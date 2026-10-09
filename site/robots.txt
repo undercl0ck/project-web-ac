@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://undercl0ck.github.io/project-web-ac/sitemap.xml
