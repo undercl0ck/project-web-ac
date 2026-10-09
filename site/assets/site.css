@@ -135,30 +135,69 @@ a:focus-visible { outline: 1px solid var(--signal); outline-offset: 3px; }
   box-shadow: inset 0 -1px 0 var(--signal);
 }
 .hero {
-  min-height: calc(100svh - 8.25rem);
+  min-height: calc(100svh - 8.75rem);
   display: flex;
-  align-items: flex-end;
-  padding: 2rem 0 4.25rem;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem 0 1.5rem;
   background: var(--ink);
   color: var(--bone);
 }
-.hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 14rem;
-  gap: 2rem;
-  align-items: end;
-  width: 100%;
+.hero > .frame {
+  display: flex;
+  flex: 1;
 }
-.hero h1 {
+.hero-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(16rem, 0.95fr);
+  grid-template-areas:
+    "title mark"
+    "facts mark";
+  gap: 1.25rem 3rem;
+  align-items: stretch;
+}
+.hero-title {
+  grid-area: title;
+  align-self: end;
   margin: 0;
   font-weight: 560;
-  font-size: clamp(4.8rem, 10.4vw, 8.6rem);
-  letter-spacing: -0.05em;
-  line-height: 0.84;
+  font-size: clamp(3.6rem, 6.6vw, 6.75rem);
+  letter-spacing: -0.045em;
+  line-height: 0.86;
 }
-.mark-lg { width: 13.5rem; height: 13.5rem; }
+.hero-mark {
+  grid-area: mark;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  min-height: 0;
+}
+.hero-facts {
+  grid-area: facts;
+  align-self: end;
+  max-width: 38rem;
+}
+.hero-facts dl {
+  display: grid;
+  grid-template-columns: 7.25rem minmax(0, 1fr);
+  gap: 0.85rem 1.15rem;
+  margin: 0 0 1.1rem;
+}
+.hero-facts dt {
+  margin: 0;
+  padding-top: 0.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--quiet-dark);
+}
+.hero-facts dd { margin: 0; }
+.hero-action { margin: 0; }
+.mark-lg { width: 100%; height: 100%; max-height: calc(100svh - 11rem); }
+.recess { fill: var(--ink); }
 .mark-lg .mass {
-  animation: settle 1.15s cubic-bezier(.16, .84, .32, 1) 1 both;
+  animation: settle 1.2s cubic-bezier(.16, .84, .32, 1) 1 both;
 }
 .signal-edge { fill: var(--signal); }
 @keyframes settle {
@@ -242,6 +281,40 @@ p { margin: 0 0 0.75rem; }
 }
 .card h3 a { text-decoration: none; }
 .card p, .strip li p { margin: 0; }
+.offerings {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+}
+.offering {
+  min-height: 18.5rem;
+  padding: 1.35rem 1.35rem 1.55rem;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+.offering .idx {
+  margin: 0 0 auto;
+  font-size: 3.4rem;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  color: var(--quiet);
+}
+.offering h2 {
+  margin: 1.75rem 0 0.55rem;
+  font-size: 1.5rem;
+  font-weight: 560;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-transform: none;
+}
+.offering p { margin: 0; max-width: 36rem; }
 .slot {
   margin: 0 0 0.4rem;
   font-size: 0.95rem;
@@ -350,10 +423,22 @@ th {
   .frame { width: min(76rem, calc(100% - 1.5rem)); }
   .mast-top { grid-template-columns: 1fr auto; min-height: 0; padding-top: 0.85rem; }
   .mast-action { grid-column: 1 / -1; }
-  .hero { min-height: 72svh; padding-bottom: 2.4rem; }
-  .hero-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-  .mark-lg { width: 6.75rem; height: 6.75rem; }
-  .hero h1 { font-size: clamp(3.5rem, 18vw, 4.8rem); }
+  .hero { min-height: 0; padding-bottom: 1.75rem; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "mark"
+      "facts";
+    gap: 1.25rem;
+  }
+  .hero-title { font-size: clamp(3.35rem, 16vw, 4.6rem); }
+  .hero-mark { justify-content: flex-start; }
+  .mark-lg { width: min(100%, 22rem); height: auto; max-height: none; }
+  .hero-facts dl { grid-template-columns: 1fr; gap: 0.2rem; }
+  .hero-facts dd { margin-bottom: 0.85rem; }
+  .offerings { grid-template-columns: 1fr; }
+  .offering { min-height: 0; }
   .page h1 { max-width: none; font-size: clamp(2.7rem, 12vw, 3.5rem); padding-top: 1.7rem; }
   .row { grid-template-columns: 1fr; gap: 0.25rem; padding: 1.5rem 0; }
   .strip, .cards, .slots { grid-template-columns: 1fr; }

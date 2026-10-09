@@ -1,8 +1,6 @@
 {
   "minimum_px": 44,
-  "method": "Chrome headless getBoundingClientRect on every a, button, input, select, textarea, and summary. Viewports 1440 and 440.",
-  "below_44": 0,
-  "smallest_target_px": 44,
+  "method": "Chrome headless getBoundingClientRect on every a, button, input, select, textarea, and summary. Viewports 1440x900 and 440x800.",
   "pages": [
     {
       "page": "home",
@@ -184,5 +182,7 @@
       "overflow": false,
       "blockquotes": 0
     }
-  ]
+  ],
+  "below_44": 0,
+  "smallest_target_px": 44
 }

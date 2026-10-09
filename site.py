@@ -47,7 +47,7 @@ class Site:
             "card_line": "For directors and the C-suite, on site or by webinar.",
             "home": True,
             "body": (
-                "Cyber Enterprise Risk Management Training (NACD-credentialed, on site or webinar). "
+                "NACD-credentialed, on site or webinar. "
                 "For board members or C-suite executives."
             ),
         },
@@ -156,6 +156,15 @@ class Site:
         "220 of the",
         "300 executive",
         "handshake",
+        "nothing was added",
+        "prior engagement",
+        "prior capabilities",
+        "not an axon finding",
+        "ready to publish",
+        "no proof is printed",
+        "not published",
+        "no claim",
+        "as printed",
         "9.5",
         "2003",
         "8(a)",
@@ -304,20 +313,24 @@ class Site:
 
     @staticmethod
     def mark(large: bool = False) -> str:
-        klass = "mark mark-lg" if large else "mark"
-        edge = (
-            '<rect class="signal-edge" x="58" y="50" width="60" height="2"/>'
-            if large
-            else ""
-        )
-        mass = "mass" if large else "mass-still"
+        if not large:
+            return (
+                '<svg class="mark" viewBox="0 0 160 160" aria-hidden="true">'
+                '<rect x="14" y="32" width="108" height="108" fill="none" stroke="currentColor" stroke-width="1"/>'
+                '<rect x="38" y="12" width="108" height="108" fill="none" stroke="currentColor" stroke-width="1"/>'
+                '<rect x="58" y="50" width="60" height="60" fill="currentColor"/>'
+                "</svg>"
+            )
         return (
-            f'<svg class="{klass}" viewBox="0 0 160 160" aria-hidden="true">'
-            '<rect x="14" y="32" width="108" height="108" fill="none" stroke="currentColor" stroke-width="1"/>'
-            '<rect x="38" y="12" width="108" height="108" fill="none" stroke="currentColor" stroke-width="1"/>'
-            f'<g class="{mass}">'
-            '<rect x="58" y="50" width="60" height="60" fill="currentColor"/>'
-            f"{edge}"
+            '<svg class="mark mark-lg" viewBox="0 0 520 640" aria-hidden="true">'
+            '<rect x="28" y="78" width="330" height="470" fill="none" stroke="currentColor" stroke-width="1.5"/>'
+            '<rect x="118" y="18" width="360" height="430" fill="none" stroke="currentColor" stroke-width="1.5"/>'
+            '<rect x="62" y="168" width="300" height="430" fill="none" stroke="currentColor" stroke-width="1.5"/>'
+            '<rect x="154" y="118" width="250" height="330" fill="currentColor"/>'
+            '<g class="mass">'
+            '<rect class="recess" x="196" y="196" width="168" height="210"/>'
+            '<rect x="196" y="196" width="168" height="210" fill="none" stroke="currentColor" stroke-width="1.5"/>'
+            '<rect class="signal-edge" x="196" y="196" width="168" height="4"/>'
             "</g></svg>"
         )
 
@@ -459,33 +472,36 @@ class Site:
                 f"<p>{escape(offer['card_line'])}</p>"
                 "</li>"
             )
-        slots = (
-            ("Record", "Slot", "No claim"),
-            ("Credential", "Slot", "No claim"),
-            ("Outcome", "Slot", "No claim"),
-        )
+        slots = ("Record", "Credential", "Outcome")
         strip = "".join(
             "<li>"
+            f'<p class="slot">Slot</p>'
             f"<p>{escape(label)}</p>"
-            f'<p class="slot">{escape(value)}</p>'
-            f'<p class="quiet">{escape(note)}</p>'
             "</li>"
-            for label, value, note in slots
+            for label in slots
         )
         return f"""
 <section class="hero">
-<div class="frame hero-grid">
-<h1>Board<br>brief</h1>
-{Site.mark(True)}
+<div class="frame">
+<div class="hero-grid">
+<h1 class="hero-title">Board<br>brief</h1>
+<div class="hero-mark">{Site.mark(True)}</div>
+<div class="hero-facts">
+<dl>
+<dt>Buyer</dt>
+<dd>Fortune 500 boards, general counsel, CISOs and executive teams, private equity, and government or critical-infrastructure readers.</dd>
+<dt>Deliverable</dt>
+<dd>Board training and pre-emptive cyber risk work.</dd>
+</dl>
+<p class="hero-action">{Site.action_link()}</p>
+</div>
+</div>
 </div>
 </section>
 <div class="paper">
 <div class="frame">
-{Site.row("01", "Buyer", "<p>Fortune 500 boards, general counsel, CISOs and executive teams, private equity, and government or critical-infrastructure readers.</p>")}
-{Site.row("02", "Deliverable", "<p>Board training and pre-emptive cyber risk work.</p>")}
-{Site.row("03", "Action", f"<p>{Site.action_link()}</p>")}
-{Site.row("04", "Proof", f'<ul class="strip">{strip}</ul>')}
-{Site.row("05", "Services", f'<ol class="cards">{"".join(cards)}</ol>')}
+{Site.row("01", "Proof", f'<ul class="strip">{strip}</ul>')}
+{Site.row("02", "Services", f'<ol class="cards">{"".join(cards)}</ol>')}
 </div>
 </div>
 """
@@ -495,12 +511,11 @@ class Site:
         blocks = []
         for index, offer in enumerate(Site.OFFERINGS, start=1):
             blocks.append(
-                Site.row(
-                    f"{index:02d}",
-                    escape(offer["name"]),
-                    f"<p>{escape(offer['body'])}</p>",
-                    offer["id"],
-                )
+                f'<li class="offering" id="{escape(offer["id"])}">'
+                f'<p class="idx">{index:02d}</p>'
+                f"<h2>{escape(offer['name'])}</h2>"
+                f"<p>{escape(offer['body'])}</p>"
+                "</li>"
             )
         rows = []
         for offer in Site.OFFERINGS:
@@ -514,14 +529,14 @@ class Site:
             )
         table = (
             '<div class="table-wrap"><table>'
-            "<caption>Each offering, the page that names it, and whether the home brief shows it.</caption>"
+            "<caption>Each offering and the page that names it.</caption>"
             "<thead><tr><th>Offering</th><th>Source URL</th><th>Home card</th></tr></thead>"
             f"<tbody>{''.join(rows)}</tbody></table></div>"
         )
         return f"""
 <h1>Capabilities</h1>
-<p class="lede">Eight offerings. The list matches the prior engagement page. Nothing was added.</p>
-{"".join(blocks)}
+<p class="lede">Eight lines of board training and pre-emptive cyber risk work.</p>
+<ol class="offerings">{"".join(blocks)}</ol>
 {Site.row("09", "Source map", table)}
 <p class="end-action">{Site.action_link()}</p>
 """
@@ -563,20 +578,20 @@ class Site:
     @staticmethod
     def proof_body(_slug: str) -> str:
         slots = (
-            "Record. No claim is printed.",
-            "Credential. No claim is printed.",
-            "Outcome. No claim is printed.",
-            "Client names. No name is printed.",
-            "Training counts. No count is printed.",
-            "Delivery timing. No hour count is printed.",
-            "Corporate identifiers and contract vehicles. Not printed.",
+            "Record",
+            "Credential",
+            "Outcome",
+            "Names",
+            "Counts",
+            "Timing",
+            "Identifiers",
         )
         items = "".join(
             f'<li><p class="slot">Slot</p><p>{escape(line)}</p></li>' for line in slots
         )
         return f"""
 <h1>Proof</h1>
-<p class="lede">No proof is printed on this page.</p>
+<p class="lede">Record, credential, and outcome.</p>
 <ul class="slots">{items}</ul>
 <p class="end-action">{Site.action_link()}</p>
 """
@@ -587,8 +602,7 @@ class Site:
 <h1>Authority</h1>
 <div class="slot-page">
 <p class="slot">Slot</p>
-<p>Recognition letters, memberships, faculty appointments, and agency records are not printed on this page.</p>
-<p>When a record is ready to publish, it replaces this slot. Until then the slot is empty.</p>
+<p>Letters, memberships, and appointments.</p>
 </div>
 <p class="end-action">{Site.action_link()}</p>
 """
@@ -657,7 +671,6 @@ class Site:
             inner = (
                 f"<p>{escape(note['body'])}</p>"
                 f'<ul class="sources">{sources}</ul>'
-                '<p class="quiet">Not an Axon finding.</p>'
             )
             blocks.append(Site.row(f"{index:02d}", escape(note["title"]), inner))
         return f"""
@@ -670,14 +683,13 @@ class Site:
     @staticmethod
     def about_body(_slug: str) -> str:
         slots = "".join(
-            '<li><p class="slot">Slot '
-            f"{number:02d}</p><p>Name and biography are not published.</p></li>"
+            f'<li><p class="slot">Slot {number:02d}</p><p>Practitioner</p></li>'
             for number in (1, 2, 3)
         )
         return f"""
 <h1>About</h1>
 <p class="lede">Axon Global Services prepares board training and pre-emptive cyber risk work for the readers on Who it is for.</p>
-<p>Phone, email, and the published street address are on Engage.</p>
+<p>Phone, email, and the street address are on Engage.</p>
 {Site.row("01", "Practitioners", f'<ul class="slots">{slots}</ul>')}
 <p class="end-action">{Site.action_link()}</p>
 """
@@ -691,13 +703,12 @@ class Site:
             "<dt>Email</dt>"
             f'<dd><a href="mailto:{Site.EMAIL}">{Site.EMAIL}</a></dd>'
             "<dt>Address</dt>"
-            "<dd>10 G St. NE, Suite 600<br>Washington, DC 20002"
-            '<p class="quiet">As printed on the prior capabilities page.</p></dd>'
+            "<dd>10 G St. NE, Suite 600<br>Washington, DC 20002</dd>"
             "</dl>"
         )
         return f"""
 <h1>{Site.ACTION}</h1>
-<p class="lede">The request opens an email. This page has no form and does not store a name, a message, or a visit.</p>
+<p class="lede">The briefing request opens an email.</p>
 {Site.row("01", "Briefing", f'<p id="request">{Site.action_link()}</p>')}
 {Site.row("02", "Secondary", secondary)}
 """
@@ -902,30 +913,69 @@ a:focus-visible { outline: 1px solid var(--signal); outline-offset: 3px; }
   box-shadow: inset 0 -1px 0 var(--signal);
 }
 .hero {
-  min-height: calc(100svh - 8.25rem);
+  min-height: calc(100svh - 8.75rem);
   display: flex;
-  align-items: flex-end;
-  padding: 2rem 0 4.25rem;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem 0 1.5rem;
   background: var(--ink);
   color: var(--bone);
 }
-.hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 14rem;
-  gap: 2rem;
-  align-items: end;
-  width: 100%;
+.hero > .frame {
+  display: flex;
+  flex: 1;
 }
-.hero h1 {
+.hero-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(16rem, 0.95fr);
+  grid-template-areas:
+    "title mark"
+    "facts mark";
+  gap: 1.25rem 3rem;
+  align-items: stretch;
+}
+.hero-title {
+  grid-area: title;
+  align-self: end;
   margin: 0;
   font-weight: 560;
-  font-size: clamp(4.8rem, 10.4vw, 8.6rem);
-  letter-spacing: -0.05em;
-  line-height: 0.84;
+  font-size: clamp(3.6rem, 6.6vw, 6.75rem);
+  letter-spacing: -0.045em;
+  line-height: 0.86;
 }
-.mark-lg { width: 13.5rem; height: 13.5rem; }
+.hero-mark {
+  grid-area: mark;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  min-height: 0;
+}
+.hero-facts {
+  grid-area: facts;
+  align-self: end;
+  max-width: 38rem;
+}
+.hero-facts dl {
+  display: grid;
+  grid-template-columns: 7.25rem minmax(0, 1fr);
+  gap: 0.85rem 1.15rem;
+  margin: 0 0 1.1rem;
+}
+.hero-facts dt {
+  margin: 0;
+  padding-top: 0.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--quiet-dark);
+}
+.hero-facts dd { margin: 0; }
+.hero-action { margin: 0; }
+.mark-lg { width: 100%; height: 100%; max-height: calc(100svh - 11rem); }
+.recess { fill: var(--ink); }
 .mark-lg .mass {
-  animation: settle 1.15s cubic-bezier(.16, .84, .32, 1) 1 both;
+  animation: settle 1.2s cubic-bezier(.16, .84, .32, 1) 1 both;
 }
 .signal-edge { fill: var(--signal); }
 @keyframes settle {
@@ -1009,6 +1059,40 @@ p { margin: 0 0 0.75rem; }
 }
 .card h3 a { text-decoration: none; }
 .card p, .strip li p { margin: 0; }
+.offerings {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+}
+.offering {
+  min-height: 18.5rem;
+  padding: 1.35rem 1.35rem 1.55rem;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+.offering .idx {
+  margin: 0 0 auto;
+  font-size: 3.4rem;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  color: var(--quiet);
+}
+.offering h2 {
+  margin: 1.75rem 0 0.55rem;
+  font-size: 1.5rem;
+  font-weight: 560;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-transform: none;
+}
+.offering p { margin: 0; max-width: 36rem; }
 .slot {
   margin: 0 0 0.4rem;
   font-size: 0.95rem;
@@ -1117,10 +1201,22 @@ th {
   .frame { width: min(76rem, calc(100% - 1.5rem)); }
   .mast-top { grid-template-columns: 1fr auto; min-height: 0; padding-top: 0.85rem; }
   .mast-action { grid-column: 1 / -1; }
-  .hero { min-height: 72svh; padding-bottom: 2.4rem; }
-  .hero-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-  .mark-lg { width: 6.75rem; height: 6.75rem; }
-  .hero h1 { font-size: clamp(3.5rem, 18vw, 4.8rem); }
+  .hero { min-height: 0; padding-bottom: 1.75rem; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "mark"
+      "facts";
+    gap: 1.25rem;
+  }
+  .hero-title { font-size: clamp(3.35rem, 16vw, 4.6rem); }
+  .hero-mark { justify-content: flex-start; }
+  .mark-lg { width: min(100%, 22rem); height: auto; max-height: none; }
+  .hero-facts dl { grid-template-columns: 1fr; gap: 0.2rem; }
+  .hero-facts dd { margin-bottom: 0.85rem; }
+  .offerings { grid-template-columns: 1fr; }
+  .offering { min-height: 0; }
   .page h1 { max-width: none; font-size: clamp(2.7rem, 12vw, 3.5rem); padding-top: 1.7rem; }
   .row { grid-template-columns: 1fr; gap: 0.25rem; padding: 1.5rem 0; }
   .strip, .cards, .slots { grid-template-columns: 1fr; }
@@ -1178,7 +1274,7 @@ th {
         if (Site.ROOT / "CNAME").exists() or (Site.OUT / "CNAME").exists():
             problems.append("CNAME present")
         home = (Site.OUT / "index.html").read_text(encoding="utf-8")
-        for needle in ("Buyer", "Deliverable", "No claim", "Services"):
+        for needle in ("Buyer", "Deliverable", "Services", Site.ACTION):
             if needle not in home:
                 problems.append(f"home missing {needle}")
         if home.count('class="card"') != 6:
@@ -1197,7 +1293,7 @@ th {
         if authority.count(">Slot<") < 1:
             problems.append("authority is not a slot")
         about = (Site.OUT / "about" / "index.html").read_text(encoding="utf-8")
-        if about.count("not published") < 3:
+        if about.count("Slot 0") < 3:
             problems.append("practitioner slots missing")
         css = (Site.OUT / "assets" / "site.css").read_text(encoding="utf-8")
         if re.search(r"url\(\s*https?:", css):
