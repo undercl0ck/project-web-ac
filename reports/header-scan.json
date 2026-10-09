@@ -1,38 +1,18 @@
 {
   "method": "Static scan of built HTML. These are document policies, not HTTP response headers.",
+  "limitation": "GitHub Pages cannot set custom HTTP response headers. This site does not add meta tags that impersonate headers browsers ignore. The document policies that are actually available are the meta content-security policy and the meta referrer policy.",
   "https": "github.io Pages sites are served over HTTPS. This repo ships no CNAME, so the host stays a github.io name, where GitHub enforces HTTPS.",
   "set_in_html": [
     "Content-Security-Policy via meta http-equiv",
-    "referrer policy via meta name=referrer (no-referrer)",
-    "X-Content-Type-Options via meta http-equiv (browsers do not reliably honor this meta; it is a marker only)"
+    "referrer policy via meta name=referrer (no-referrer)"
   ],
-  "github_pages_response_observed": {
-    "sample": "https://undercl0ck.github.io/gregs-hvac/ on Oct 9, 2026",
-    "present": [
-      "strict-transport-security: max-age=31556952",
-      "access-control-allow-origin: *",
-      "cache-control"
-    ],
-    "absent_on_that_response": [
-      "content-security-policy",
-      "referrer-policy",
-      "x-frame-options",
-      "x-content-type-options",
-      "permissions-policy",
-      "cross-origin-opener-policy",
-      "cross-origin-resource-policy",
-      "cross-origin-embedder-policy"
-    ]
-  },
   "github_pages_cannot_set": [
-    "Custom HTTP response headers. Pages has no _headers file and no per-repo header config.",
-    "Content-Security-Policy as an HTTP header. The meta element is the available control. Meta CSP ignores frame-ancestors, sandbox, report-uri, and report-to, so those cannot be enforced here.",
+    "Custom HTTP response headers. Pages has no header config for a repository.",
+    "Content-Security-Policy as an HTTP header. The meta element is the available control. Meta CSP ignores frame-ancestors, sandbox, report-uri, and report-to.",
     "Referrer-Policy as an HTTP header. The meta referrer element is the available control.",
-    "X-Frame-Options.",
-    "X-Content-Type-Options as a reliable control. The meta form is not a standard browser hook.",
-    "Permissions-Policy.",
+    "X-Frame-Options, X-Content-Type-Options, and Permissions-Policy.",
     "Cross-Origin-Opener-Policy, Cross-Origin-Resource-Policy, and Cross-Origin-Embedder-Policy.",
-    "A custom HSTS policy. On github.io, GitHub sends its own strict-transport-security. A CNAME would leave that default host, so this repo does not add one."
+    "A custom HSTS policy. On github.io, GitHub sends its own strict-transport-security."
   ],
   "pages": [
     {
@@ -58,12 +38,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -95,12 +75,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -132,12 +112,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -169,12 +149,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -183,6 +163,81 @@
         "https://axoncyber.com/how-we-engage/",
         "https://axoncyber.com/how-we-engage/</a",
         "https://undercl0ck.github.io/project-web-ac/capabilities/"
+      ]
+    },
+    {
+      "path": "clients/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "https://undercl0ck.github.io/project-web-ac/clients/"
+      ]
+    },
+    {
+      "path": "credentials/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "https://axoncyber.com/our-",
+        "https://undercl0ck.github.io/project-web-ac/credentials/"
       ]
     },
     {
@@ -208,18 +263,140 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
       "scripts": 0,
       "external_urls": [
         "https://undercl0ck.github.io/project-web-ac/engage/"
+      ]
+    },
+    {
+      "path": "faq/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "https://undercl0ck.github.io/project-web-ac/faq/"
+      ]
+    },
+    {
+      "path": "fyi/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "http://fortune.com/2015/01/23/cyber-attack-insurance-lloyds/",
+        "http://thehill.com/policy/cybersecurity/321174-nsa-and-cybercom-head-rogers-pushes-to-loosen-reins-on-cyberweapons",
+        "http://venturebeat.com/2016/09/26/u-s-senator-calls-for-sec-probe-of-yahoo-disclosures-on-hacking-timeline/",
+        "http://www.american.edu/kogod/cybergov/news.cfm",
+        "http://www.eweek.com/news/gen.-hayden-private-sector-must-lead-fight-against-cyber-threats.html",
+        "http://www.forbes.com/sites/stevemorgan/2015/12/20/cybersecurity%E2%80%8B-%E2%80%8Bmarket-reaches-75-billion-in-2015%E2%80%8B%E2%80%8B-%E2%80%8Bexpected-to-reach-170-billion-by-2020/#6cf2130d2191",
+        "http://www.inc.com/joseph-steinberg/sec-investigation-raises-terrifying-question-could-your-employees-go-to-prison-f.html",
+        "http://www.middlemarketgrowth.org/cybersecurity-insurance-really-need-know/",
+        "https://undercl0ck.github.io/project-web-ac/fyi/",
+        "https://www.dlapiper.com/en/uk/focus/eu-data-protection-regulation/key-changes/",
+        "https://www.youtube.com/watch?v=0K6npguJuuc&amp;sns=em"
+      ]
+    },
+    {
+      "path": "government/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "https://axoncyber.com/extended-capabilities/",
+        "https://undercl0ck.github.io/project-web-ac/government/"
       ]
     },
     {
@@ -245,12 +422,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -282,12 +459,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -297,6 +474,276 @@
         "https://www.govinfo.gov/content/pkg/FR-2023-08-04/html/2023-16194.htm",
         "https://www.law.cornell.edu/cfr/text/17/229.106",
         "https://www.nist.gov/news-events/news/2024/02/nist-releases-version-20-landmark-cybersecurity-framework"
+      ]
+    },
+    {
+      "path": "news/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "http://www.chli.org",
+        "http://www.cnn.com/videos/tech/2014/12/19/exp-ath-how-do-hackers-gain-access-richard-marshall.cnn</p",
+        "http://www.hmgstrategy.com/company/news-and-press-overview/detail.asp?newsID=78</p",
+        "http://www.hmgstrategy.com/events/agenda.asp?eventID=66</p",
+        "http://www.hmgstrategy.com/events/agenda.asp?eventID=67</p",
+        "http://www.hmgstrategy.com/events/agenda.asp?eventID=95),",
+        "https://axoncyber.com/2020/10/",
+        "https://axoncyber.com/2020/10/20/144/",
+        "https://axoncyber.com/2020/10/20/2013-august-1-washington-d-c-2/",
+        "https://axoncyber.com/2020/10/20/2013-august-1-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-august-14-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-august-19-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-august-23-cambridge-ma/",
+        "https://axoncyber.com/2020/10/20/2013-august-6-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-july-24-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-july-26-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2013-june-24-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-november-19-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2013-november-5-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-october-14-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-october-31-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2013-september-10-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2013-september-12-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2013-september-24-houston-tx/",
+        "https://axoncyber.com/2020/10/20/2013-september-4-nasa-kennedy-space-center-offices-cape-canaveral-fl/",
+        "https://axoncyber.com/2020/10/20/2014-april-14-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-april-2-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2014-april-23-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-april-25-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-april-27-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-april-28-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-april-4-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2014-august-19-atlanta-ga/",
+        "https://axoncyber.com/2020/10/20/2014-december-19/",
+        "https://axoncyber.com/2020/10/20/2014-february-12-dallas-tx-2/",
+        "https://axoncyber.com/2020/10/20/2014-february-12-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2014-january-8-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2014-july-22-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-july-25-vancouver-ca/",
+        "https://axoncyber.com/2020/10/20/2014-june-15-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-march-19-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-march-20-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2014-march-24-san-francisco-ca/",
+        "https://axoncyber.com/2020/10/20/2014-march-24/",
+        "https://axoncyber.com/2020/10/20/2014-march-3-2014-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-may-1-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-may-8-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-october-14-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-october-16-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2014-september-04/",
+        "https://axoncyber.com/2020/10/20/2015-august-31-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2015-december-7-2015-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2015-january-29/",
+        "https://axoncyber.com/2020/10/20/2015-june-13-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2015-june-25-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2015-march-18-san-antonio-tx/",
+        "https://axoncyber.com/2020/10/20/2015-march-25-harvard-club-ny-ny/",
+        "https://axoncyber.com/2020/10/20/2015-may-12-san-diego-ca/",
+        "https://axoncyber.com/2020/10/20/2015-november-3-2015-nasa-kennedy-space-center-fl/",
+        "https://axoncyber.com/2020/10/20/2015-october-26-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2015-september-10-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2015-september-11-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2015-september-23-denver-co/",
+        "https://axoncyber.com/2020/10/20/2015-september-28-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2015-september-29-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-april-12-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2016-april-14-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-april-6-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2016-august-3-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-december-30-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2016-february-15-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2016-february-16-charlotte-nc/",
+        "https://axoncyber.com/2020/10/20/2016-february-20-hartford-ct/",
+        "https://axoncyber.com/2020/10/20/2016-february-4-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-february-9-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2016-january-19-2016-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-january-25-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-july-1-washington-dc/",
+        "https://axoncyber.com/2020/10/20/2016-july-14-nasa-kennedy-space-center-fl/",
+        "https://axoncyber.com/2020/10/20/2016-july-21-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-june-16-lexington-va/",
+        "https://axoncyber.com/2020/10/20/2016-june-20-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-march-15-chicago-il/",
+        "https://axoncyber.com/2020/10/20/2016-march-8-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2016-march-9-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-may-15-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-may-29-30-washington-dc/",
+        "https://axoncyber.com/2020/10/20/2016-november-16-cambridge-massachusetts/",
+        "https://axoncyber.com/2020/10/20/2016-november-5-10-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2016-october-15-2016-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2016-october-19-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-october-26-2016-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2016-october-7-2016-palo-alto-ca/",
+        "https://axoncyber.com/2020/10/20/2016-september-17-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-april-10-nasa-ksc/",
+        "https://axoncyber.com/2020/10/20/2017-april-11-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2017-april-12-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2017-april-14-cambridge-massachusetts/",
+        "https://axoncyber.com/2020/10/20/2017-april-14-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-april-26-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-april-28-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2017-april-6-hmg-strategy-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2017-august-31-houston-tx/",
+        "https://axoncyber.com/2020/10/20/2017-december-14-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-february-3-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-january-19-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-july-19-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-july-3-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-march-11-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-march-18-san-francisco-ca/",
+        "https://axoncyber.com/2020/10/20/2017-march-9-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2017-november-30-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-october-10-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-september-13-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2017-september-27-atlanta-ga/",
+        "https://axoncyber.com/2020/10/20/2017-september-8-kansas-city-ks/",
+        "https://axoncyber.com/2020/10/20/2018-april-13-orlando-fl/",
+        "https://axoncyber.com/2020/10/20/2018-august-15-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2018-december-26-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-february-15-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-january-15-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-july-26-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-july-28-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-june-11-new-york-ny/",
+        "https://axoncyber.com/2020/10/20/2018-june-7-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-may-8-nasville-tn/",
+        "https://axoncyber.com/2020/10/20/2018-november-1-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2018-october-4-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-september-12-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-september-18-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2018-september-4-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2019-august-20-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2019-december-20-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2019-february-12-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2019-february-28-omaha-ne/",
+        "https://axoncyber.com/2020/10/20/2019-january-8-las-vegas-nv/",
+        "https://axoncyber.com/2020/10/20/2019-june-6-kansas-city/",
+        "https://axoncyber.com/2020/10/20/2019-march-19-dallas-tx/",
+        "https://axoncyber.com/2020/10/20/2019-may-5-london-england/",
+        "https://axoncyber.com/2020/10/20/2019-october-6-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2019-september-19-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2019-september-23-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2020-apri-13-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2020-august-7-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2020-february-3-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2020-january-1-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2020-january-20-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2020-june-9-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2020-march-3-washington-d-c/",
+        "https://axoncyber.com/2020/10/20/2020-may-19-washington-d-c/",
+        "https://axoncyber.com/2020/12/",
+        "https://axoncyber.com/2020/12/31/2020-december-30-washington-d-c/",
+        "https://axoncyber.com/2020/12/31/2020-october-7-washington-d-c/",
+        "https://axoncyber.com/2020/12/31/882/",
+        "https://axoncyber.com/2021/03/",
+        "https://axoncyber.com/2021/03/26/2021-march-26-new-york/",
+        "https://axoncyber.com/2021/03/31/2021-march-31-washington-d-c/",
+        "https://axoncyber.com/2021/04/",
+        "https://axoncyber.com/2021/04/06/2021-april-6-washington-d-c/",
+        "https://axoncyber.com/2021/05/",
+        "https://axoncyber.com/2021/05/18/2021-may-18-washington-d-c/",
+        "https://axoncyber.com/2021/10/",
+        "https://axoncyber.com/2021/10/06/2021-may-21-washington-d-c/",
+        "https://axoncyber.com/2021/10/06/2021-october-06-washington-d-c/",
+        "https://axoncyber.com/2021/10/06/2021-september-14-washington-d-c/",
+        "https://axoncyber.com/2021/10/06/2021-september-20-washington-d-c/",
+        "https://axoncyber.com/2021/12/",
+        "https://axoncyber.com/2021/12/09/2021-december-07-washington-d-c/",
+        "https://axoncyber.com/2021/12/09/2021-december-08-new-york-n-y/",
+        "https://axoncyber.com/2021/12/09/2021-december-09-washington-d-c/",
+        "https://axoncyber.com/2021/12/09/2021-november-16-silicon-valley-ca/",
+        "https://axoncyber.com/2021/12/15/2021-december-15-washington-d-c/",
+        "https://axoncyber.com/2022/03/",
+        "https://axoncyber.com/2022/03/08/2022-february-11-new-york-n-y/",
+        "https://axoncyber.com/2022/03/08/2022-march-1-washington-d-c/",
+        "https://axoncyber.com/2022/12/",
+        "https://axoncyber.com/2022/12/19/2022-december-18-washington-d-c/",
+        "https://axoncyber.com/2022/12/19/2022-july-1-washington-d-c/",
+        "https://axoncyber.com/2022/12/19/2022-november-15-washington-d-c/",
+        "https://axoncyber.com/2022/12/19/2022-october-11-washington-d-c/",
+        "https://axoncyber.com/2022/12/19/2022-october-17-washington-d-c/",
+        "https://axoncyber.com/2022/12/19/2022-october-20-washington-d-c/",
+        "https://axoncyber.com/2022/12/19/2022-september-15-washington-d-c/",
+        "https://axoncyber.com/2023/05/",
+        "https://axoncyber.com/2023/05/18/2023-april-03-fort-mead-va/",
+        "https://axoncyber.com/2023/05/18/2023-january-2-washington-d-c/",
+        "https://axoncyber.com/2023/05/18/2023-march-03-dallas-tx/",
+        "https://axoncyber.com/2023/05/18/2023-march-21-dallas-tx/",
+        "https://axoncyber.com/2023/05/18/2023-march-27-washington-d-c/",
+        "https://axoncyber.com/2023/10/",
+        "https://axoncyber.com/2023/10/09/2023-august-16-washington-d-c/",
+        "https://axoncyber.com/2023/10/09/2023-june-29-mclean-va/",
+        "https://axoncyber.com/2023/10/09/2023-may-29-washington-d-c/",
+        "https://axoncyber.com/2024/02/",
+        "https://axoncyber.com/2024/02/19/2023-july-15-dallas-tx/",
+        "https://axoncyber.com/2024/02/19/2023-november-15-washington-d-c/",
+        "https://axoncyber.com/2024/02/19/2023-september-15-dallas-tx-2/",
+        "https://axoncyber.com/2024/02/19/2023-september-15-dallas-tx/",
+        "https://axoncyber.com/2024/02/19/2024-february-18-washington-d-c/",
+        "https://axoncyber.com/2024/02/19/2024-january-15-washington-d-c/",
+        "https://axoncyber.com/2024/04/",
+        "https://axoncyber.com/2024/04/03/2024-april-2-washington-d-c/",
+        "https://axoncyber.com/2024/04/03/2024-march-11-washington-d-c/",
+        "https://axoncyber.com/2024/04/03/2024-march-8-eagle-pass-tx/",
+        "https://axoncyber.com/2024/08/",
+        "https://axoncyber.com/2024/08/06/2024-august-10-washington-d-c/",
+        "https://axoncyber.com/2024/08/06/2024-june-18-tokyo-japan/",
+        "https://axoncyber.com/2024/09/",
+        "https://axoncyber.com/2024/09/30/2024-december-01-washington-d-c/",
+        "https://axoncyber.com/2024/09/30/2024-september-21-colorado-springs-co/",
+        "https://axoncyber.com/2024/09/30/september-10-tokyo-japan/",
+        "https://axoncyber.com/2024/11/",
+        "https://axoncyber.com/2024/11/07/dhs-cisa-interview-with-axon-cyber-ceo-israel-martinez/",
+        "https://axoncyber.com/2025/03/",
+        "https://axoncyber.com/2025/03/04/2025-february-22-washington-d-c/",
+        "https://axoncyber.com/2025/03/05/2025-march-07-washington-d-c/",
+        "https://axoncyber.com/2025/04/",
+        "https://axoncyber.com/2025/04/04/2025-april-03-dallas-texas/",
+        "https://axoncyber.com/2025/04/25/2025-april-22-washington-d-c/",
+        "https://axoncyber.com/2025/10/",
+        "https://axoncyber.com/2025/10/04/2025-october-7-grapevine-texas/",
+        "https://axoncyber.com/2026/04/",
+        "https://axoncyber.com/2026/04/29/2025-december-12-washington-d-c-boca-raton-fl/",
+        "https://axoncyber.com/2026/04/29/2025-march-03-sherman-texas/",
+        "https://axoncyber.com/2026/04/29/2025-march-13-dallas-texas/",
+        "https://axoncyber.com/2026/04/29/2026-april-29-dallas-texas/",
+        "https://axoncyber.com/2026/04/29/2026-april-7-dallas-texas/",
+        "https://axoncyber.com/2026/04/29/2026-february-24-dallas-texas/",
+        "https://axoncyber.com/2026/04/29/2026-january-25-dallas-texas/",
+        "https://axoncyber.com/2026/04/29/2026-march-5-dallas-texas-2/",
+        "https://axoncyber.com/2026/04/29/2026-march-5-dallas-texas/",
+        "https://axoncyber.com/2026/04/29/2026-may-15-dallas-texas/",
+        "https://undercl0ck.github.io/project-web-ac/news/",
+        "https://www.cna.org/about/"
       ]
     },
     {
@@ -322,26 +769,129 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
       "scripts": 0,
       "external_urls": [
-        "https://axoncyber.com/",
-        "https://axoncyber.com/</a",
-        "https://axoncyber.com/our-ceo-global-cto/",
-        "https://axoncyber.com/our-ceo-global-cto/</a",
-        "https://axoncyber.com/what-we-do/",
-        "https://axoncyber.com/what-we-do/</a",
-        "https://axoncyber.com/who-we-are/",
-        "https://axoncyber.com/who-we-are/</a",
         "https://undercl0ck.github.io/project-web-ac/proof/"
+      ]
+    },
+    {
+      "path": "recognition/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "https://undercl0ck.github.io/project-web-ac/recognition/"
+      ]
+    },
+    {
+      "path": "recognition-2/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "https://undercl0ck.github.io/project-web-ac/recognition-2/"
+      ]
+    },
+    {
+      "path": "recognition-3/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 0,
+      "external_urls": [
+        "https://undercl0ck.github.io/project-web-ac/recognition-3/"
       ]
     },
     {
@@ -367,12 +917,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -404,17 +954,18 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
       "scripts": 0,
       "external_urls": [
+        "https://axoncyber.com/our-",
         "https://undercl0ck.github.io/project-web-ac/who/"
       ]
     }
