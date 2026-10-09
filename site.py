@@ -31,6 +31,15 @@ class Site:
         {"slug": "", "nav": "Home", "title": "Board brief", "home": True},
         {"slug": "capabilities", "nav": "Capabilities", "title": "Capabilities"},
         {"slug": "who", "nav": "Who it is for", "title": "Who it is for"},
+        {"slug": "clients", "nav": "Clients", "title": "Our Clients"},
+        {"slug": "credentials", "nav": "Credentials", "title": "Credentials"},
+        {"slug": "recognition", "nav": "Recognitions", "title": "Recognitions"},
+        {"slug": "recognition-2", "nav": None, "title": "Recognitions, continued"},
+        {"slug": "recognition-3", "nav": None, "title": "Recognitions, continued"},
+        {"slug": "news", "nav": "News", "title": "News"},
+        {"slug": "faq", "nav": "FAQs", "title": "FAQs"},
+        {"slug": "government", "nav": "Government Quals", "title": "Government Quals"},
+        {"slug": "fyi", "nav": "FYI", "title": "FYI"},
         {"slug": "proof", "nav": "Proof", "title": "Proof"},
         {"slug": "authority", "nav": "Authority", "title": "Authority"},
         {"slug": "insights", "nav": "Insights", "title": "Insights"},
@@ -126,18 +135,14 @@ class Site:
 
     BANNED = (
         "did you know",
-        "safe harbor",
-        "safe haven",
         "liability shield",
         "127 unique",
         "127 benefit",
-        "gdpr",
         "no one else",
         "18 differentiator",
         "18 material",
         "cage code",
         "uei:",
-        "naics",
         "34 million",
         "$34",
         "48 hour",
@@ -148,13 +153,6 @@ class Site:
         "drone",
         "binary rain",
         "grumpy gears",
-        "israel martinez",
-        "over 150",
-        "trained over",
-        "over 200",
-        "over 220",
-        "220 of the",
-        "300 executive",
         "handshake",
         "nothing was added",
         "prior engagement",
@@ -166,9 +164,6 @@ class Site:
         "no claim",
         "as printed",
         "9.5",
-        "2003",
-        "8(a)",
-        "secret service",
         "blockquote",
         "unverified",
         "x-content-type-options",
@@ -260,6 +255,10 @@ class Site:
         ofl = Site.ROOT / "fonts" / "OFL.txt"
         if ofl.exists():
             (font_dir / "OFL.txt").write_text(ofl.read_text(encoding="utf-8"), encoding="utf-8")
+        media_out = Site.OUT / "assets" / "media"
+        media_out.mkdir(parents=True, exist_ok=True)
+        for src in sorted((Site.ROOT / "media").glob("*.webp")):
+            (media_out / src.name).write_bytes(src.read_bytes())
         css_path = Site.OUT / "assets" / "site.css"
         css_path.write_text(Site.css(), encoding="utf-8")
         (Site.OUT / "favicon.svg").write_text(Site.favicon(), encoding="utf-8")
@@ -448,6 +447,15 @@ class Site:
             "": Site.home_body,
             "capabilities": Site.capabilities_body,
             "who": Site.who_body,
+            "clients": Site.clients_body,
+            "credentials": Site.credentials_body,
+            "recognition": Site.recognition_body,
+            "recognition-2": Site.recognition_body,
+            "recognition-3": Site.recognition_body,
+            "news": Site.news_body,
+            "faq": Site.faq_body,
+            "government": Site.government_body,
+            "fyi": Site.fyi_body,
             "proof": Site.proof_body,
             "authority": Site.authority_body,
             "insights": Site.insights_body,
@@ -500,6 +508,10 @@ class Site:
 </section>
 <div class="paper">
 <div class="frame">
+<section class="credential-strip">
+<h2>Credentials</h2>
+{Site.pictures("", [row for row in Site.catalog() if row["kind"] == "seal" and row["page"] == "https://axoncyber.com/"], "seal-grid")}
+</section>
 {Site.row("01", "Proof", f'<ul class="strip">{strip}</ul>')}
 {Site.row("02", "Services", f'<ol class="cards">{"".join(cards)}</ol>')}
 </div>
@@ -568,10 +580,19 @@ class Site:
         blocks = []
         for index, (title, line) in enumerate(rows, start=1):
             blocks.append(Site.row(f"{index:02d}", escape(title), f"<p>{escape(line)}</p>"))
+        data = Site.bundle()
+        photos = [
+            row for row in Site.catalog()
+            if row["id"] in {"who-speaker", "who-room", "who-ftc"}
+        ]
+        lines = "".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])
         return f"""
 <h1>Who it is for</h1>
 <p class="lede">Five readers. The work is board training and pre-emptive cyber risk assessment.</p>
 {"".join(blocks)}
+{Site.row("06", escape(data["who_credentials_heading"]), f"<ul class=\"plain\">{lines}</ul>")}
+{Site.row("07", escape(data["who_value_heading"]), f"<p>{escape(data['who_value'])}</p>")}
+{Site.pictures("who", photos, "photo-grid")}
 <p class="end-action">{Site.action_link()}</p>
 """
 
@@ -686,9 +707,11 @@ class Site:
             f'<li><p class="slot">Slot {number:02d}</p><p>Practitioner</p></li>'
             for number in (1, 2, 3)
         )
+        portrait = next(row for row in Site.catalog() if row["id"] == "mark-photo")
         return f"""
 <h1>About</h1>
 <p class="lede">Axon Global Services prepares board training and pre-emptive cyber risk work for the readers on Who it is for.</p>
+<figure class="portrait"><img src="{Site.media_src("about", portrait["file"])}" alt="{escape(portrait["alt"])}" width="{portrait["width"]}" height="{portrait["height"]}"></figure>
 <p>Phone, email, and the street address are on Engage.</p>
 {Site.row("01", "Practitioners", f'<ul class="slots">{slots}</ul>')}
 <p class="end-action">{Site.action_link()}</p>
@@ -725,6 +748,208 @@ class Site:
         return f"""
 <h1>Sitemap</h1>
 <ol class="map">{"".join(items)}</ol>
+<p class="end-action">{Site.action_link()}</p>
+"""
+
+    @staticmethod
+    def bundle() -> dict:
+        return json.loads((Site.ROOT / "content" / "pages.json").read_text(encoding="utf-8"))
+
+    @staticmethod
+    def catalog() -> list:
+        data = json.loads((Site.ROOT / "content" / "assets.json").read_text(encoding="utf-8"))
+        return data["assets"]
+
+    @staticmethod
+    def media_src(slug: str, filename: str) -> str:
+        return f"{'' if slug == '' else '../'}assets/media/{filename}"
+
+    @staticmethod
+    def pictures(slug: str, rows: list, kind: str) -> str:
+        items = []
+        for row in rows:
+            items.append(
+                "<li>"
+                f'<img src="{Site.media_src(slug, row["file"])}" alt="{escape(row["alt"])}" '
+                f'width="{row["width"]}" height="{row["height"]}">'
+                "</li>"
+            )
+        return f'<ul class="{kind}">{"".join(items)}</ul>'
+
+    @staticmethod
+    def recognition_groups() -> list:
+        rows = [row for row in Site.catalog() if row["kind"] == "recognition"]
+        rows.sort(key=lambda row: row["id"])
+        groups = []
+        current = []
+        size = 0
+        for row in rows:
+            if current and size + row["bytes"] > 860_000:
+                groups.append(current)
+                current = []
+                size = 0
+            current.append(row)
+            size += row["bytes"]
+        if current:
+            groups.append(current)
+        return groups
+
+    @staticmethod
+    def clients_body(slug: str) -> str:
+        data = Site.bundle()
+        intro = "".join(f"<p>{escape(line)}</p>" for line in data["clients_intro"])
+        names = "".join(f"<li>{escape(name)}</li>" for name in data["clients"])
+        photos = [row for row in Site.catalog() if row["id"].startswith("client-")]
+        return f"""
+<h1>Our Clients</h1>
+{intro}
+<ul class="name-wall">{names}</ul>
+{Site.pictures(slug, photos, "photo-grid")}
+<p class="end-action">{Site.action_link()}</p>
+"""
+
+    @staticmethod
+    def credentials_body(slug: str) -> str:
+        data = Site.bundle()
+        seals = [row for row in Site.catalog() if row["kind"] == "seal"]
+        lines = "".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])
+        return f"""
+<h1>Credentials</h1>
+<p class="lede">{escape(data["who_credentials_heading"])}</p>
+{Site.pictures(slug, seals, "seal-grid")}
+<ul class="plain">{lines}</ul>
+<p>{escape(data["who_value"])}</p>
+<p class="end-action">{Site.action_link()}</p>
+"""
+
+    @staticmethod
+    def recognition_body(slug: str) -> str:
+        index = {"recognition": 0, "recognition-2": 1, "recognition-3": 2}[slug]
+        groups = Site.recognition_groups()
+        parts = ("recognition", "recognition-2", "recognition-3")
+        links = []
+        for number, part in enumerate(parts):
+            label = "Recognitions" if number == 0 else f"Continued {number + 1}"
+            current = ' aria-current="page"' if part == slug else ""
+            links.append(f'<a href="{Site.href(slug, part)}"{current}>{label}</a>')
+        lede = '<p class="lede">General Photos, Letters, and Other</p>' if index == 0 else ""
+        title = "Recognitions" if index == 0 else "Recognitions, continued"
+        return f"""
+<h1>{title}</h1>
+{lede}
+{Site.pictures(slug, groups[index], "recog-grid")}
+<nav class="part-nav" aria-label="Recognition pages">{"".join(links)}</nav>
+<p class="end-action">{Site.action_link()}</p>
+"""
+
+    @staticmethod
+    def news_body(slug: str) -> str:
+        posts = json.loads((Site.ROOT / "content" / "news.json").read_text(encoding="utf-8"))
+        months = Site.bundle()["archive_months"]
+        month_links = "".join(
+            f'<a href="{escape(url)}">{escape(label)}</a>' for label, url in months
+        )
+        items = []
+        for post in posts:
+            excerpt = f"<p>{escape(post['excerpt'])}</p>" if post.get("excerpt") else ""
+            items.append(
+                "<li>"
+                f'<a href="{escape(post["source"])}">'
+                f'<time datetime="{escape(post["date"])}">{escape(post["date"])}</time>'
+                f"<span>{escape(post['title'])}</span></a>"
+                f"{excerpt}</li>"
+            )
+        return f"""
+<h1>News</h1>
+<p class="lede">Supporting Documentation for Axon Discourses, Awards and Recognitions</p>
+<nav class="month-nav" aria-label="News archive">{month_links}</nav>
+<ol class="archive">{"".join(items)}</ol>
+<p class="end-action">{Site.action_link()}</p>
+"""
+
+    @staticmethod
+    def faq_body(_slug: str) -> str:
+        data = Site.bundle()
+        intro = "".join(f"<p>{escape(line)}</p>" for line in data["faq_intro"])
+        questions = "".join(f"<li>{escape(line)}</li>" for line in data["faq_questions"])
+        quotes = []
+        for item in data["faq_quotes"]:
+            note = f"<p>{escape(item['note'])}</p>" if item.get("note") else ""
+            quotes.append(f"<li><p>{escape(item['quote'])}</p>{note}</li>")
+        lessons = "".join(f"<li>{escape(line)}</li>" for line in data["faq_lessons"])
+        lesson_intro = "".join(f"<p>{escape(line)}</p>" for line in data["faq_lessons_intro"])
+        return f"""
+<h1>FAQs</h1>
+{intro}
+<ol class="plain">{questions}</ol>
+<h2>Top Quotes</h2>
+<p>{escape(data["faq_disclaimer"])}</p>
+<ul class="plain">{"".join(quotes)}</ul>
+<h2>Top Lessons Learned</h2>
+{lesson_intro}
+<ul class="plain">{lessons}</ul>
+<p class="end-action">{Site.action_link()}</p>
+"""
+
+    @staticmethod
+    def government_body(_slug: str) -> str:
+        lines = Site.bundle()["government_lines"]
+        quals = []
+        codes = []
+        note = ""
+        mode = "quals"
+        for line in lines:
+            if line == "Government Qualifications":
+                continue
+            if line.startswith("Below are the NAICS"):
+                mode = "codes"
+                note = line
+                continue
+            if line == "View our Extended Capabilities":
+                codes.append(
+                    '<li><a href="https://axoncyber.com/extended-capabilities/">'
+                    f"{escape(line)}</a></li>"
+                )
+                continue
+            target = codes if mode == "codes" else quals
+            target.append(f"<li>{escape(line)}</li>")
+        return f"""
+<h1>Government Quals</h1>
+<ul class="plain">{"".join(quals)}</ul>
+<p>{escape(note)}</p>
+<ul class="plain codes">{"".join(codes)}</ul>
+<p class="end-action">{Site.action_link()}</p>
+"""
+
+    @staticmethod
+    def fyi_body(_slug: str) -> str:
+        data = Site.bundle()
+        paragraph = escape(data["fyi_paragraph"])
+        paragraph = paragraph.replace(
+            "Morrison &amp; Foerster, LLP",
+            '<a href="https://www.youtube.com/watch?v=0K6npguJuuc&amp;sns=em">Morrison &amp; Foerster, LLP</a>',
+        )
+        paragraph = paragraph.replace(
+            "DLA Piper LLP",
+            '<a href="https://www.dlapiper.com/en/uk/focus/eu-data-protection-regulation/key-changes/">DLA Piper LLP</a>',
+        )
+        paragraph = paragraph.replace(
+            "AxonInfo@AxonCyber.com",
+            '<a href="mailto:AxonInfo@AxonCyber.com">AxonInfo@AxonCyber.com</a>',
+        )
+        readings = []
+        for item in data["fyi_readings"]:
+            text = escape(item["text"])
+            if item.get("href"):
+                readings.append(f'<li><a href="{escape(item["href"])}">{text}</a></li>')
+            else:
+                readings.append(f"<li>{text}</li>")
+        return f"""
+<h1>FYI</h1>
+<h2>{escape(data["fyi_heading"])}</h2>
+<p>{paragraph}</p>
+<h2>Further Reading</h2>
+<ul class="plain">{"".join(readings)}</ul>
 <p class="end-action">{Site.action_link()}</p>
 """
 
@@ -1197,6 +1422,79 @@ th {
 }
 .foot-legal p { margin: 0; }
 .foot-legal a, .foot-side a, .colophon .wordmark { color: var(--bone); }
+.credential-strip { padding-top: 2.4rem; }
+.credential-strip h2 {
+  margin: 0 0 0.8rem;
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
+  font-weight: 560;
+  letter-spacing: -0.03em;
+}
+.seal-grid, .photo-grid, .recog-grid, .name-wall, .plain {
+  list-style: none;
+  margin: 0.6rem 0 1.4rem;
+  padding: 0;
+}
+.seal-grid, .photo-grid, .recog-grid, .name-wall {
+  display: grid;
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+}
+.seal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.photo-grid, .recog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.name-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.seal-grid li, .photo-grid li, .recog-grid li, .name-wall li {
+  margin: 0;
+  min-height: 8.75rem;
+  padding: 1rem;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bone);
+}
+.name-wall li {
+  justify-content: flex-start;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.seal-grid img, .photo-grid img, .recog-grid img {
+  display: block;
+  width: 100%;
+  height: 8.75rem;
+  object-fit: contain;
+}
+.seal-grid img { filter: grayscale(1) sepia(0.4) contrast(1.08); }
+.photo-grid img, .recog-grid img, .portrait img { filter: grayscale(1) contrast(1.05); }
+.photo-grid li, .recog-grid li { background: var(--ink); }
+.photo-grid img, .recog-grid img { height: 12rem; }
+.portrait { margin: 0 0 1.4rem; max-width: 22rem; }
+.portrait img { display: block; width: 100%; height: auto; }
+.plain li { margin: 0; padding: 0.85rem 0; border-top: 1px solid var(--rule); }
+.month-nav, .part-nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.35rem; margin: 0 0 1.4rem; }
+.month-nav a, .part-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.55rem;
+  text-decoration: none;
+}
+.archive { list-style: none; margin: 0; padding: 0; }
+.archive li { border-top: 1px solid var(--rule); padding: 0.35rem 0 0.8rem; }
+.archive a {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  min-height: 44px;
+  text-decoration: none;
+  font-weight: 520;
+}
+.archive time { flex: none; color: var(--quiet); font-size: 0.85rem; }
+.archive p { margin: 0.15rem 0 0; color: var(--quiet); }
+.opening main { display: flex; flex-direction: column; }
+.opening .hero { flex: 1; min-height: 0; }
+.mark-lg { max-height: 100%; }
 @media (max-width: 800px) {
   .frame { width: min(76rem, calc(100% - 1.5rem)); }
   .mast-top { grid-template-columns: 1fr auto; min-height: 0; padding-top: 0.85rem; }
@@ -1224,6 +1522,9 @@ th {
   .brief { grid-template-columns: 1fr; }
   .foot { grid-template-columns: 1fr; padding-top: 2.2rem; }
   .foot-legal { flex-direction: column; }
+  .seal-grid, .photo-grid, .recog-grid, .name-wall { grid-template-columns: 1fr 1fr; }
+  .name-wall { grid-template-columns: 1fr; }
+  .archive a { flex-direction: column; gap: 0.15rem; align-items: flex-start; }
 }
 """
 
@@ -1254,14 +1555,8 @@ th {
             for phrase in Site.BANNED:
                 if phrase in lowered:
                     problems.append(f"banned phrase {phrase!r} in {path}")
-            for name in Site.CLIENTS:
-                if name in lowered:
-                    problems.append(f"client name {name!r} in {path}")
-            for token in ("dell", "ford", "intel", "google", "walmart", "target", "delta", "usg"):
-                if re.search(rf"\b{token}\b", lowered):
-                    problems.append(f"client token {token!r} in {path}")
-        if nacd_files != ["capabilities/index.html"]:
-            problems.append(f"NACD appears in {nacd_files}")
+        if "capabilities/index.html" not in nacd_files:
+            problems.append(f"NACD missing from capabilities: {nacd_files}")
         caps = (Site.OUT / "capabilities" / "index.html").read_text(encoding="utf-8")
         if caps.count("NACD-credentialed") != 1:
             problems.append("NACD-credentialed count is not 1")
@@ -1295,6 +1590,8 @@ th {
         about = (Site.OUT / "about" / "index.html").read_text(encoding="utf-8")
         if about.count("Slot 0") < 3:
             problems.append("practitioner slots missing")
+        if len(Site.recognition_groups()) != 3:
+            problems.append("recognition archive is not split into 3 pages")
         css = (Site.OUT / "assets" / "site.css").read_text(encoding="utf-8")
         if re.search(r"url\(\s*https?:", css):
             problems.append("stylesheet requests a third party")
@@ -1368,14 +1665,19 @@ th {
         rows = []
         for path in sorted(Site.OUT.rglob("*.html")):
             html_bytes = path.stat().st_size
-            total = html_bytes + css + icon + font
+            image_bytes = icon
+            for src in re.findall(r'<img\b[^>]*\bsrc="([^"]+)"', text := path.read_text(encoding="utf-8")):
+                image = (path.parent / src).resolve()
+                if image.is_file():
+                    image_bytes += image.stat().st_size
+            total = html_bytes + css + font + image_bytes
             rows.append(
                 {
                     "path": str(path.relative_to(Site.OUT)),
                     "html_bytes": html_bytes,
                     "css_bytes": css,
                     "font_bytes": font,
-                    "image_bytes": icon,
+                    "image_bytes": image_bytes,
                     "js_bytes": 0,
                     "total_bytes": total,
                     "limit_bytes": limit,
@@ -1383,7 +1685,7 @@ th {
                 }
             )
         return {
-            "method": "Uncompressed bytes of the HTML file plus the shared stylesheet, the self-hosted font, and the SVG mark.",
+            "method": "Uncompressed bytes of the HTML file plus the shared stylesheet, the self-hosted font, the SVG mark, and the images that page references.",
             "limit_bytes": limit,
             "pages": rows,
         }
