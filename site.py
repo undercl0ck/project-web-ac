@@ -1,6 +1,6 @@
 """Axon Global Services static site.
 
-One class. Static methods. Plain HTML, one stylesheet, one self-hosted grotesque.
+One class. Static methods. Plain HTML, one stylesheet, one menu script, one self-hosted grotesque.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ class Site:
     SOURCE = "https://axoncyber.com/how-we-engage/"
 
     PAGES = (
-        {"slug": "", "nav": None, "title": "Board brief", "home": True},
+        {"slug": "", "nav": None, "title": "Home", "home": True},
         {"slug": "capabilities", "nav": "Capabilities", "title": "Capabilities"},
         {"slug": "who", "nav": "Who it is for", "title": "Who it is for"},
         {"slug": "clients", "nav": "Clients", "title": "Our Clients"},
@@ -89,7 +89,7 @@ class Site:
             "card_line": "For directors and the C-suite, on site or by webinar.",
             "home": True,
             "body": (
-                "NACD-credentialed, on site or webinar. "
+                "By NACD® credentialed experts, on site or webinar. "
                 "For board members or C-suite executives."
             ),
         },
@@ -294,6 +294,7 @@ class Site:
             (media_out / src.name).write_bytes(src.read_bytes())
         css_path = Site.OUT / "assets" / "site.css"
         css_path.write_text(Site.css(), encoding="utf-8")
+        (Site.OUT / "assets" / "menu.js").write_text(Site.menu_script(), encoding="utf-8")
         (Site.OUT / "favicon.png").write_bytes((Site.ROOT / "media" / "favicon-32.png").read_bytes())
         (Site.OUT / "apple-touch-icon.png").write_bytes(
             (Site.ROOT / "media" / "favicon-180.png").read_bytes()
@@ -411,11 +412,13 @@ class Site:
         body_class = ' class="opening"' if page.get("home") else ""
         depth = "" if slug == "" else "../"
         description = escape(
-            "Axon Global Services. Board training and pre-emptive cyber risk work."
+            "Training on site or by webinar, and assessments explained in plain business language."
+            if page.get("home")
+            else "Axon Global Services. Board training and pre-emptive cyber risk work."
         )
         csp = (
             "default-src 'self'; base-uri 'none'; object-src 'none'; "
-            "form-action 'none'; script-src 'none'; style-src 'self'; "
+            "form-action 'none'; script-src 'self'; style-src 'self'; "
             "img-src 'self' data:; font-src 'self'; connect-src 'none'; "
             "frame-src 'none'; worker-src 'none'; manifest-src 'self'; "
             "upgrade-insecure-requests"
@@ -474,6 +477,7 @@ class Site:
 </div>
 </footer>
 </div>
+<script src="{depth}assets/menu.js"></script>
 </body>
 </html>
 """
@@ -498,19 +502,24 @@ class Site:
             links.append(f'<a href="{Site.href(slug, dest)}"{child}>{escape(text)}</a>')
         edge = " menu-end" if item["slug"] in {"insights", "about"} else ""
         state = " here" if here else ""
+        panel_id = "menu-" + item["slug"]
         return (
-            f'<details class="menu{edge}{state}">'
-            f"<summary>{escape(item['label'])}</summary>"
-            f'<div class="menu-panel">{"".join(links)}</div></details>'
+            f'<div class="menu{edge}{state}">'
+            f'<button type="button" class="menu-trigger" aria-expanded="false" '
+            f'aria-controls="{panel_id}">{escape(item["label"])}</button>'
+            f'<div class="menu-panel" id="{panel_id}" hidden>{"".join(links)}</div>'
+            "</div>"
         )
 
     @staticmethod
     def primary_nav(slug: str) -> str:
         groups = "".join(Site.menu_links(slug, item) for item in Site.MENU)
         return (
-            '<input class="nav-toggle" id="nav-toggle" type="checkbox" aria-label="Menu">'
-            '<label class="nav-toggle-label" for="nav-toggle">Menu</label>'
-            f'<div class="nav-groups">{groups}</div>'
+            '<button type="button" class="nav-toggle" aria-expanded="false" '
+            'aria-controls="nav-groups" aria-label="Open menu">'
+            '<span class="nav-bars" aria-hidden="true"></span>'
+            "</button>"
+            f'<div class="nav-groups" id="nav-groups">{groups}</div>'
         )
 
     @staticmethod
@@ -601,17 +610,15 @@ class Site:
 <section class="hero">
 <div class="frame">
 <div class="hero-grid">
-<h1 class="hero-title">Board<br>brief</h1>
-<div class="hero-mark">{Site.mark(True)}</div>
-<div class="hero-facts">
-<dl>
-<dt>Buyer</dt>
-<dd>Fortune 500 boards, general counsel, CISOs and executive teams, private equity, and government or critical-infrastructure readers.</dd>
-<dt>Deliverable</dt>
-<dd>Board training and pre-emptive cyber risk work.</dd>
-</dl>
-<p class="hero-action">{Site.action_link()}</p>
+<div class="hero-copy">
+<h1 class="hero-title">We train boards and general counsel on cyber risk, and deliver a written risk report before a breach.</h1>
+<p class="hero-sub">Training on site or by webinar, and assessments explained in plain business language.</p>
+<div class="hero-cta">
+{Site.action_link()}
+<a class="hero-phone" href="tel:+12022485050">{Site.PHONE}</a>
 </div>
+</div>
+<div class="hero-mark">{Site.mark(True)}</div>
 </div>
 </div>
 </section>
@@ -908,13 +915,7 @@ class Site:
     @staticmethod
     def marquee(names: list) -> str:
         items = "".join(f"<li>{escape(name)}</li>" for name in names)
-        return (
-            '<div class="marquee">'
-            '<div class="marquee-track">'
-            f"<ul>{items}</ul>"
-            f'<ul aria-hidden="true">{items}</ul>'
-            "</div></div>"
-        )
+        return f'<ul class="client-row">{items}</ul>'
 
     @staticmethod
     def figures() -> str:
@@ -1146,6 +1147,87 @@ class Site:
         )
 
     @staticmethod
+    def menu_script() -> str:
+        return """(function () {
+  var toggle = document.querySelector(".nav-toggle");
+  var groups = document.getElementById("nav-groups");
+  if (!toggle || !groups) return;
+
+  function drawer() {
+    return window.getComputedStyle(toggle).display !== "none";
+  }
+
+  function panelFor(button) {
+    var id = button.getAttribute("aria-controls");
+    return id ? document.getElementById(id) : null;
+  }
+
+  function setTrigger(button, open) {
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+    var panel = panelFor(button);
+    if (panel) panel.hidden = !open;
+    button.parentNode.classList.toggle("is-open", open);
+  }
+
+  function closeTriggers(except) {
+    var buttons = groups.querySelectorAll(".menu-trigger");
+    Array.prototype.forEach.call(buttons, function (button) {
+      if (button !== except) setTrigger(button, false);
+    });
+  }
+
+  function setDrawer(open) {
+    if (!drawer()) return;
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    document.body.classList.toggle("nav-open", open);
+    if (!open) closeTriggers(null);
+  }
+
+  toggle.addEventListener("click", function () {
+    var open = toggle.getAttribute("aria-expanded") !== "true";
+    setDrawer(open);
+    if (open) {
+      var first = groups.querySelector("a, button");
+      if (first) first.focus();
+    } else {
+      toggle.focus();
+    }
+  });
+
+  groups.addEventListener("click", function (event) {
+    var button = event.target.closest(".menu-trigger");
+    if (!button || !groups.contains(button)) return;
+    var open = button.getAttribute("aria-expanded") !== "true";
+    closeTriggers(button);
+    setTrigger(button, open);
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape") return;
+    var openTrigger = groups.querySelector('.menu-trigger[aria-expanded="true"]');
+    if (openTrigger) {
+      setTrigger(openTrigger, false);
+      openTrigger.focus();
+      return;
+    }
+    if (drawer() && toggle.getAttribute("aria-expanded") === "true") {
+      setDrawer(false);
+      toggle.focus();
+    }
+  });
+
+  window.addEventListener("resize", function () {
+    if (!drawer()) {
+      document.body.classList.remove("nav-open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open menu");
+    }
+  });
+})();
+"""
+
+    @staticmethod
     def css() -> str:
         return """@font-face {
   font-family: "Libre Franklin";
@@ -1205,7 +1287,29 @@ a {
   overflow-wrap: anywhere;
   text-underline-offset: 0.22em;
 }
-a:focus-visible { outline: 1px solid var(--signal); outline-offset: 3px; }
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.mast :focus-visible,
+.hero :focus-visible,
+.close :focus-visible,
+.colophon :focus-visible {
+  outline: 2px solid var(--bone);
+  outline-offset: 2px;
+}
+.skip:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
 .mast { background: var(--ink); color: var(--bone); }
 .mast-top {
   display: grid;
@@ -1254,10 +1358,12 @@ a:focus-visible { outline: 1px solid var(--signal); outline-offset: 3px; }
 .nav {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.15rem 0.35rem;
   border-top: 1px solid var(--rule-dark);
   padding: 0.2rem 0 0.35rem;
 }
+.nav-toggle { display: none; }
 .nav a, .foot-nav a {
   display: inline-flex;
   align-items: center;
@@ -1284,66 +1390,66 @@ a:focus-visible { outline: 1px solid var(--signal); outline-offset: 3px; }
   box-shadow: inset 0 -1px 0 var(--signal);
 }
 .hero {
-  min-height: calc(100svh - 8.75rem);
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.6rem 0 1.5rem;
+  padding: 1.1rem 0 1.6rem;
   background: var(--ink);
   color: var(--bone);
 }
-.hero > .frame {
-  display: flex;
-  flex: 1;
-}
+.hero > .frame { display: flex; flex: 1; }
 .hero-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(16rem, 0.95fr);
-  grid-template-areas:
-    "title mark"
-    "facts mark";
+  grid-template-columns: minmax(0, 1.25fr) minmax(12rem, 0.75fr);
   gap: 1.25rem 3rem;
-  align-items: stretch;
+  align-items: center;
 }
 .hero-title {
-  grid-area: title;
-  align-self: end;
   margin: 0;
+  max-width: 18ch;
   font-weight: 560;
-  font-size: clamp(3.6rem, 6.6vw, 6.75rem);
-  letter-spacing: -0.045em;
-  line-height: 0.86;
+  font-size: clamp(2rem, 2.7vw + 0.7rem, 3.45rem);
+  letter-spacing: -0.038em;
+  line-height: 1.02;
+}
+.hero-sub {
+  margin: 0.9rem 0 0;
+  max-width: 36rem;
+  color: var(--quiet-dark);
+  font-size: 1.12rem;
+}
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.15rem;
+  margin-top: 1.15rem;
+}
+.hero-cta .action {
+  color: var(--ink);
+  background: var(--signal);
+  box-shadow: none;
+  min-height: 48px;
+  padding: 0.7rem 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.hero-phone {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+  font-weight: 560;
 }
 .hero-mark {
-  grid-area: mark;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: flex-end;
   min-height: 0;
 }
-.hero-facts {
-  grid-area: facts;
-  align-self: end;
-  max-width: 38rem;
-}
-.hero-facts dl {
-  display: grid;
-  grid-template-columns: 7.25rem minmax(0, 1fr);
-  gap: 0.85rem 1.15rem;
-  margin: 0 0 1.1rem;
-}
-.hero-facts dt {
-  margin: 0;
-  padding-top: 0.2rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--quiet-dark);
-}
-.hero-facts dd { margin: 0; }
-.hero-action { margin: 0; }
-.mark-lg { width: 100%; height: 100%; max-height: calc(100svh - 11rem); }
+.mark-lg { width: 100%; height: auto; max-height: min(26rem, 52vh); }
 .recess { fill: var(--ink); }
 .mark-lg .mass {
   animation: settle 1.2s cubic-bezier(.16, .84, .32, 1) 1 both;
@@ -1640,25 +1746,16 @@ th {
 .archive p { margin: 0.15rem 0 0; color: var(--quiet); }
 .opening main { display: flex; flex-direction: column; }
 .opening .hero { flex: 1; min-height: 0; }
-.mark-lg { max-height: 100%; }
 @media (max-width: 800px) {
   .frame { width: min(76rem, calc(100% - 1.5rem)); }
-  .mast-top { grid-template-columns: 1fr auto; min-height: 0; padding-top: 0.85rem; }
-  .mast-action { grid-column: 1 / -1; }
-  .hero { min-height: 0; padding-bottom: 1.75rem; }
-  .hero-grid {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "title"
-      "mark"
-      "facts";
-    gap: 1.25rem;
-  }
-  .hero-title { font-size: clamp(3.35rem, 16vw, 4.6rem); }
+  .mast-top { grid-template-columns: 1fr auto; min-height: 0; padding-top: 0.35rem; }
+  .hero { min-height: 0; padding: 0.35rem 0 1.25rem; }
+  .hero-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+  .hero-title { font-size: clamp(1.7rem, 6.4vw, 2.15rem); max-width: 22ch; }
+  .hero-sub { margin-top: 0.55rem; font-size: 1rem; }
+  .hero-cta { margin-top: 0.75rem; }
   .hero-mark { justify-content: flex-start; }
-  .mark-lg { width: min(100%, 22rem); height: auto; max-height: none; }
-  .hero-facts dl { grid-template-columns: 1fr; gap: 0.2rem; }
-  .hero-facts dd { margin-bottom: 0.85rem; }
+  .mark-lg { width: min(100%, 9.5rem); height: auto; max-height: 8rem; }
   .offerings { grid-template-columns: 1fr; }
   .offering { min-height: 0; }
   .page h1 { max-width: none; font-size: clamp(2.7rem, 12vw, 3.5rem); padding-top: 1.7rem; }
@@ -1673,40 +1770,7 @@ th {
   .archive a { flex-direction: column; gap: 0.15rem; align-items: flex-start; }
   .close-grid { grid-template-columns: 1fr; align-items: start; padding: 2.2rem 0 2.4rem; }
   .cards, .figures, .offerings { grid-template-columns: 1fr; }
-  .nav-toggle-label {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0 0.85rem;
-    cursor: pointer;
-  }
-  .nav-toggle {
-    position: absolute;
-    left: 0;
-    top: 0.15rem;
-    width: 5.6rem;
-    height: 44px;
-    margin: 0;
-    opacity: 0;
-    clip: auto;
-    overflow: visible;
-    z-index: 2;
-  }
-  .nav-groups { display: none; }
-  .nav-toggle:checked ~ .nav-groups {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .menu[open] > .menu-panel {
-    position: static;
-    min-width: 0;
-    background: transparent;
-    border: 0;
-    padding: 0 0 0.25rem 0.75rem;
-  }
-  .folio { display: none; }
+  .folio, .mast-action { display: none; }
   .seal-grid li { min-height: 9rem; }
   .seal-grid img { width: 6.25rem; height: 6.25rem; }
 }
@@ -1719,33 +1783,34 @@ body {
 .mast { padding-top: env(safe-area-inset-top); }
 .colophon { padding-bottom: env(safe-area-inset-bottom); }
 .logo { width: 3rem; height: auto; max-width: 3rem; display: block; object-fit: cover; }
-.nav { display: block; position: relative; }
-.nav-toggle {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-}
-.nav-toggle-label { display: none; }
+.nav { display: flex; position: relative; }
 .nav-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 0 0.1rem; }
-.menu > summary, a.menu-label, .menu-panel a {
+.nav-bars, .nav-bars::before, .nav-bars::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  position: relative;
+  transition: transform 160ms ease, top 160ms ease, background-color 160ms ease;
+}
+.nav-bars::before, .nav-bars::after { content: ""; position: absolute; left: 0; }
+.nav-bars::before { top: -6px; }
+.nav-bars::after { top: 6px; }
+.nav-toggle[aria-expanded="true"] .nav-bars { background: transparent; }
+.nav-toggle[aria-expanded="true"] .nav-bars::before { top: 0; transform: rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-bars::after { top: 0; transform: rotate(-45deg); }
+.menu-trigger, a.menu-label, .menu-panel a {
   display: flex;
   align-items: center;
   min-height: 44px;
   min-width: 44px;
   padding: 0 0.7rem;
   text-decoration: none;
+  text-align: left;
   font-size: 0.92rem;
   cursor: pointer;
 }
-.menu > summary { list-style: none; }
-.menu > summary::-webkit-details-marker { display: none; }
-.menu > summary::marker { content: ""; }
-.menu > summary::after {
+.menu-trigger::after {
   content: "";
   width: 0.38rem;
   height: 0.38rem;
@@ -1753,11 +1818,12 @@ body {
   border-right: 1px solid currentColor;
   border-bottom: 1px solid currentColor;
   transform: translateY(-0.12rem) rotate(45deg);
+  transition: transform 160ms ease;
 }
-.menu[open] > summary::after { transform: translateY(0.08rem) rotate(225deg); }
-.menu.here > summary, a.menu-label[aria-current="page"] { box-shadow: inset 0 -1px 0 currentColor; }
-.menu-panel { display: none; }
-.menu[open] > .menu-panel { display: flex; flex-direction: column; }
+.menu.is-open > .menu-trigger::after { transform: translateY(0.08rem) rotate(225deg); }
+.menu.here > .menu-trigger, a.menu-label[aria-current="page"] { box-shadow: inset 0 -1px 0 currentColor; }
+.menu-panel[hidden] { display: none !important; }
+.menu.is-open > .menu-panel { display: flex; flex-direction: column; }
 .menu-panel a { width: 100%; }
 .page h1 { font-size: clamp(2.75rem, 4.2vw + 1.1rem, 5.75rem); }
 .lede { font-size: clamp(1.12rem, 0.4vw + 1rem, 1.38rem); max-width: 40rem; }
@@ -1811,23 +1877,25 @@ body {
   letter-spacing: -0.045em;
   line-height: 0.95;
 }
-.marquee { overflow: hidden; max-width: 100%; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
-.marquee-track { display: flex; width: max-content; animation: drift 80s linear infinite; }
-.marquee:hover .marquee-track, .marquee:focus-within .marquee-track { animation-play-state: paused; }
-.marquee ul { display: flex; list-style: none; margin: 0; padding: 0; }
-.marquee li {
+.client-row {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+}
+.client-row li {
   display: flex;
   align-items: center;
   min-height: 3.15rem;
-  padding: 0 1.05rem;
-  border-right: 1px solid var(--rule);
+  margin: 0;
+  padding: 0.35rem 1.05rem;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
   font-weight: 560;
   letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-@keyframes drift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
 }
 .card, .offering { padding: 0; overflow: hidden; }
 .card-plate { height: 7.25rem; background: var(--ink); }
@@ -1866,58 +1934,71 @@ body {
 .foot-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1.2rem; }
 .foot-group { display: flex; flex-direction: column; align-items: flex-start; }
 .foot-group a { text-decoration: none; }
-@media (min-width: 801px) {
+@media (min-width: 1024px) {
   .menu { position: relative; }
-  .menu[open] > .menu-panel {
+  .menu.is-open > .menu-panel {
     position: absolute;
     z-index: 8;
-    top: calc(100% - 1px);
+    top: 100%;
     left: 0;
     min-width: 15.5rem;
-    background: #14120f;
+    background: var(--ink);
     border: 1px solid var(--rule-dark);
     padding: 0.3rem 0;
+    box-shadow: none;
   }
-  .menu-end[open] > .menu-panel { left: auto; right: 0; }
+  .menu-end.is-open > .menu-panel { left: auto; right: 0; }
 }
 @media (max-width: 1100px) {
   .cards, .figures { grid-template-columns: 1fr 1fr; }
   .name-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-@media (max-width: 800px) {
-  .nav-toggle-label {
-    display: inline-flex;
-    align-items: center;
+@media (max-width: 1023px) {
+  .hero-grid { align-items: start; }
+  .hero-title { font-size: clamp(1.85rem, 3.2vw, 2.45rem); }
+  .mark-lg { max-height: min(16rem, 34vh); }
+  .mast .frame { position: relative; }
+  .folio, .mast-action { display: none; }
+  .nav {
+    position: absolute;
+    top: 0.35rem;
+    right: 0;
+    width: 44px;
     min-height: 44px;
-    min-width: 44px;
-    padding: 0 0.85rem;
-    cursor: pointer;
+    border-top: 0;
+    padding: 0;
+    z-index: 4;
   }
   .nav-toggle {
-    position: absolute;
-    left: 0;
-    top: 0.15rem;
-    width: 5.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
     height: 44px;
-    margin: 0;
-    padding: 0;
-    opacity: 0;
-    clip: auto;
-    overflow: visible;
-    z-index: 2;
   }
-  .nav-groups { display: none; }
-  .nav-toggle:checked ~ .nav-groups {
+  .nav-groups {
+    display: none;
+    position: absolute;
+    top: 44px;
+    right: 0;
+    width: min(22rem, calc(100vw - 1.5rem));
+    background: var(--ink);
+    border: 1px solid var(--rule-dark);
+    padding: 0.2rem 0;
+  }
+  body.nav-open { overflow: hidden; }
+  body.nav-open .nav-groups {
     display: flex;
     flex-direction: column;
     align-items: stretch;
   }
-  .menu[open] > .menu-panel {
+  .menu-trigger, a.menu-label, .menu-panel a { min-height: 56px; }
+  .menu.is-open > .menu-panel {
     position: static;
     min-width: 0;
     background: transparent;
     border: 0;
-    padding: 0 0 0.25rem 0.75rem;
+    padding: 0 0 0.15rem 0.75rem;
   }
   .cards, .figures, .offerings { grid-template-columns: 1fr; }
   .name-wall { grid-template-columns: 1fr 1fr; }
@@ -1934,9 +2015,12 @@ p, h1, h2, h3, li, dd {
   .wordmark-line { letter-spacing: 0.1em; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
-  .marquee ul[aria-hidden="true"] { display: none; }
-  .marquee ul { flex-wrap: wrap; }
+  .mark-lg .mass,
+  .nav-bars, .nav-bars::before, .nav-bars::after,
+  .menu-trigger::after {
+    animation: none;
+    transition: none;
+  }
 }
 """
 
@@ -1960,8 +2044,13 @@ p, h1, h2, h3, li, dd {
                 problems.append(f"missing csp in {path}")
             if 'name="referrer" content="no-referrer"' not in text:
                 problems.append(f"missing referrer policy in {path}")
-            if re.search(r"<script", text, re.I):
-                problems.append(f"script in {path}")
+            scripts = re.findall(r"<script\b([^>]*)>", text, re.I)
+            expected = ' src="' + ("../" if path.parent != Site.OUT else "") + 'assets/menu.js"'
+            rel = str(path.relative_to(Site.OUT))
+            if scripts != [expected]:
+                problems.append(f"unexpected script in {rel}")
+            if re.search(r"<script\b[^>]*>\s*[^<\s]", text, re.I):
+                problems.append(f"inline script in {rel}")
             if "NACD" in text:
                 nacd_files.append(str(path.relative_to(Site.OUT)))
             for phrase in Site.BANNED:
@@ -1970,8 +2059,10 @@ p, h1, h2, h3, li, dd {
         if "capabilities/index.html" not in nacd_files:
             problems.append(f"NACD missing from capabilities: {nacd_files}")
         caps = (Site.OUT / "capabilities" / "index.html").read_text(encoding="utf-8")
-        if caps.count("NACD-credentialed") != 1:
-            problems.append("NACD-credentialed count is not 1")
+        if caps.count("By NACD® credentialed experts") != 1:
+            problems.append("NACD credential line is missing")
+        if "NACD-credentialed" in caps:
+            problems.append("old NACD-credentialed wording remains")
         if re.search(r"<h[1-6][^>]*>[^<]*NACD", caps):
             problems.append("NACD appears in a heading")
         blob = "\n".join(blob_parts).casefold()
@@ -1981,9 +2072,21 @@ p, h1, h2, h3, li, dd {
         if (Site.ROOT / "CNAME").exists() or (Site.OUT / "CNAME").exists():
             problems.append("CNAME present")
         home = (Site.OUT / "index.html").read_text(encoding="utf-8")
-        for needle in ("Buyer", "Deliverable", "Services", Site.ACTION):
+        for needle in (
+            "We train boards and general counsel on cyber risk, and deliver a written risk report before a breach.",
+            "Training on site or by webinar, and assessments explained in plain business language.",
+            "Services",
+            Site.ACTION,
+            Site.PHONE,
+        ):
             if needle not in home:
                 problems.append(f"home missing {needle}")
+        if "Board brief" in home or ">Buyer<" in home or ">Deliverable<" in home:
+            problems.append("old hero copy remains")
+        if 'aria-label="Open menu"' not in home or "<button" not in home:
+            problems.append("menu toggle is not a labeled button")
+        if "checkbox" in home:
+            problems.append("menu still uses a checkbox")
         if home.count('class="card"') != 6:
             problems.append("home card count is not 6")
         if "gtag" in blob or "google-analytics" in blob or "plausible" in blob:
@@ -2015,6 +2118,27 @@ p, h1, h2, h3, li, dd {
         css = (Site.OUT / "assets" / "site.css").read_text(encoding="utf-8")
         if re.search(r"url\(\s*https?:", css):
             problems.append("stylesheet requests a third party")
+        if "@keyframes drift" in css or "animation: drift" in css:
+            problems.append("client row still animates")
+        if "outline: 2px solid var(--ink)" not in css or "outline: 2px solid var(--bone)" not in css:
+            problems.append("focus rings missing")
+        if "outline-offset: 2px" not in css:
+            problems.append("focus offset missing")
+        faq = (Site.OUT / "faq" / "index.html").read_text(encoding="utf-8")
+        fyi = (Site.OUT / "fyi" / "index.html").read_text(encoding="utf-8")
+        news = (Site.OUT / "news" / "index.html").read_text(encoding="utf-8")
+        if "safe harbor" not in faq:
+            problems.append("faq missing safe harbor")
+        if "safe haven" not in fyi:
+            problems.append("fyi missing safe haven")
+        if "[poop]" in faq or "[fill in the blank]" in faq or "[ELT]" in faq or "[bad actors]" in faq:
+            problems.append("faq still has editorial brackets")
+        if "Would it stand up to review by your board, your regulator, or a court?" not in faq:
+            problems.append("faq review question missing")
+        if "Generals Counsel" not in faq or "Conducted" not in home:
+            problems.append("source wording drifted")
+        if re.search(r"\[\d+\]", news):
+            problems.append("news still has citation marks")
         repo_text = "\n".join(
             path.read_text(encoding="utf-8", errors="ignore")
             for path in Site.ROOT.rglob("*")
@@ -2080,6 +2204,7 @@ p, h1, h2, h3, li, dd {
     def weights() -> dict:
         css = (Site.OUT / "assets" / "site.css").stat().st_size
         font = (Site.OUT / "assets" / "fonts" / "libre-franklin-latin.woff2").stat().st_size
+        js = (Site.OUT / "assets" / "menu.js").stat().st_size
         limit = 1_048_576
         rows = []
         for path in sorted(Site.OUT.rglob("*.html")):
@@ -2112,7 +2237,7 @@ p, h1, h2, h3, li, dd {
                 if best is not None and best not in seen:
                     seen.add(best)
                     image_bytes += best_size
-            total = html_bytes + css + font + image_bytes
+            total = html_bytes + css + font + image_bytes + js
             rows.append(
                 {
                     "path": str(path.relative_to(Site.OUT)),
@@ -2120,14 +2245,14 @@ p, h1, h2, h3, li, dd {
                     "css_bytes": css,
                     "font_bytes": font,
                     "image_bytes": image_bytes,
-                    "js_bytes": 0,
+                    "js_bytes": js,
                     "total_bytes": total,
                     "limit_bytes": limit,
                     "under_limit": total < limit,
                 }
             )
         return {
-            "method": "Uncompressed bytes of the HTML file plus the shared stylesheet, the self-hosted font, the favicon, and the largest image candidate referenced by each img element.",
+            "method": "Uncompressed bytes of the HTML file plus the shared stylesheet, the menu script, the self-hosted font, the favicon, and the largest image candidate referenced by each img element.",
             "limit_bytes": limit,
             "pages": rows,
         }
