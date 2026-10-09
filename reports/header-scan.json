@@ -23,7 +23,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -60,7 +60,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -97,7 +97,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -134,7 +134,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -160,8 +160,6 @@
       "forms": 0,
       "scripts": 0,
       "external_urls": [
-        "https://axoncyber.com/how-we-engage/",
-        "https://axoncyber.com/how-we-engage/</a",
         "https://undercl0ck.github.io/project-web-ac/capabilities/"
       ]
     },
@@ -173,7 +171,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -210,7 +208,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -236,7 +234,10 @@
       "forms": 0,
       "scripts": 0,
       "external_urls": [
-        "https://axoncyber.com/our-",
+        "https://axoncyber.com/our-clients/",
+        "https://axoncyber.com/our-clients/</a",
+        "https://axoncyber.com/recognitions/",
+        "https://axoncyber.com/recognitions/</a",
         "https://undercl0ck.github.io/project-web-ac/credentials/"
       ]
     },
@@ -248,7 +249,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -285,7 +286,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -322,7 +323,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -369,7 +370,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -407,7 +408,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -444,7 +445,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -484,7 +485,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -754,7 +755,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -791,7 +792,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -828,7 +829,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -865,7 +866,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -902,7 +903,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -939,7 +940,7 @@
         },
         {
           "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
         },
         {
           "name": "description",
@@ -965,7 +966,10 @@
       "forms": 0,
       "scripts": 0,
       "external_urls": [
-        "https://axoncyber.com/our-",
+        "https://axoncyber.com/our-clients/",
+        "https://axoncyber.com/our-clients/</a",
+        "https://axoncyber.com/recognitions/",
+        "https://axoncyber.com/recognitions/</a",
         "https://undercl0ck.github.io/project-web-ac/who/"
       ]
     }

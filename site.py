@@ -28,7 +28,7 @@ class Site:
     SOURCE = "https://axoncyber.com/how-we-engage/"
 
     PAGES = (
-        {"slug": "", "nav": "Home", "title": "Board brief", "home": True},
+        {"slug": "", "nav": None, "title": "Board brief", "home": True},
         {"slug": "capabilities", "nav": "Capabilities", "title": "Capabilities"},
         {"slug": "who", "nav": "Who it is for", "title": "Who it is for"},
         {"slug": "clients", "nav": "Clients", "title": "Our Clients"},
@@ -46,6 +46,39 @@ class Site:
         {"slug": "about", "nav": "About", "title": "About"},
         {"slug": "engage", "nav": "Engage", "title": "Engage"},
         {"slug": "sitemap", "nav": None, "title": "Sitemap"},
+    )
+
+    # Six top-level items. The briefing link stays in the mast, beside this menu.
+    MENU = (
+        {"label": "Capabilities", "slug": "capabilities", "children": ()},
+        {"label": "Who it is for", "slug": "who", "children": ()},
+        {
+            "label": "Credentials",
+            "slug": "credentials",
+            "children": (
+                ("Clients", "clients"),
+                ("Recognitions", "recognition"),
+                ("Government Quals", "government"),
+            ),
+        },
+        {
+            "label": "Insights",
+            "slug": "insights",
+            "children": (
+                ("News", "news"),
+                ("FYI", "fyi"),
+                ("FAQs", "faq"),
+            ),
+        },
+        {
+            "label": "About",
+            "slug": "about",
+            "children": (
+                ("Proof", "proof"),
+                ("Authority", "authority"),
+            ),
+        },
+        {"label": "Engage", "slug": "engage", "children": ()},
     )
 
     OFFERINGS = (
@@ -261,7 +294,10 @@ class Site:
             (media_out / src.name).write_bytes(src.read_bytes())
         css_path = Site.OUT / "assets" / "site.css"
         css_path.write_text(Site.css(), encoding="utf-8")
-        (Site.OUT / "favicon.svg").write_text(Site.favicon(), encoding="utf-8")
+        (Site.OUT / "favicon.png").write_bytes((Site.ROOT / "media" / "favicon-32.png").read_bytes())
+        (Site.OUT / "apple-touch-icon.png").write_bytes(
+            (Site.ROOT / "media" / "favicon-180.png").read_bytes()
+        )
         (Site.OUT / ".nojekyll").write_text("", encoding="utf-8")
         (Site.OUT / "robots.txt").write_text(Site.robots(), encoding="utf-8")
         (Site.OUT / "sitemap.xml").write_text(Site.sitemap_xml(), encoding="utf-8")
@@ -300,11 +336,17 @@ class Site:
 
     @staticmethod
     def folio(slug: str) -> str:
-        shown = [page for page in Site.PAGES if page["nav"]]
-        for index, page in enumerate(shown, start=1):
-            if page["slug"] == slug:
+        for index, item in enumerate(Site.MENU, start=1):
+            slugs = {item["slug"], *[dest for _label, dest in item["children"]]}
+            if slug in slugs or (item["slug"] == "credentials" and slug.startswith("recognition")):
                 return f"{index:02d}"
         return ""
+
+    @staticmethod
+    def current(slug: str, dest: str) -> bool:
+        if slug == dest:
+            return True
+        return dest == "recognition" and slug.startswith("recognition")
 
     @staticmethod
     def action_link() -> str:
@@ -335,14 +377,32 @@ class Site:
 
     @staticmethod
     def wordmark(slug: str) -> str:
+        src = Site.media_src(slug, "mark-logo.webp")
+        small = Site.media_src(slug, "mark-logo-96.webp")
         return (
             f'<a class="wordmark" href="{Site.href(slug, "")}">'
-            f"{Site.mark(False)}"
+            f'<img class="logo" src="{src}" srcset="{small} 96w, {src} 200w" '
+            'sizes="48px" alt="Axon Global Services" width="200" height="180">'
             '<span class="wordmark-type">'
             '<span class="wordmark-name">Axon</span>'
             '<span class="wordmark-line">Global Services</span>'
             "</span></a>"
         )
+
+    @staticmethod
+    def close_band() -> str:
+        return f"""
+<aside class="close" aria-label="Briefing">
+<div class="frame close-grid">
+<div>
+<p class="eyebrow">Briefing</p>
+<h2>{Site.ACTION}</h2>
+<p>The request opens an email to {Site.EMAIL}.</p>
+</div>
+<p class="close-action">{Site.action_link()}</p>
+</div>
+</aside>
+"""
 
     @staticmethod
     def document(page: dict, main: str) -> str:
@@ -370,7 +430,7 @@ class Site:
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title} — Axon Global Services</title>
 <meta name="description" content="{description}">
 <meta name="referrer" content="no-referrer">
@@ -378,7 +438,8 @@ class Site:
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#0e0d0b">
 <link rel="canonical" href="{escape(Site.canonical(slug))}">
-<link rel="icon" href="{depth}favicon.svg" type="image/svg+xml">
+<link rel="icon" href="{depth}favicon.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="{depth}apple-touch-icon.png">
 <link rel="stylesheet" href="{depth}assets/site.css">
 </head>
 <body{body_class}>
@@ -391,21 +452,20 @@ class Site:
 {folio_html}
 <p class="mast-action">{Site.action_link()}</p>
 </div>
-<nav class="nav" aria-label="Pages">{Site.nav(slug)}</nav>
+<nav class="nav" aria-label="Pages">{Site.primary_nav(slug)}</nav>
 </div>
 </header>
 <main id="content">
 {content}
 </main>
+{Site.close_band()}
 <footer class="colophon">
 <div class="frame foot">
 <div class="foot-brand">{Site.wordmark(slug)}</div>
-<nav class="foot-nav" aria-label="Footer">{Site.nav(slug)}</nav>
+<nav class="foot-nav" aria-label="Footer">{Site.footer_nav(slug)}</nav>
 <div class="foot-side">
-<p class="quiet">Secondary</p>
 <p><a href="tel:+12022485050">{Site.PHONE}</a></p>
 <p><a href="mailto:{Site.EMAIL}">{Site.EMAIL}</a></p>
-<p class="foot-action">{Site.action_link()}</p>
 </div>
 <div class="foot-legal">
 <p>© 2026 Axon Global Services</p>
@@ -419,16 +479,56 @@ class Site:
 """
 
     @staticmethod
-    def nav(slug: str) -> str:
-        parts = []
-        for page in Site.PAGES:
-            if not page["nav"]:
-                continue
-            current = ' aria-current="page"' if page["slug"] == slug else ""
-            parts.append(
-                f'<a href="{Site.href(slug, page["slug"])}"{current}>{escape(page["nav"])}</a>'
+    def menu_links(slug: str, item: dict) -> str:
+        here = Site.current(slug, item["slug"]) or any(
+            Site.current(slug, dest) for _label, dest in item["children"]
+        )
+        current = ' aria-current="page"' if Site.current(slug, item["slug"]) else ""
+        if not item["children"]:
+            return (
+                f'<a class="menu-label" href="{Site.href(slug, item["slug"])}"{current}>'
+                f'{escape(item["label"])}</a>'
             )
-        return "".join(parts)
+        parent = (
+            f'<a href="{Site.href(slug, item["slug"])}"{current}>{escape(item["label"])}</a>'
+        )
+        links = [parent]
+        for text, dest in item["children"]:
+            child = ' aria-current="page"' if Site.current(slug, dest) else ""
+            links.append(f'<a href="{Site.href(slug, dest)}"{child}>{escape(text)}</a>')
+        edge = " menu-end" if item["slug"] in {"insights", "about"} else ""
+        state = " here" if here else ""
+        return (
+            f'<details class="menu{edge}{state}">'
+            f"<summary>{escape(item['label'])}</summary>"
+            f'<div class="menu-panel">{"".join(links)}</div></details>'
+        )
+
+    @staticmethod
+    def primary_nav(slug: str) -> str:
+        groups = "".join(Site.menu_links(slug, item) for item in Site.MENU)
+        return (
+            '<input class="nav-toggle" id="nav-toggle" type="checkbox" aria-label="Menu">'
+            '<label class="nav-toggle-label" for="nav-toggle">Menu</label>'
+            f'<div class="nav-groups">{groups}</div>'
+        )
+
+    @staticmethod
+    def footer_nav(slug: str) -> str:
+        groups = []
+        for item in Site.MENU:
+            links = []
+            current = ' aria-current="page"' if Site.current(slug, item["slug"]) else ""
+            links.append(
+                f'<a href="{Site.href(slug, item["slug"])}"{current}>{escape(item["label"])}</a>'
+            )
+            for text, dest in item["children"]:
+                child = ' aria-current="page"' if Site.current(slug, dest) else ""
+                links.append(
+                    f'<a href="{Site.href(slug, dest)}"{child}>{escape(text)}</a>'
+                )
+            groups.append(f'<div class="foot-group">{"".join(links)}</div>')
+        return "".join(groups)
 
     @staticmethod
     def row(number: str, title: str, inner: str, element_id: str = "") -> str:
@@ -466,6 +566,19 @@ class Site:
         return writers[slug](slug)
 
     @staticmethod
+    def plate(index: int) -> str:
+        shift = (index - 1) * 16
+        return (
+            '<div class="card-plate" aria-hidden="true">'
+            '<svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice">'
+            f'<rect x="{16 + shift}" y="22" width="190" height="130" fill="none" stroke="#f3efe6" stroke-width="1"/>'
+            f'<rect x="{78 + shift}" y="-6" width="160" height="108" fill="none" stroke="#f3efe6" stroke-width="1"/>'
+            f'<rect x="{96 + shift}" y="40" width="72" height="72" fill="#f3efe6"/>'
+            f'<rect x="{96 + shift}" y="40" width="72" height="3" fill="#c6a36a"/>'
+            "</svg></div>"
+        )
+
+    @staticmethod
     def home_body(_slug: str) -> str:
         cards = []
         index = 0
@@ -475,19 +588,15 @@ class Site:
             index += 1
             cards.append(
                 '<li class="card">'
+                f"{Site.plate(index)}"
+                '<div class="card-body">'
                 f'<p class="idx">{index:02d}</p>'
                 f'<h3><a href="capabilities/#{escape(offer["id"])}">{escape(offer["card"])}</a></h3>'
                 f"<p>{escape(offer['card_line'])}</p>"
-                "</li>"
+                "</div></li>"
             )
-        slots = ("Record", "Credential", "Outcome")
-        strip = "".join(
-            "<li>"
-            f'<p class="slot">Slot</p>'
-            f"<p>{escape(label)}</p>"
-            "</li>"
-            for label in slots
-        )
+        data = Site.bundle()
+        recognized = escape(data["who_credentials"][1])
         return f"""
 <section class="hero">
 <div class="frame">
@@ -507,13 +616,23 @@ class Site:
 </div>
 </section>
 <div class="paper">
+<section class="trust">
 <div class="frame">
-<section class="credential-strip">
-<h2>Credentials</h2>
-{Site.pictures("", [row for row in Site.catalog() if row["kind"] == "seal" and row["page"] == "https://axoncyber.com/"], "seal-grid")}
+<p class="eyebrow">Recognized by</p>
+{Site.pictures("", Site.seal_rows(), "seal-grid")}
+<p class="trust-line">{recognized}</p>
+</div>
 </section>
-{Site.row("01", "Proof", f'<ul class="strip">{strip}</ul>')}
-{Site.row("02", "Services", f'<ol class="cards">{"".join(cards)}</ol>')}
+<div class="frame">
+<section class="proofband">
+<h2>Our Clients</h2>
+{Site.marquee(data["clients"])}
+{Site.figures()}
+</section>
+<section class="services">
+<h2>Services</h2>
+<ol class="cards">{"".join(cards)}</ol>
+</section>
 </div>
 </div>
 """
@@ -524,33 +643,17 @@ class Site:
         for index, offer in enumerate(Site.OFFERINGS, start=1):
             blocks.append(
                 f'<li class="offering" id="{escape(offer["id"])}">'
+                f"{Site.plate(index)}"
+                '<div class="offering-body">'
                 f'<p class="idx">{index:02d}</p>'
                 f"<h2>{escape(offer['name'])}</h2>"
                 f"<p>{escape(offer['body'])}</p>"
-                "</li>"
+                "</div></li>"
             )
-        rows = []
-        for offer in Site.OFFERINGS:
-            home = "Yes" if offer["home"] else "No"
-            rows.append(
-                "<tr>"
-                f"<td>{escape(offer['name'])}</td>"
-                f'<td><a href="{escape(Site.SOURCE)}">{escape(Site.SOURCE)}</a></td>'
-                f"<td>{home}</td>"
-                "</tr>"
-            )
-        table = (
-            '<div class="table-wrap"><table>'
-            "<caption>Each offering and the page that names it.</caption>"
-            "<thead><tr><th>Offering</th><th>Source URL</th><th>Home card</th></tr></thead>"
-            f"<tbody>{''.join(rows)}</tbody></table></div>"
-        )
         return f"""
 <h1>Capabilities</h1>
 <p class="lede">Eight lines of board training and pre-emptive cyber risk work.</p>
 <ol class="offerings">{"".join(blocks)}</ol>
-{Site.row("09", "Source map", table)}
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
@@ -591,41 +694,44 @@ class Site:
 <p class="lede">Five readers. The work is board training and pre-emptive cyber risk assessment.</p>
 {"".join(blocks)}
 {Site.row("06", escape(data["who_credentials_heading"]), f"<ul class=\"plain\">{lines}</ul>")}
-{Site.row("07", escape(data["who_value_heading"]), f"<p>{escape(data['who_value'])}</p>")}
+{Site.row("07", escape(data["who_value_heading"]), f"<p>{Site.linked(data['who_value'])}</p>")}
 {Site.pictures("who", photos, "photo-grid")}
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
-    def proof_body(_slug: str) -> str:
-        slots = (
-            "Record",
-            "Credential",
-            "Outcome",
-            "Names",
-            "Counts",
-            "Timing",
-            "Identifiers",
-        )
-        items = "".join(
-            f'<li><p class="slot">Slot</p><p>{escape(line)}</p></li>' for line in slots
-        )
+    def proof_body(slug: str) -> str:
+        data = Site.bundle()
+        names = "".join(f"<li>{escape(name)}</li>" for name in data["clients"])
         return f"""
 <h1>Proof</h1>
-<p class="lede">Record, credential, and outcome.</p>
-<ul class="slots">{items}</ul>
-<p class="end-action">{Site.action_link()}</p>
+<p class="lede">{escape(data["who_credentials_heading"])}</p>
+{Site.pictures(slug, Site.seal_rows(), "seal-grid")}
+<ul class="plain">{"".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])}</ul>
+{Site.figures()}
+<h2>Our Clients</h2>
+<ul class="name-wall">{names}</ul>
 """
 
     @staticmethod
-    def authority_body(_slug: str) -> str:
+    def authority_body(slug: str) -> str:
+        data = Site.bundle()
+        lines = []
+        for line in data["government_lines"]:
+            if line in {"Government Qualifications", "View our Extended Capabilities"}:
+                continue
+            if line.startswith("Below are the NAICS"):
+                break
+            lines.append(f"<li>{escape(line)}</li>")
+        creds = "".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])
         return f"""
 <h1>Authority</h1>
-<div class="slot-page">
-<p class="slot">Slot</p>
-<p>Letters, memberships, and appointments.</p>
-</div>
-<p class="end-action">{Site.action_link()}</p>
+<p class="lede">{escape(data["who_credentials_heading"])}</p>
+{Site.pictures(slug, Site.seal_rows(), "seal-grid")}
+<ul class="plain">{creds}</ul>
+<h2>Government qualifications</h2>
+<ul class="plain">{"".join(lines)}</ul>
+<p><a href="{Site.href(slug, "government")}">Government Quals</a></p>
+<p><a href="{Site.href(slug, "recognition")}">Recognitions</a></p>
 """
 
     @staticmethod
@@ -698,42 +804,33 @@ class Site:
 <h1>Insights</h1>
 <p class="lede">Short board notes. Each one is a reading of a public document.</p>
 {"".join(blocks)}
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
-    def about_body(_slug: str) -> str:
-        slots = "".join(
-            f'<li><p class="slot">Slot {number:02d}</p><p>Practitioner</p></li>'
-            for number in (1, 2, 3)
-        )
-        portrait = next(row for row in Site.catalog() if row["id"] == "mark-photo")
+    def about_body(slug: str) -> str:
+        data = Site.bundle()
+        lines = "".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])
+        logo = next(row for row in Site.catalog() if row["id"] == "mark-logo")
         return f"""
 <h1>About</h1>
 <p class="lede">Axon Global Services prepares board training and pre-emptive cyber risk work for the readers on Who it is for.</p>
-<figure class="portrait"><img src="{Site.media_src("about", portrait["file"])}" alt="{escape(portrait["alt"])}" width="{portrait["width"]}" height="{portrait["height"]}"></figure>
-<p>Phone, email, and the street address are on Engage.</p>
-{Site.row("01", "Practitioners", f'<ul class="slots">{slots}</ul>')}
-<p class="end-action">{Site.action_link()}</p>
+<figure class="portrait">{Site.image(slug, logo, "12rem")}</figure>
+<ul class="plain">{lines}</ul>
 """
 
     @staticmethod
     def engage_body(_slug: str) -> str:
-        secondary = (
-            "<dl class=\"brief\">"
-            "<dt>Phone</dt>"
-            f'<dd><a href="tel:+12022485050">{Site.PHONE}</a></dd>'
-            "<dt>Email</dt>"
-            f'<dd><a href="mailto:{Site.EMAIL}">{Site.EMAIL}</a></dd>'
-            "<dt>Address</dt>"
-            "<dd>10 G St. NE, Suite 600<br>Washington, DC 20002</dd>"
-            "</dl>"
-        )
         return f"""
 <h1>{Site.ACTION}</h1>
 <p class="lede">The briefing request opens an email.</p>
-{Site.row("01", "Briefing", f'<p id="request">{Site.action_link()}</p>')}
-{Site.row("02", "Secondary", secondary)}
+<dl class="brief">
+<dt>Phone</dt>
+<dd><a href="tel:+12022485050">{Site.PHONE}</a></dd>
+<dt>Email</dt>
+<dd><a href="mailto:{Site.EMAIL}">{Site.EMAIL}</a></dd>
+<dt>Address</dt>
+<dd>10 G St. NE, Suite 600<br>Washington, DC 20002</dd>
+</dl>
 """
 
     @staticmethod
@@ -748,7 +845,6 @@ class Site:
         return f"""
 <h1>Sitemap</h1>
 <ol class="map">{"".join(items)}</ol>
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
@@ -765,16 +861,75 @@ class Site:
         return f"{'' if slug == '' else '../'}assets/media/{filename}"
 
     @staticmethod
+    def linked(text: str) -> str:
+        parts = re.split(r"(https://[^\s]+)", text)
+        out = []
+        for part in parts:
+            if part.startswith("https://"):
+                href = part.rstrip(".,);")
+                tail = part[len(href):]
+                out.append(f'<a href="{escape(href)}">{escape(href)}</a>{escape(tail)}')
+            else:
+                out.append(escape(part))
+        return "".join(out)
+
+    @staticmethod
+    def seal_rows() -> list:
+        return [
+            row for row in Site.catalog()
+            if row["kind"] == "seal" and row["page"] == "https://axoncyber.com/"
+        ]
+
+    @staticmethod
+    def image(slug: str, row: dict, sizes: str) -> str:
+        src = Site.media_src(slug, row["file"])
+        width = int(row["width"])
+        small_name = Path(row["file"]).stem + "-sm.webp"
+        small = Site.ROOT / "media" / small_name
+        if small.exists() and width > 640:
+            srcset = f'{Site.media_src(slug, small_name)} 640w, {src} {width}w'
+        else:
+            srcset = f"{src} {width}w"
+        return (
+            f'<img src="{src}" srcset="{srcset}" sizes="{sizes}" '
+            f'alt="{escape(row["alt"])}" width="{width}" height="{row["height"]}">'
+        )
+
+    @staticmethod
     def pictures(slug: str, rows: list, kind: str) -> str:
-        items = []
-        for row in rows:
-            items.append(
-                "<li>"
-                f'<img src="{Site.media_src(slug, row["file"])}" alt="{escape(row["alt"])}" '
-                f'width="{row["width"]}" height="{row["height"]}">'
-                "</li>"
-            )
+        sizes = {
+            "seal-grid": "(max-width: 767px) 40vw, 12rem",
+            "photo-grid": "(max-width: 767px) 46vw, (max-width: 1023px) 30vw, 22rem",
+            "recog-grid": "(max-width: 767px) 46vw, (max-width: 1023px) 30vw, 20rem",
+        }.get(kind, "(max-width: 767px) 100vw, 40rem")
+        items = [f"<li>{Site.image(slug, row, sizes)}</li>" for row in rows]
         return f'<ul class="{kind}">{"".join(items)}</ul>'
+
+    @staticmethod
+    def marquee(names: list) -> str:
+        items = "".join(f"<li>{escape(name)}</li>" for name in names)
+        return (
+            '<div class="marquee">'
+            '<div class="marquee-track">'
+            f"<ul>{items}</ul>"
+            f'<ul aria-hidden="true">{items}</ul>'
+            "</div></div>"
+        )
+
+    @staticmethod
+    def figures() -> str:
+        data = Site.bundle()
+        rows = (
+            ("2003", data["who_credentials"][3]),
+            ("over 220", data["clients_intro"][0]),
+            ("over 200", data["clients_intro"][2]),
+        )
+        items = []
+        for mark, line in rows:
+            items.append(
+                f'<li><p class="figure-mark">{escape(mark)}</p><p>{escape(line)}</p></li>'
+            )
+        return f'<ul class="figures">{"".join(items)}</ul>'
 
     @staticmethod
     def recognition_groups() -> list:
@@ -797,7 +952,7 @@ class Site:
     @staticmethod
     def clients_body(slug: str) -> str:
         data = Site.bundle()
-        intro = "".join(f"<p>{escape(line)}</p>" for line in data["clients_intro"])
+        intro = "".join(f"<p>{Site.linked(line)}</p>" for line in data["clients_intro"])
         names = "".join(f"<li>{escape(name)}</li>" for name in data["clients"])
         photos = [row for row in Site.catalog() if row["id"].startswith("client-")]
         return f"""
@@ -805,21 +960,18 @@ class Site:
 {intro}
 <ul class="name-wall">{names}</ul>
 {Site.pictures(slug, photos, "photo-grid")}
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
     def credentials_body(slug: str) -> str:
         data = Site.bundle()
-        seals = [row for row in Site.catalog() if row["kind"] == "seal"]
         lines = "".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])
         return f"""
 <h1>Credentials</h1>
 <p class="lede">{escape(data["who_credentials_heading"])}</p>
-{Site.pictures(slug, seals, "seal-grid")}
+{Site.pictures(slug, Site.seal_rows(), "seal-grid")}
 <ul class="plain">{lines}</ul>
-<p>{escape(data["who_value"])}</p>
-<p class="end-action">{Site.action_link()}</p>
+<p>{Site.linked(data["who_value"])}</p>
 """
 
     @staticmethod
@@ -839,7 +991,6 @@ class Site:
 {lede}
 {Site.pictures(slug, groups[index], "recog-grid")}
 <nav class="part-nav" aria-label="Recognition pages">{"".join(links)}</nav>
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
@@ -864,7 +1015,6 @@ class Site:
 <p class="lede">Supporting Documentation for Axon Discourses, Awards and Recognitions</p>
 <nav class="month-nav" aria-label="News archive">{month_links}</nav>
 <ol class="archive">{"".join(items)}</ol>
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
@@ -888,7 +1038,6 @@ class Site:
 <h2>Top Lessons Learned</h2>
 {lesson_intro}
 <ul class="plain">{lessons}</ul>
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
@@ -918,7 +1067,6 @@ class Site:
 <ul class="plain">{"".join(quals)}</ul>
 <p>{escape(note)}</p>
 <ul class="plain codes">{"".join(codes)}</ul>
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
@@ -950,7 +1098,6 @@ class Site:
 <p>{paragraph}</p>
 <h2>Further Reading</h2>
 <ul class="plain">{"".join(readings)}</ul>
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
@@ -959,7 +1106,6 @@ class Site:
 <h1>Not found</h1>
 <p class="lede">This page is not on the site.</p>
 <p><a href="./">Home</a></p>
-<p class="end-action">{Site.action_link()}</p>
 """
 
     @staticmethod
@@ -1523,8 +1669,274 @@ th {
   .foot { grid-template-columns: 1fr; padding-top: 2.2rem; }
   .foot-legal { flex-direction: column; }
   .seal-grid, .photo-grid, .recog-grid, .name-wall { grid-template-columns: 1fr 1fr; }
-  .name-wall { grid-template-columns: 1fr; }
+  .name-wall { grid-template-columns: 1fr 1fr; }
   .archive a { flex-direction: column; gap: 0.15rem; align-items: flex-start; }
+  .close-grid { grid-template-columns: 1fr; align-items: start; padding: 2.2rem 0 2.4rem; }
+  .cards, .figures, .offerings { grid-template-columns: 1fr; }
+  .nav-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 0.85rem;
+    cursor: pointer;
+  }
+  .nav-toggle {
+    position: absolute;
+    left: 0;
+    top: 0.15rem;
+    width: 5.6rem;
+    height: 44px;
+    margin: 0;
+    opacity: 0;
+    clip: auto;
+    overflow: visible;
+    z-index: 2;
+  }
+  .nav-groups { display: none; }
+  .nav-toggle:checked ~ .nav-groups {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .menu[open] > .menu-panel {
+    position: static;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    padding: 0 0 0.25rem 0.75rem;
+  }
+  .folio { display: none; }
+  .seal-grid li { min-height: 9rem; }
+  .seal-grid img { width: 6.25rem; height: 6.25rem; }
+}
+body {
+  font-size: clamp(1rem, 0.94rem + 0.22vw, 1.125rem);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  overflow-x: clip;
+}
+.mast { padding-top: env(safe-area-inset-top); }
+.colophon { padding-bottom: env(safe-area-inset-bottom); }
+.logo { width: 3rem; height: auto; max-width: 3rem; display: block; object-fit: cover; }
+.nav { display: block; position: relative; }
+.nav-toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.nav-toggle-label { display: none; }
+.nav-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 0 0.1rem; }
+.menu > summary, a.menu-label, .menu-panel a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 0.7rem;
+  text-decoration: none;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.menu > summary { list-style: none; }
+.menu > summary::-webkit-details-marker { display: none; }
+.menu > summary::marker { content: ""; }
+.menu > summary::after {
+  content: "";
+  width: 0.38rem;
+  height: 0.38rem;
+  margin-left: 0.45rem;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: translateY(-0.12rem) rotate(45deg);
+}
+.menu[open] > summary::after { transform: translateY(0.08rem) rotate(225deg); }
+.menu.here > summary, a.menu-label[aria-current="page"] { box-shadow: inset 0 -1px 0 currentColor; }
+.menu-panel { display: none; }
+.menu[open] > .menu-panel { display: flex; flex-direction: column; }
+.menu-panel a { width: 100%; }
+.page h1 { font-size: clamp(2.75rem, 4.2vw + 1.1rem, 5.75rem); }
+.lede { font-size: clamp(1.12rem, 0.4vw + 1rem, 1.38rem); max-width: 40rem; }
+.eyebrow {
+  margin: 0 0 0.8rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.trust { padding: 1.45rem 0 0.2rem; }
+.trust-line { max-width: 46rem; margin: 0.15rem 0 0; }
+.proofband, .services { margin-top: 2.6rem; }
+.proofband h2, .services h2 {
+  margin: 0 0 0.9rem;
+  font-size: clamp(1.7rem, 1.2vw + 1.2rem, 2.35rem);
+  font-weight: 560;
+  letter-spacing: -0.03em;
+}
+.seal-grid li { min-height: 11.5rem; }
+.seal-grid img { width: 8.5rem; height: 8.5rem; max-width: 86%; object-fit: contain; }
+.name-wall { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.name-wall li {
+  min-height: 4.25rem;
+  padding: 0.55rem 0.7rem;
+  justify-content: center;
+  text-align: center;
+  font-size: clamp(0.82rem, 0.3vw + 0.74rem, 0.98rem);
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.figures {
+  list-style: none;
+  margin: 1.35rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+}
+.figures li {
+  margin: 0;
+  padding: 1.15rem 1.05rem 1.25rem;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.figure-mark {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.85rem, 1.4vw + 1rem, 2.7rem);
+  font-weight: 560;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+.marquee { overflow: hidden; max-width: 100%; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.marquee-track { display: flex; width: max-content; animation: drift 80s linear infinite; }
+.marquee:hover .marquee-track, .marquee:focus-within .marquee-track { animation-play-state: paused; }
+.marquee ul { display: flex; list-style: none; margin: 0; padding: 0; }
+.marquee li {
+  display: flex;
+  align-items: center;
+  min-height: 3.15rem;
+  padding: 0 1.05rem;
+  border-right: 1px solid var(--rule);
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+@keyframes drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.card, .offering { padding: 0; overflow: hidden; }
+.card-plate { height: 7.25rem; background: var(--ink); }
+.card-plate svg { display: block; width: 100%; height: 100%; }
+.card-body, .offering-body { display: flex; flex-direction: column; flex: 1; padding: 1.15rem 1.15rem 1.35rem; }
+.card .idx { margin: 0 0 0.85rem; }
+.card h3 { margin: 0 0 0.4rem; }
+.offering .idx { margin: 0 0 1rem; font-size: 2.4rem; }
+.offering h2 { margin: 0 0 0.5rem; }
+.close { background: var(--ink); color: var(--bone); border-top: 1px solid var(--rule-dark); }
+.close-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.25rem 2rem;
+  align-items: end;
+  padding: 3rem 0 3.2rem;
+}
+.close h2 {
+  margin: 0.15rem 0 0.55rem;
+  max-width: 16ch;
+  font-size: clamp(2rem, 3vw + 1rem, 3.35rem);
+  font-weight: 560;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+.close p { margin: 0; max-width: 36rem; }
+.close .action {
+  color: var(--ink);
+  background: var(--signal);
+  box-shadow: none;
+  min-height: 48px;
+  padding: 0.7rem 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.foot-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1.2rem; }
+.foot-group { display: flex; flex-direction: column; align-items: flex-start; }
+.foot-group a { text-decoration: none; }
+@media (min-width: 801px) {
+  .menu { position: relative; }
+  .menu[open] > .menu-panel {
+    position: absolute;
+    z-index: 8;
+    top: calc(100% - 1px);
+    left: 0;
+    min-width: 15.5rem;
+    background: #14120f;
+    border: 1px solid var(--rule-dark);
+    padding: 0.3rem 0;
+  }
+  .menu-end[open] > .menu-panel { left: auto; right: 0; }
+}
+@media (max-width: 1100px) {
+  .cards, .figures { grid-template-columns: 1fr 1fr; }
+  .name-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 800px) {
+  .nav-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 0.85rem;
+    cursor: pointer;
+  }
+  .nav-toggle {
+    position: absolute;
+    left: 0;
+    top: 0.15rem;
+    width: 5.6rem;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    clip: auto;
+    overflow: visible;
+    z-index: 2;
+  }
+  .nav-groups { display: none; }
+  .nav-toggle:checked ~ .nav-groups {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .menu[open] > .menu-panel {
+    position: static;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    padding: 0 0 0.25rem 0.75rem;
+  }
+  .cards, .figures, .offerings { grid-template-columns: 1fr; }
+  .name-wall { grid-template-columns: 1fr 1fr; }
+  .close-grid { grid-template-columns: 1fr; align-items: start; }
+  .seal-grid li { min-height: 9rem; }
+  .seal-grid img { width: 6.25rem; height: 6.25rem; }
+}
+p, h1, h2, h3, li, dd {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 390px) {
+  .frame { width: min(76rem, calc(100% - 1.25rem)); }
+  .wordmark-name { letter-spacing: 0.12em; }
+  .wordmark-line { letter-spacing: 0.1em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
+  .marquee ul[aria-hidden="true"] { display: none; }
+  .marquee ul { flex-wrap: wrap; }
 }
 """
 
@@ -1579,17 +1991,25 @@ th {
         for offer in Site.OFFERINGS:
             if escape(offer["name"]) not in caps:
                 problems.append(f"missing offering {offer['name']}")
-        if caps.count(Site.SOURCE) < 8:
-            problems.append("source map incomplete")
+        if Site.SOURCE in caps or "Source map" in caps:
+            problems.append("capabilities still prints a source map")
+        if ">Slot<" in blob or ">Secondary<" in "\n".join(blob_parts):
+            problems.append("internal note remains in the html")
+        if len(Site.MENU) != 6:
+            problems.append("menu is not six items")
         proof = (Site.OUT / "proof" / "index.html").read_text(encoding="utf-8")
-        if proof.count("<blockquote") or proof.count(">Slot<") < 1:
-            problems.append("proof is not slots only")
+        if ">Slot<" in proof or "over 220" not in proof:
+            problems.append("proof is missing the live figures")
         authority = (Site.OUT / "authority" / "index.html").read_text(encoding="utf-8")
-        if authority.count(">Slot<") < 1:
-            problems.append("authority is not a slot")
+        if ">Slot<" in authority or "Government qualifications" not in authority:
+            problems.append("authority is missing the live qualifications")
         about = (Site.OUT / "about" / "index.html").read_text(encoding="utf-8")
-        if about.count("Slot 0") < 3:
-            problems.append("practitioner slots missing")
+        if "Slot" in about or "mark-logo.webp" not in about:
+            problems.append("about is missing the logo")
+        if "viewport-fit=cover" not in home or "mark-logo.webp" not in home:
+            problems.append("home logo or viewport-fit missing")
+        if "Recognized by" not in home:
+            problems.append("home is missing the recognition band")
         if len(Site.recognition_groups()) != 3:
             problems.append("recognition archive is not split into 3 pages")
         css = (Site.OUT / "assets" / "site.css").read_text(encoding="utf-8")
@@ -1659,17 +2079,39 @@ th {
     @staticmethod
     def weights() -> dict:
         css = (Site.OUT / "assets" / "site.css").stat().st_size
-        icon = (Site.OUT / "favicon.svg").stat().st_size
         font = (Site.OUT / "assets" / "fonts" / "libre-franklin-latin.woff2").stat().st_size
         limit = 1_048_576
         rows = []
         for path in sorted(Site.OUT.rglob("*.html")):
+            text = path.read_text(encoding="utf-8")
             html_bytes = path.stat().st_size
-            image_bytes = icon
-            for src in re.findall(r'<img\b[^>]*\bsrc="([^"]+)"', text := path.read_text(encoding="utf-8")):
-                image = (path.parent / src).resolve()
-                if image.is_file():
-                    image_bytes += image.stat().st_size
+            seen = set()
+            image_bytes = 0
+            for icon_name in ("favicon.png", "apple-touch-icon.png"):
+                icon = (Site.OUT / icon_name).resolve()
+                if icon.is_file() and icon not in seen:
+                    seen.add(icon)
+                    image_bytes += icon.stat().st_size
+            for tag in re.findall(r"<img\b[^>]*>", text):
+                urls = []
+                src = re.search(r'\bsrc="([^"]+)"', tag)
+                if src:
+                    urls.append(src.group(1))
+                srcset = re.search(r'\bsrcset="([^"]+)"', tag)
+                if srcset:
+                    urls.extend(part.strip().split()[0] for part in srcset.group(1).split(","))
+                best = None
+                best_size = -1
+                for url in urls:
+                    if url.startswith(("http:", "https:", "data:")):
+                        continue
+                    image = (path.parent / url).resolve()
+                    if image.is_file() and image.stat().st_size > best_size:
+                        best = image
+                        best_size = image.stat().st_size
+                if best is not None and best not in seen:
+                    seen.add(best)
+                    image_bytes += best_size
             total = html_bytes + css + font + image_bytes
             rows.append(
                 {
@@ -1685,7 +2127,7 @@ th {
                 }
             )
         return {
-            "method": "Uncompressed bytes of the HTML file plus the shared stylesheet, the self-hosted font, the SVG mark, and the images that page references.",
+            "method": "Uncompressed bytes of the HTML file plus the shared stylesheet, the self-hosted font, the favicon, and the largest image candidate referenced by each img element.",
             "limit_bytes": limit,
             "pages": rows,
         }

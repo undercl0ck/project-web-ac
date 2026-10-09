@@ -69,13 +69,24 @@
     {
       "id": "who-ftc",
       "file": "who-ftc.webp",
-      "alt": "FTC-logo-generic",
+      "alt": "Forbes Technology Council",
       "source": "https://axoncyber.com/wp-content/uploads/2020/10/FTC-logo-generic.png",
       "page": "https://axoncyber.com/who-we-are/",
       "kind": "seal",
       "width": 720,
       "height": 422,
       "bytes": 9630
+    },
+    {
+      "id": "mark-logo",
+      "file": "mark-logo.webp",
+      "alt": "Axon Global Services",
+      "source": "https://axoncyber.com/wp-content/uploads/2020/12/axon-global-services-raw-icon-retina-3.jpg",
+      "page": "https://axoncyber.com/",
+      "kind": "logo",
+      "width": 200,
+      "height": 180,
+      "bytes": 6446
     },
     {
       "id": "mark-photo",
