@@ -1,0 +1,188 @@
+{
+  "minimum_px": 44,
+  "method": "Chrome headless getBoundingClientRect on every a, button, input, select, textarea, and summary. Viewports 1440 and 440.",
+  "below_44": 0,
+  "smallest_target_px": 44,
+  "pages": [
+    {
+      "page": "home",
+      "viewport": 1440,
+      "interactive": 31,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "capabilities",
+      "viewport": 1440,
+      "interactive": 33,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "who",
+      "viewport": 1440,
+      "interactive": 25,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "proof",
+      "viewport": 1440,
+      "interactive": 25,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "authority",
+      "viewport": 1440,
+      "interactive": 25,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "insights",
+      "viewport": 1440,
+      "interactive": 29,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "about",
+      "viewport": 1440,
+      "interactive": 25,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "engage",
+      "viewport": 1440,
+      "interactive": 27,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "sitemap",
+      "viewport": 1440,
+      "interactive": 34,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "home",
+      "viewport": 440,
+      "interactive": 31,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "capabilities",
+      "viewport": 440,
+      "interactive": 33,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "who",
+      "viewport": 440,
+      "interactive": 25,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "proof",
+      "viewport": 440,
+      "interactive": 25,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "authority",
+      "viewport": 440,
+      "interactive": 25,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "insights",
+      "viewport": 440,
+      "interactive": 29,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "about",
+      "viewport": 440,
+      "interactive": 25,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "engage",
+      "viewport": 440,
+      "interactive": 27,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    },
+    {
+      "page": "sitemap",
+      "viewport": 440,
+      "interactive": 34,
+      "below_44": 0,
+      "min_width": 52.8,
+      "min_height": 44,
+      "overflow": false,
+      "blockquotes": 0
+    }
+  ]
+}

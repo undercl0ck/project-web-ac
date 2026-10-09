@@ -1,38 +1,18 @@
 {
   "method": "Static scan of built HTML. These are document policies, not HTTP response headers.",
+  "limitation": "GitHub Pages cannot set custom HTTP response headers. This site does not add meta tags that impersonate headers browsers ignore. The document policies that are actually available are the meta content-security policy and the meta referrer policy.",
   "https": "github.io Pages sites are served over HTTPS. This repo ships no CNAME, so the host stays a github.io name, where GitHub enforces HTTPS.",
   "set_in_html": [
     "Content-Security-Policy via meta http-equiv",
-    "referrer policy via meta name=referrer (no-referrer)",
-    "X-Content-Type-Options via meta http-equiv (browsers do not reliably honor this meta; it is a marker only)"
+    "referrer policy via meta name=referrer (no-referrer)"
   ],
-  "github_pages_response_observed": {
-    "sample": "https://undercl0ck.github.io/gregs-hvac/ on Oct 9, 2026",
-    "present": [
-      "strict-transport-security: max-age=31556952",
-      "access-control-allow-origin: *",
-      "cache-control"
-    ],
-    "absent_on_that_response": [
-      "content-security-policy",
-      "referrer-policy",
-      "x-frame-options",
-      "x-content-type-options",
-      "permissions-policy",
-      "cross-origin-opener-policy",
-      "cross-origin-resource-policy",
-      "cross-origin-embedder-policy"
-    ]
-  },
   "github_pages_cannot_set": [
-    "Custom HTTP response headers. Pages has no _headers file and no per-repo header config.",
-    "Content-Security-Policy as an HTTP header. The meta element is the available control. Meta CSP ignores frame-ancestors, sandbox, report-uri, and report-to, so those cannot be enforced here.",
+    "Custom HTTP response headers. Pages has no header config for a repository.",
+    "Content-Security-Policy as an HTTP header. The meta element is the available control. Meta CSP ignores frame-ancestors, sandbox, report-uri, and report-to.",
     "Referrer-Policy as an HTTP header. The meta referrer element is the available control.",
-    "X-Frame-Options.",
-    "X-Content-Type-Options as a reliable control. The meta form is not a standard browser hook.",
-    "Permissions-Policy.",
+    "X-Frame-Options, X-Content-Type-Options, and Permissions-Policy.",
     "Cross-Origin-Opener-Policy, Cross-Origin-Resource-Policy, and Cross-Origin-Embedder-Policy.",
-    "A custom HSTS policy. On github.io, GitHub sends its own strict-transport-security. A CNAME would leave that default host, so this repo does not add one."
+    "A custom HSTS policy. On github.io, GitHub sends its own strict-transport-security."
   ],
   "pages": [
     {
@@ -58,12 +38,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -95,12 +75,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -132,12 +112,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -169,12 +149,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -208,12 +188,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -245,12 +225,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -282,12 +262,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -322,25 +302,17 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
       "scripts": 0,
       "external_urls": [
-        "https://axoncyber.com/",
-        "https://axoncyber.com/</a",
-        "https://axoncyber.com/our-ceo-global-cto/",
-        "https://axoncyber.com/our-ceo-global-cto/</a",
-        "https://axoncyber.com/what-we-do/",
-        "https://axoncyber.com/what-we-do/</a",
-        "https://axoncyber.com/who-we-are/",
-        "https://axoncyber.com/who-we-are/</a",
         "https://undercl0ck.github.io/project-web-ac/proof/"
       ]
     },
@@ -367,12 +339,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
@@ -404,12 +376,12 @@
           "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
-          "http-equiv": "X-Content-Type-Options",
-          "content": "nosniff"
-        },
-        {
           "name": "color-scheme",
           "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
         }
       ],
       "forms": 0,
