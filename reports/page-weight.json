@@ -1,0 +1,106 @@
+{
+  "method": "Uncompressed bytes of the HTML file plus the shared stylesheet plus the SVG mark. No other assets are referenced.",
+  "limit_bytes": 1048576,
+  "pages": [
+    {
+      "path": "404.html",
+      "html_bytes": 2130,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 7949,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "about/index.html",
+      "html_bytes": 2563,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 8382,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "authority/index.html",
+      "html_bytes": 2345,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 8164,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "capabilities/index.html",
+      "html_bytes": 5412,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 11231,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "engage/index.html",
+      "html_bytes": 2572,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 8391,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "index.html",
+      "html_bytes": 3858,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 9677,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "insights/index.html",
+      "html_bytes": 4362,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 10181,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "proof/index.html",
+      "html_bytes": 5467,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 11286,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "sitemap/index.html",
+      "html_bytes": 2475,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 8294,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "who/index.html",
+      "html_bytes": 2819,
+      "css_bytes": 5653,
+      "image_bytes": 166,
+      "js_bytes": 0,
+      "total_bytes": 8638,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    }
+  ]
+}
