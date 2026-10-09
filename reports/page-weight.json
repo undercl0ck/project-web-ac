@@ -158,12 +158,12 @@
     },
     {
       "path": "recognition/index.html",
-      "html_bytes": 8684,
+      "html_bytes": 8581,
       "css_bytes": 13297,
       "font_bytes": 29336,
-      "image_bytes": 854220,
+      "image_bytes": 849292,
       "js_bytes": 0,
-      "total_bytes": 905537,
+      "total_bytes": 900506,
       "limit_bytes": 1048576,
       "under_limit": true
     },
