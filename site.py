@@ -1717,8 +1717,6 @@ th {
   height: 8.75rem;
   object-fit: contain;
 }
-.seal-grid img { filter: grayscale(1) sepia(0.4) contrast(1.08); }
-.photo-grid img, .recog-grid img, .portrait img { filter: grayscale(1) contrast(1.05); }
 .photo-grid li, .recog-grid li { background: var(--ink); }
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
@@ -2120,6 +2118,8 @@ p, h1, h2, h3, li, dd {
             problems.append("stylesheet requests a third party")
         if "@keyframes drift" in css or "animation: drift" in css:
             problems.append("client row still animates")
+        if re.search(r"grayscale|sepia|mix-blend-mode|duotone", css):
+            problems.append("image color treatment remains")
         if "outline: 2px solid var(--ink)" not in css or "outline: 2px solid var(--bone)" not in css:
             problems.append("focus rings missing")
         if "outline-offset: 2px" not in css:

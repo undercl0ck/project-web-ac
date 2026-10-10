@@ -486,8 +486,6 @@ th {
   height: 8.75rem;
   object-fit: contain;
 }
-.seal-grid img { filter: grayscale(1) sepia(0.4) contrast(1.08); }
-.photo-grid img, .recog-grid img, .portrait img { filter: grayscale(1) contrast(1.05); }
 .photo-grid li, .recog-grid li { background: var(--ink); }
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
