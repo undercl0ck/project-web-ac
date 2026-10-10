@@ -828,8 +828,10 @@ class Site:
 {Site.pictures(slug, Site.seal_rows(), "seal-grid")}
 <ul class="plain">{"".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])}</ul>
 {Site.figures()}
+<section id="clients">
 <h2>Our Clients</h2>
 {Site.client_logo_row(slug)}
+</section>
 """
 
     @staticmethod
@@ -1092,7 +1094,7 @@ class Site:
             raise SystemExit("government line drifted from the source")
         if "Cybersecurity Infrastructure Security Agency" not in government:
             raise SystemExit("agency name drifted from the source")
-        proof = Site.href(slug, "proof")
+        proof = Site.href(slug, "proof") + "#clients"
         authority = Site.href(slug, "authority")
         return f"""
 <div class="mandate">
@@ -1109,9 +1111,9 @@ class Site:
 <div>
 <ul class="mandate-pair">
 <li><p class="mandate-num">200+</p><p>{escape(line_200.strip())}</p></li>
-<li><p class="mandate-num">300+</p><p>{escape(line_300.strip())}</p></li>
+<li><p class="mandate-num">300+</p><p>{escape(line_300.strip())} <a href="{proof}">our clients</a></p></li>
 </ul>
-<p class="mandate-links"><a href="{proof}">See our clients</a><a href="{authority}">See awards and recognitions</a></p>
+<p class="mandate-links"><a href="{authority}">See awards and recognitions</a></p>
 </div>
 </div>
 </div>
@@ -1721,7 +1723,7 @@ a:focus-visible, button:focus-visible {
   min-height: 44px;
   padding: 0 0.55rem;
   text-decoration: none;
-  font-size: 0.82rem;
+  font-size: 1rem;
   letter-spacing: 0.04em;
 }
 .nav a[aria-current="page"], .foot-nav a[aria-current="page"] {
@@ -1769,7 +1771,7 @@ a:focus-visible, button:focus-visible {
   margin: 0.9rem 0 0;
   max-width: 36rem;
   color: var(--quiet-dark);
-  font-size: 1.12rem;
+  font-size: 1.125rem;
 }
 .hero-cta {
   display: flex;
@@ -2107,7 +2109,7 @@ th {
 .logo-row .logo-fallback {
   padding: 0 0.3rem;
   font-weight: 560;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: -0.02em;
   line-height: 1.05;
   text-align: center;
@@ -2198,7 +2200,7 @@ body {
   padding: 0 0.7rem;
   text-decoration: none;
   text-align: left;
-  font-size: 0.92rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 .menu-trigger::after {
@@ -2364,6 +2366,7 @@ body {
 .foot-group { display: flex; flex-direction: column; align-items: flex-start; }
 .foot-group a { text-decoration: none; }
 @media (min-width: 1024px) {
+  .nav a, .foot-nav a, .menu-trigger { font-size: 1.125rem; }
   .menu { position: relative; }
   .menu.is-open > .menu-panel {
     position: absolute;
@@ -2451,7 +2454,7 @@ p, h1, h2, h3, li, dd {
 @media (max-width: 480px) {
   .hero { padding-top: 2.15rem; }
 }
-@media (max-width: 440px) {
+@media (max-width: 1023px) {
   .logo-row {
     display: flex;
     flex-wrap: wrap;

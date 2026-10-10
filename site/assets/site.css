@@ -151,7 +151,7 @@ a:focus-visible, button:focus-visible {
   min-height: 44px;
   padding: 0 0.55rem;
   text-decoration: none;
-  font-size: 0.82rem;
+  font-size: 1rem;
   letter-spacing: 0.04em;
 }
 .nav a[aria-current="page"], .foot-nav a[aria-current="page"] {
@@ -199,7 +199,7 @@ a:focus-visible, button:focus-visible {
   margin: 0.9rem 0 0;
   max-width: 36rem;
   color: var(--quiet-dark);
-  font-size: 1.12rem;
+  font-size: 1.125rem;
 }
 .hero-cta {
   display: flex;
@@ -537,7 +537,7 @@ th {
 .logo-row .logo-fallback {
   padding: 0 0.3rem;
   font-weight: 560;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: -0.02em;
   line-height: 1.05;
   text-align: center;
@@ -628,7 +628,7 @@ body {
   padding: 0 0.7rem;
   text-decoration: none;
   text-align: left;
-  font-size: 0.92rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 .menu-trigger::after {
@@ -794,6 +794,7 @@ body {
 .foot-group { display: flex; flex-direction: column; align-items: flex-start; }
 .foot-group a { text-decoration: none; }
 @media (min-width: 1024px) {
+  .nav a, .foot-nav a, .menu-trigger { font-size: 1.125rem; }
   .menu { position: relative; }
   .menu.is-open > .menu-panel {
     position: absolute;
@@ -881,7 +882,7 @@ p, h1, h2, h3, li, dd {
 @media (max-width: 480px) {
   .hero { padding-top: 2.15rem; }
 }
-@media (max-width: 440px) {
+@media (max-width: 1023px) {
   .logo-row {
     display: flex;
     flex-wrap: wrap;
