@@ -822,10 +822,10 @@ p, h1, h2, h3, li, dd {
   .mark-lg .mass,
   .nav-bars, .nav-bars::before, .nav-bars::after,
   .menu-trigger::after,
-  .icon-card-toggle,
   .icon-card .svc-icon,
   .icon-card-panel,
-  .icon-card-panel::before {
+  .svc-word,
+  .svc-grid .card {
     animation: none;
     transition: none;
   }
@@ -844,7 +844,7 @@ p, h1, h2, h3, li, dd {
 .svc-grid > li {
   display: flex;
   width: 368px;
-  height: 460px;
+  height: 292px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -855,7 +855,7 @@ p, h1, h2, h3, li, dd {
   display: flex;
   flex-direction: column;
   width: 368px;
-  height: 460px;
+  height: 292px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -865,52 +865,41 @@ p, h1, h2, h3, li, dd {
   box-shadow: none;
   color: var(--ink);
   overflow: hidden;
+  transition: background-color 160ms ease, box-shadow 160ms ease;
 }
-.svc-grid .svc-heading {
-  display: flex;
-  flex: 1 1 auto;
-  min-height: 44px;
-  margin: 0;
-  font: inherit;
-  letter-spacing: inherit;
+.page .svc-grid > li,
+.page .svc-grid .card { height: 356px; }
+.icon-card:hover .card,
+.svc-grid .card:focus-visible,
+.svc-grid .icon-card:has(:focus-visible) .card {
+  background: #e7e2d6;
+  box-shadow: inset 0 0 0 1px rgba(14, 13, 11, 0.42);
 }
-.icon-card-toggle {
-  position: relative;
-  z-index: 1;
-  flex: 1 1 auto;
+.icon-card-stage {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 20px;
-  width: 100%;
-  min-height: 44px;
-  margin: 0;
-  padding: 148px 0 28px;
-  text-align: left;
-  transition: padding 360ms cubic-bezier(.16, 1, .3, 1), gap 360ms cubic-bezier(.16, 1, .3, 1);
-}
-.icon-card.is-open .svc-heading,
-.icon-card.is-open .icon-card-toggle {
-  flex: 0 0 auto;
-}
-.icon-card.is-open .icon-card-toggle {
-  padding: 28px 0 12px;
+  align-items: center;
   gap: 12px;
+  padding: 22px 0 4px;
 }
 .svc-grid .svc-icon {
   display: block;
-  width: 64px;
-  height: 64px;
+  width: 96px;
+  height: 96px;
   margin: 0;
   flex: none;
   color: var(--ink);
-  transition: width 360ms cubic-bezier(.16, 1, .3, 1), height 360ms cubic-bezier(.16, 1, .3, 1);
 }
-.icon-card.is-open .svc-icon {
-  width: 32px;
-  height: 32px;
+.svc-word {
+  margin: 0;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
 }
+.icon-card-panel { min-height: 0; }
 .svc-grid .svc-name,
 .svc-grid .svc-for,
 .svc-grid .svc-get,
@@ -919,83 +908,160 @@ p, h1, h2, h3, li, dd {
   margin: 0;
   max-width: none;
   color: var(--ink);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 28px;
+  line-height: 22px;
   letter-spacing: 0;
   text-transform: none;
 }
-.svc-grid .svc-name { font-weight: 600; }
+.svc-grid .svc-name {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 28px;
+}
 .svc-grid .svc-for,
 .svc-grid .svc-get { margin: 0 0 8px; }
-.svc-grid .svc-body { margin: 0; }
 .svc-grid .svc-more {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  margin-top: 8px;
+  margin-top: 4px;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.12em;
 }
-.icon-card-toggle:hover .svc-name {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.12em;
-}
-.icon-card-panel {
+.icon-card:has(.svc-for) .svc-name {
   position: absolute;
-  z-index: 2;
-  left: 0;
-  right: 0;
-  top: 176px;
-  bottom: 0;
-  overflow: auto;
-  opacity: 0;
-  transform: translateY(12px);
-  pointer-events: none;
-  transition: opacity 320ms ease, transform 360ms cubic-bezier(.16, 1, .3, 1);
-}
-.icon-card.is-open .icon-card-panel {
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-}
-.icon-card-panel::before {
-  content: "";
-  display: block;
-  width: 100%;
+  width: 1px;
   height: 1px;
-  margin: 0 0 16px;
-  background: var(--ink);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 360ms cubic-bezier(.16, 1, .3, 1);
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
-.icon-card.is-open .icon-card-panel::before { transform: scaleX(1); }
-.svc-grid .icon-card:has(.icon-card-toggle:focus-visible) {
+.svc-grid .icon-card:focus-within {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
-.icon-card-toggle:focus-visible { outline: none; }
+.svc-grid .card:focus-visible { outline: none; }
+@media (hover: hover) and (pointer: fine) {
+  .icon-card-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    justify-content: center;
+    gap: 18px;
+    padding: 0;
+    pointer-events: none;
+  }
+  .svc-grid .svc-icon {
+    position: absolute;
+    width: 128px;
+    height: 128px;
+    left: calc(50% - 64px);
+    top: calc(50% - 92px);
+    transition: width 220ms cubic-bezier(.16, 1, .3, 1), height 220ms cubic-bezier(.16, 1, .3, 1), left 220ms cubic-bezier(.16, 1, .3, 1), top 220ms cubic-bezier(.16, 1, .3, 1);
+  }
+  .svc-word {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(50% + 48px);
+    text-align: center;
+    transition: opacity 160ms ease;
+  }
+  .icon-card-panel {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    top: 76px;
+    bottom: 0;
+    overflow: auto;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 220ms ease, transform 220ms cubic-bezier(.16, 1, .3, 1);
+  }
+  .icon-card:hover:not(.is-suppressed) .svc-icon,
+  .icon-card:focus-within:not(.is-suppressed) .svc-icon,
+  .icon-card.is-open:not(.is-suppressed) .svc-icon {
+    width: 48px;
+    height: 48px;
+    left: 0;
+    top: 14px;
+    transition-delay: 120ms;
+  }
+  .icon-card:hover:not(.is-suppressed) .svc-word,
+  .icon-card:focus-within:not(.is-suppressed) .svc-word,
+  .icon-card.is-open:not(.is-suppressed) .svc-word {
+    opacity: 0;
+    transition-delay: 120ms;
+  }
+  .icon-card:hover:not(.is-suppressed) .icon-card-panel,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition-delay: 120ms;
+  }
+  .icon-card:hover:not(.is-suppressed) .svc-name,
+  .icon-card:focus-within:not(.is-suppressed) .svc-name,
+  .icon-card.is-open:not(.is-suppressed) .svc-name {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 0 8px;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+  .icon-card:focus-within:not(.is-suppressed) .svc-icon,
+  .icon-card.is-open:not(.is-suppressed) .svc-icon,
+  .icon-card:focus-within:not(.is-suppressed) .svc-word,
+  .icon-card.is-open:not(.is-suppressed) .svc-word,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-panel,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-stage,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-stage {
+    transition-delay: 0s;
+  }
+}
 @media (max-width: 1279px) {
   .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .svc-grid > li, .svc-grid .card { width: 100%; }
 }
 @media (max-width: 760px) {
   .svc-grid { grid-template-columns: 1fr; }
-  .svc-grid .svc-name,
-  .svc-grid .svc-for,
-  .svc-grid .svc-get,
-  .svc-grid .svc-body,
-  .svc-grid .svc-more {
-    font-size: 16px;
-    line-height: 24px;
+  .svc-word,
+  .svc-grid .svc-name {
+    font-size: 20px;
+    line-height: 26px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .icon-card-toggle,
   .icon-card .svc-icon,
   .icon-card-panel,
-  .icon-card-panel::before { transition: none; }
+  .svc-word,
+  .icon-card-stage,
+  .svc-grid .card,
+  .icon-card:hover .svc-icon,
+  .icon-card:hover .svc-word,
+  .icon-card:hover .icon-card-panel,
+  .icon-card:hover .icon-card-stage,
+  .icon-card:focus-within .svc-icon,
+  .icon-card:focus-within .svc-word,
+  .icon-card:focus-within .icon-card-panel,
+  .icon-card:focus-within .icon-card-stage,
+  .icon-card.is-open .svc-icon,
+  .icon-card.is-open .svc-word,
+  .icon-card.is-open .icon-card-panel,
+  .icon-card.is-open .icon-card-stage {
+    transition: none;
+  }
 }
+

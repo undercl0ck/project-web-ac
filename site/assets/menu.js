@@ -78,37 +78,47 @@
 (function () {
   var cards = document.querySelectorAll(".icon-card");
   if (!cards.length) return;
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
 
-  function setOpen(card, open) {
-    var button = card.querySelector(".icon-card-toggle");
-    if (!button) return;
-    card.classList.toggle("is-open", open);
-    button.setAttribute("aria-expanded", open ? "true" : "false");
-    var link = card.querySelector(".svc-more");
-    if (link) {
-      if (open) link.removeAttribute("tabindex");
-      else link.setAttribute("tabindex", "-1");
-    }
+  function cardOf(node) {
+    if (!node || !node.closest) return null;
+    return node.classList && node.classList.contains("icon-card") ? node : node.closest(".icon-card");
   }
 
   Array.prototype.forEach.call(cards, function (card) {
-    var button = card.querySelector(".icon-card-toggle");
-    var link = card.querySelector(".svc-more");
-    if (link) link.setAttribute("tabindex", "-1");
-    if (!button) return;
-    button.addEventListener("click", function () {
-      setOpen(card, button.getAttribute("aria-expanded") !== "true");
+    card.addEventListener("pointerleave", function () {
+      card.classList.remove("is-suppressed");
     });
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape" || !fine.matches) return;
+    var hovered = null;
+    Array.prototype.forEach.call(cards, function (card) {
+      if (card.matches(":hover")) hovered = card;
+    });
+    var focused = cardOf(document.activeElement);
+    var card = focused || hovered;
+    if (!card) return;
+    card.classList.add("is-suppressed");
+    if (focused && document.activeElement && card.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
+  });
+
+  document.addEventListener("focusin", function (event) {
+    var card = cardOf(event.target);
+    if (card) card.classList.remove("is-suppressed");
   });
 
   function openFromHash() {
     var id = (location.hash || "").replace(/^#/, "");
     if (!id) return;
     var node = document.getElementById(id);
-    if (!node) return;
-    var card = node.classList.contains("icon-card") ? node : node.closest(".icon-card");
+    var card = cardOf(node);
     if (!card) return;
-    setOpen(card, true);
+    card.classList.remove("is-suppressed");
+    card.classList.add("is-open");
   }
 
   openFromHash();
