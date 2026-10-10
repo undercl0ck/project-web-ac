@@ -2552,8 +2552,18 @@ p, h1, h2, h3, li, dd {
   border: 0;
   border-top: 1px solid var(--ink);
   border-radius: 0;
-  background: transparent;
+  background: #e4dccb;
   color: var(--ink);
+  outline: 1px solid #5e584e;
+  outline-offset: -1px;
+  transition: background-color 120ms, outline-color 120ms;
+}
+.svc-grid .icon-card:hover .card,
+.svc-grid .icon-card.is-hot .card,
+.svc-grid .icon-card.is-open .card,
+.svc-grid .icon-card:focus-within .card {
+  background: #ddd4c1;
+  outline-color: #0e0d0b;
 }
 .icon-card-stage {
   display: flex;
@@ -2568,6 +2578,10 @@ p, h1, h2, h3, li, dd {
   margin: 0;
   flex: none;
   color: var(--ink);
+}
+@media (forced-colors: active) {
+  .svc-icon { color: CanvasText; }
+  .svc-grid .svc-icon { color: CanvasText; }
 }
 .svc-word {
   margin: 0;
@@ -2601,11 +2615,11 @@ p, h1, h2, h3, li, dd {
 .svc-grid .svc-for,
 .svc-grid .svc-get,
 .svc-grid .svc-body { margin: 0 0 8px; }
+.svc-grid .icon-card:has(.card:focus-visible),
 .svc-grid .icon-card:focus-within {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
-.svc-grid .card:focus-visible { outline: none; }
 @media (min-width: 761px) {
   .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; row-gap: 32px; }
 }
