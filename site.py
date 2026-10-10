@@ -814,7 +814,7 @@ class Site:
 <p class="lede">Five readers. The work is board training and pre-emptive cyber risk assessment.</p>
 {"".join(blocks)}
 {Site.row("06", escape(data["who_credentials_heading"]), f"<ul class=\"plain\">{lines}</ul>")}
-{Site.row("07", escape(data["who_value_heading"]), f"<p>{Site.linked(data['who_value'])}</p>")}
+{Site.row("07", escape(data["who_value_heading"]), Site.value_block("who"))}
 {Site.pictures("who", seals, "seal-grid")}
 {Site.pictures("who", photos, "photo-grid")}
 """
@@ -1079,6 +1079,45 @@ class Site:
         return f'<ul class="figures">{"".join(items)}</ul>'
 
     @staticmethod
+    def value_block(slug: str) -> str:
+        text = Site.bundle()["who_value"]
+        government, rest = text.split(" Axon is also executing", 1)
+        infra, training = rest.split(" Axon Global has provided", 1)
+        infra = "Axon is also executing" + infra
+        training = "Axon Global has provided" + training
+        line_200, line_300 = training.split(" and over 300 ", 1)
+        line_300 = "over 300 " + line_300
+        line_300 = line_300[: line_300.find(" https://")].rstrip()
+        if "while simultaneously" not in government:
+            raise SystemExit("government line drifted from the source")
+        if "Cybersecurity Infrastructure Security Agency" not in government:
+            raise SystemExit("agency name drifted from the source")
+        proof = Site.href(slug, "proof")
+        authority = Site.href(slug, "authority")
+        return f"""
+<div class="mandate">
+<div class="mandate-row">
+<p class="mandate-label">Government work</p>
+<p>{escape(government.strip())}</p>
+</div>
+<div class="mandate-row">
+<p class="mandate-label">Critical infrastructure</p>
+<p>{escape(infra.strip())}</p>
+</div>
+<div class="mandate-row">
+<p class="mandate-label">Board training</p>
+<div>
+<ul class="mandate-pair">
+<li><p class="mandate-num">200+</p><p>{escape(line_200.strip())}</p></li>
+<li><p class="mandate-num">300+</p><p>{escape(line_300.strip())}</p></li>
+</ul>
+<p class="mandate-links"><a href="{proof}">See our clients</a><a href="{authority}">See awards and recognitions</a></p>
+</div>
+</div>
+</div>
+"""
+
+    @staticmethod
     def recognition_groups() -> list:
         rows = [row for row in Site.catalog() if row["kind"] == "recognition"]
         rows.sort(key=lambda row: row["id"])
@@ -1117,7 +1156,7 @@ class Site:
 <p class="lede">{escape(data["who_credentials_heading"])}</p>
 {Site.pictures(slug, Site.seal_rows(), "seal-grid")}
 <ul class="plain">{lines}</ul>
-<p>{Site.linked(data["who_value"])}</p>
+{Site.value_block(slug)}
 """
 
     @staticmethod
@@ -2229,6 +2268,57 @@ body {
   letter-spacing: -0.045em;
   line-height: 0.95;
 }
+.mandate { border-top: 1px solid var(--ink); margin: 1.4rem 0 0; }
+.mandate-row {
+  display: grid;
+  grid-template-columns: 9.25rem minmax(0, 1fr);
+  gap: 0.75rem 1.5rem;
+  align-items: start;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--ink);
+}
+.mandate-label { margin: 0; font-weight: 560; }
+.mandate-row > p,
+.mandate-pair p { margin: 0; }
+.mandate-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mandate-pair li { margin: 0; padding-left: 0.95rem; position: relative; }
+.mandate-pair li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.7rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+.mandate-pair .mandate-num {
+  margin: 0 0 0.35rem;
+  font-size: 64px;
+  line-height: 1;
+  font-weight: 560;
+  letter-spacing: -0.04em;
+}
+.mandate-links { display: flex; flex-direction: column; align-items: flex-start; margin-top: 0.35rem; }
+.mandate-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  width: max-content;
+  max-width: 100%;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 560;
+}
+.mandate-links a::after { content: "→"; }
 .card, .offering { padding: 0; overflow: hidden; }
 .svc-icon {
   display: block;
@@ -2363,26 +2453,57 @@ p, h1, h2, h3, li, dd {
 }
 @media (max-width: 440px) {
   .logo-row {
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+  }
+  .logo-row li {
+    flex: 0 0 160px;
+    width: 160px;
+    height: 40px;
+    min-height: 40px;
   }
   .seal-grid,
   .photo-grid,
-  .recog-grid,
+  .recog-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    border: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .seal-grid li,
+  .photo-grid li,
+  .recog-grid li {
+    flex: 0 0 50%;
+    width: 50%;
+    max-width: 50%;
+    border: 0 solid var(--ink);
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+  }
+  .seal-grid li:nth-child(odd),
+  .photo-grid li:nth-child(odd),
+  .recog-grid li:nth-child(odd) {
+    border-left-width: 1px;
+  }
+  .seal-grid li:nth-child(-n + 2),
+  .photo-grid li:nth-child(-n + 2),
+  .recog-grid li:nth-child(-n + 2) {
+    border-top-width: 1px;
+  }
   .portrait,
   .hero-photo {
     margin-left: auto;
     margin-right: auto;
-  }
-  .seal-grid li:last-child:nth-child(odd),
-  .photo-grid li:last-child:nth-child(odd),
-  .recog-grid li:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
   }
 }
 @media (max-width: 390px) {
   .frame { width: min(76rem, calc(100% - 1.25rem)); }
   .wordmark-name { letter-spacing: 0.12em; }
   .wordmark-line { letter-spacing: 0.1em; }
+  .mandate-row { grid-template-columns: 7.25rem minmax(0, 1fr); gap: 0.5rem 0.75rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .mark-lg .mass,
