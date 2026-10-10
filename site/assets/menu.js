@@ -75,3 +75,42 @@
     }
   });
 })();
+(function () {
+  var cards = document.querySelectorAll(".icon-card");
+  if (!cards.length) return;
+
+  function setOpen(card, open) {
+    var button = card.querySelector(".icon-card-toggle");
+    if (!button) return;
+    card.classList.toggle("is-open", open);
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+    var link = card.querySelector(".svc-more");
+    if (link) {
+      if (open) link.removeAttribute("tabindex");
+      else link.setAttribute("tabindex", "-1");
+    }
+  }
+
+  Array.prototype.forEach.call(cards, function (card) {
+    var button = card.querySelector(".icon-card-toggle");
+    var link = card.querySelector(".svc-more");
+    if (link) link.setAttribute("tabindex", "-1");
+    if (!button) return;
+    button.addEventListener("click", function () {
+      setOpen(card, button.getAttribute("aria-expanded") !== "true");
+    });
+  });
+
+  function openFromHash() {
+    var id = (location.hash || "").replace(/^#/, "");
+    if (!id) return;
+    var node = document.getElementById(id);
+    if (!node) return;
+    var card = node.classList.contains("icon-card") ? node : node.closest(".icon-card");
+    if (!card) return;
+    setOpen(card, true);
+  }
+
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
+})();
