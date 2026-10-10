@@ -2508,7 +2508,6 @@ p, h1, h2, h3, li, dd {
   .icon-card.is-open:not(.is-suppressed) .icon-card-stage {
     opacity: 0;
     transition: opacity 160ms ease;
-    transition-delay: 60ms;
   }
   .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
   .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
@@ -2516,7 +2515,6 @@ p, h1, h2, h3, li, dd {
     opacity: 1;
     pointer-events: auto;
     transition: opacity 160ms ease;
-    transition-delay: 60ms;
   }
 }
 @media (hover: hover) and (pointer: fine) and (max-width: 1263px) {
