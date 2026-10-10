@@ -1528,36 +1528,39 @@ class Site:
   window.addEventListener("hashchange", openFromHash);
 
   function lockRows() {
-    var grid = document.querySelector(".page .svc-grid");
-    if (!grid) return;
-    var items = grid.querySelectorAll(".icon-card");
-    Array.prototype.forEach.call(items, function (card) {
-      card.style.minHeight = "";
-      var article = card.querySelector(".card");
-      if (article) article.style.minHeight = "";
-    });
-    if (!fine.matches) return;
-    var rows = [];
-    Array.prototype.forEach.call(items, function (card) {
-      var top = Math.round(card.getBoundingClientRect().top);
-      var row = rows.length && Math.abs(rows[rows.length - 1].top - top) < 2 ? rows[rows.length - 1] : null;
-      if (!row) {
-        row = { top: top, items: [] };
-        rows.push(row);
-      }
-      var panel = card.querySelector(".icon-card-panel");
-      var border = parseFloat(getComputedStyle(card.querySelector(".card")).borderTopWidth) || 0;
-      row.items.push({ card: card, openH: Math.max(368, Math.ceil(panel.scrollHeight + border)) });
-    });
-    rows.forEach(function (row) {
-      var tall = 368;
-      row.items.forEach(function (item) {
-        if (item.openH > tall) tall = item.openH;
+    Array.prototype.forEach.call(document.querySelectorAll(".svc-grid"), function (grid) {
+      var items = grid.querySelectorAll(".icon-card");
+      Array.prototype.forEach.call(items, function (card) {
+        card.style.minHeight = "";
+        var article = card.querySelector(".card");
+        if (article) article.style.minHeight = "";
       });
-      var px = tall + "px";
-      row.items.forEach(function (item) {
-        item.card.style.minHeight = px;
-        item.card.querySelector(".card").style.minHeight = px;
+      if (!fine.matches) return;
+      var rows = [];
+      Array.prototype.forEach.call(items, function (card) {
+        var top = Math.round(card.getBoundingClientRect().top);
+        var row = rows.length && Math.abs(rows[rows.length - 1].top - top) < 2 ? rows[rows.length - 1] : null;
+        if (!row) {
+          row = { top: top, items: [] };
+          rows.push(row);
+        }
+        var article = card.querySelector(".card");
+        var panel = card.querySelector(".icon-card-panel");
+        var border = article ? parseFloat(getComputedStyle(article).borderTopWidth) || 0 : 0;
+        var square = Math.round(card.getBoundingClientRect().width);
+        var openH = Math.max(square, Math.ceil(panel.scrollHeight + border));
+        row.items.push({ card: card, article: article, openH: openH });
+      });
+      rows.forEach(function (row) {
+        var tall = 0;
+        row.items.forEach(function (item) {
+          if (item.openH > tall) tall = item.openH;
+        });
+        var px = tall + "px";
+        row.items.forEach(function (item) {
+          item.card.style.minHeight = px;
+          if (item.article) item.article.style.minHeight = px;
+        });
       });
     });
   }
@@ -2362,10 +2365,12 @@ body {
   font-weight: 600;
   text-decoration: none;
 }
-.foot-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1.2rem; }
+.foot-nav { display: grid; grid-template-columns: max-content max-content; gap: 0.35rem 1.2rem; }
+.foot-nav a { white-space: nowrap; }
 .foot-group { display: flex; flex-direction: column; align-items: flex-start; }
 .foot-group a { text-decoration: none; }
 @media (min-width: 1024px) {
+  body { font-size: 1.125rem; }
   .nav a, .foot-nav a, .menu-trigger { font-size: 1.125rem; }
   .menu { position: relative; }
   .menu.is-open > .menu-panel {
@@ -2616,15 +2621,17 @@ p, h1, h2, h3, li, dd {
 }
 @media (hover: hover) and (pointer: fine) {
   .svc-grid {
-    grid-template-columns: repeat(3, 368px);
+    grid-template-columns: minmax(0, 368px);
     column-gap: 48px;
     row-gap: 48px;
     align-items: start;
+    justify-content: start;
   }
   .svc-grid > li,
   .svc-grid .card {
-    width: 368px;
-    height: 368px;
+    width: min(368px, 100%);
+    height: auto;
+    aspect-ratio: 1;
     padding: 0;
     overflow: hidden;
   }
@@ -2676,11 +2683,11 @@ p, h1, h2, h3, li, dd {
     transition: opacity 160ms ease;
   }
 }
-@media (hover: hover) and (pointer: fine) and (max-width: 1263px) {
-  .svc-grid { grid-template-columns: repeat(2, 368px); }
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+  .svc-grid { grid-template-columns: repeat(2, minmax(0, 368px)); }
 }
-@media (hover: hover) and (pointer: fine) and (max-width: 847px) {
-  .svc-grid { grid-template-columns: 368px; }
+@media (hover: hover) and (pointer: fine) and (min-width: 1280px) {
+  .svc-grid { grid-template-columns: repeat(3, minmax(0, 368px)); }
 }
 @media (hover: hover) and (pointer: fine) and (max-width: 440px) {
   .svc-grid .svc-for,

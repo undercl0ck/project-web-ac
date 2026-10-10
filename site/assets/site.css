@@ -790,10 +790,12 @@ body {
   font-weight: 600;
   text-decoration: none;
 }
-.foot-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1.2rem; }
+.foot-nav { display: grid; grid-template-columns: max-content max-content; gap: 0.35rem 1.2rem; }
+.foot-nav a { white-space: nowrap; }
 .foot-group { display: flex; flex-direction: column; align-items: flex-start; }
 .foot-group a { text-decoration: none; }
 @media (min-width: 1024px) {
+  body { font-size: 1.125rem; }
   .nav a, .foot-nav a, .menu-trigger { font-size: 1.125rem; }
   .menu { position: relative; }
   .menu.is-open > .menu-panel {
@@ -1044,15 +1046,17 @@ p, h1, h2, h3, li, dd {
 }
 @media (hover: hover) and (pointer: fine) {
   .svc-grid {
-    grid-template-columns: repeat(3, 368px);
+    grid-template-columns: minmax(0, 368px);
     column-gap: 48px;
     row-gap: 48px;
     align-items: start;
+    justify-content: start;
   }
   .svc-grid > li,
   .svc-grid .card {
-    width: 368px;
-    height: 368px;
+    width: min(368px, 100%);
+    height: auto;
+    aspect-ratio: 1;
     padding: 0;
     overflow: hidden;
   }
@@ -1104,11 +1108,11 @@ p, h1, h2, h3, li, dd {
     transition: opacity 160ms ease;
   }
 }
-@media (hover: hover) and (pointer: fine) and (max-width: 1263px) {
-  .svc-grid { grid-template-columns: repeat(2, 368px); }
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+  .svc-grid { grid-template-columns: repeat(2, minmax(0, 368px)); }
 }
-@media (hover: hover) and (pointer: fine) and (max-width: 847px) {
-  .svc-grid { grid-template-columns: 368px; }
+@media (hover: hover) and (pointer: fine) and (min-width: 1280px) {
+  .svc-grid { grid-template-columns: repeat(3, minmax(0, 368px)); }
 }
 @media (hover: hover) and (pointer: fine) and (max-width: 440px) {
   .svc-grid .svc-for,
