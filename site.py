@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import date
 from html import escape
 from pathlib import Path
 
@@ -89,8 +90,8 @@ class Site:
             "card_line": "For directors and the C-suite, on site or by webinar.",
             "home": True,
             "body": (
-                "By NACD® credentialed experts, on site or webinar. "
-                "For board members or C-suite executives."
+                "Designed for Board members or C-Suite executives (on site or via Webinar). "
+                "By NACD® credentialed experts."
             ),
         },
         {
@@ -100,8 +101,9 @@ class Site:
             "card_line": "A third-party report of material threats, written for the board.",
             "home": True,
             "body": (
-                "A third-party report of material cyber threats the organization "
-                "had not already identified, written for the board."
+                "A third-party report identifying material cyber threats previously "
+                "unknown to your organization based on NACD ® and World Economic Forum ® "
+                "and Global D&O ISAO © Cyber Risk Recommendations for Boards."
             ),
         },
         {
@@ -111,8 +113,8 @@ class Site:
             "card_line": "A report on whether a company being acquired is already compromised.",
             "home": True,
             "body": (
-                "A report on whether a company being acquired is compromised, "
-                "including whether intellectual property has been taken."
+                "a report detailing whether a target company is compromised or breached "
+                "(e.g. identifying if i.p. has been stolen)."
             ),
         },
         {
@@ -121,7 +123,10 @@ class Site:
             "card": "Supply Chain Risk Assessment",
             "card_line": "A report on which suppliers present a cyber risk.",
             "home": True,
-            "body": "A report identifying suppliers that present a cyber risk to the organization.",
+            "body": (
+                "A report identifying which suppliers are infecting your organization "
+                "and if they present a cyber risk."
+            ),
         },
         {
             "id": "program",
@@ -129,17 +134,20 @@ class Site:
             "card": "Cybersecurity Program Assessment",
             "card_line": "A report of gaps between the program and current threats.",
             "home": True,
-            "body": "A third-party report of gaps between the current program and current threats.",
+            "body": (
+                "An expedient third-party report identifying gaps between current "
+                "programs verses current threats."
+            ),
         },
         {
             "id": "external",
-            "name": "External Security Posture Assessment (dark-web and deep-net search)",
+            "name": "External Security Posture Assessment",
             "card": "External Security Posture Assessment",
             "card_line": "What is visible from outside, including a dark-web and deep-net search.",
             "home": True,
             "body": (
-                "A report of what is visible from outside the organization, "
-                "including a dark-web and deep-net search for compromises."
+                'A report detailing what bad actors can see from the "outside-in" '
+                "(includes dark-web, deep-net search for compromises)."
             ),
         },
         {
@@ -149,19 +157,21 @@ class Site:
             "card_line": "",
             "home": False,
             "body": (
-                "A third-party review of logs for espionage and other threats "
-                "that do not match a known signature."
+                "A third-party, secure, and expedient review of logs identifying "
+                "espionage and other unsignatured threats."
             ),
         },
         {
             "id": "proactive",
-            "name": "Cyber Proactive Defense",
+            "name": "Cyber Proactive Defense®",
             "card": "Cyber Proactive Defense",
             "card_line": "",
             "home": False,
             "body": (
-                "Discrete services performed within U.S. or international law, "
-                "directed at stopping an attack."
+                "Discrete services performed within the U.S. and/or international law "
+                "that stop the attack or eliminate liability. "
+                "We then offer a strategy for Axon to neutralize these threats "
+                "within U.S. and/or international law."
             ),
         },
     )
@@ -1039,6 +1049,52 @@ class Site:
 <nav class="part-nav" aria-label="Recognition pages">{"".join(links)}</nav>
 """
 
+    _NEWS_MONTHS = {
+        "january": 1,
+        "february": 2,
+        "march": 3,
+        "april": 4,
+        "may": 5,
+        "june": 6,
+        "july": 7,
+        "august": 8,
+        "september": 9,
+        "october": 10,
+        "november": 11,
+        "december": 12,
+    }
+
+    @staticmethod
+    def news_stamp(post: dict) -> str | None:
+        """ISO day from a title dateline. None when the post does not state one day."""
+        title = (post.get("title") or "").strip()
+        match = re.match(r"(20\d{2})\s+([A-Za-z]+)\s+(\d{1,2})\b(.*)$", title)
+        if not match:
+            return None
+        year, month_name, day, rest = match.groups()
+        if re.match(r"\s*[-–—]\s*\d", rest):
+            return None
+        month = Site._NEWS_MONTHS.get(month_name.casefold())
+        if month is None:
+            return None
+        try:
+            stamped = date(int(year), month, int(day)).isoformat()
+        except ValueError:
+            return None
+        excerpt = post.get("excerpt") or ""
+        other = re.search(r"(20\d{2})\s+([A-Za-z]+)\s+(\d{1,2})\b", excerpt)
+        if other:
+            excerpt_month = Site._NEWS_MONTHS.get(other.group(2).casefold())
+            if excerpt_month is None:
+                return None
+            try:
+                excerpt_day = date(int(other.group(1)), excerpt_month, int(other.group(3))).isoformat()
+            except ValueError:
+                return None
+            if excerpt_day != stamped:
+                return None
+        return stamped
+
     @staticmethod
     def news_body(slug: str) -> str:
         posts = json.loads((Site.ROOT / "content" / "news.json").read_text(encoding="utf-8"))
@@ -1049,10 +1105,16 @@ class Site:
         items = []
         for post in posts:
             excerpt = f"<p>{escape(post['excerpt'])}</p>" if post.get("excerpt") else ""
+            stamp = Site.news_stamp(post)
+            time = (
+                f'<time datetime="{escape(stamp)}">{escape(stamp)}</time>'
+                if stamp
+                else ""
+            )
             items.append(
                 "<li>"
                 f'<a href="{escape(post["source"])}">'
-                f'<time datetime="{escape(post["date"])}">{escape(post["date"])}</time>'
+                f"{time}"
                 f"<span>{escape(post['title'])}</span></a>"
                 f"{excerpt}</li>"
             )
@@ -1351,8 +1413,9 @@ a:focus-visible, button:focus-visible {
   outline: 2px solid var(--bone);
   outline-offset: 2px;
 }
+.skip:focus,
 .skip:focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--bone);
   outline-offset: 2px;
 }
 .mast { background: var(--ink); color: var(--bone); }
