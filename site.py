@@ -1546,11 +1546,7 @@ class Site:
         }
         var article = card.querySelector(".card");
         var panel = card.querySelector(".icon-card-panel");
-        var border = 0;
-        if (article) {
-          var box = getComputedStyle(article);
-          border = (parseFloat(box.borderTopWidth) || 0) + (parseFloat(box.borderBottomWidth) || 0);
-        }
+        var border = article ? parseFloat(getComputedStyle(article).borderTopWidth) || 0 : 0;
         var square = Math.round(card.getBoundingClientRect().width);
         var openH = Math.max(square, Math.ceil(panel.scrollHeight + border));
         row.items.push({ card: card, article: article, openH: openH });
@@ -2553,18 +2549,25 @@ p, h1, h2, h3, li, dd {
   width: 100%;
   margin: 0;
   padding: 4px 0 16px;
-  border: 1px solid #5e584e;
+  border: 0;
+  border-top: 1px solid var(--ink);
   border-radius: 0;
   background: #e4dccb;
   color: var(--ink);
-  transition: background-color 120ms, border-color 120ms;
+  outline: 1px solid #5e584e;
+  outline-offset: -1px;
+  transition: background-color 120ms, outline-color 120ms;
 }
 .svc-grid .icon-card:hover .card,
 .svc-grid .icon-card.is-hot .card,
 .svc-grid .icon-card.is-open .card,
 .svc-grid .icon-card:focus-within .card {
   background: #ddd4c1;
-  border-color: #0e0d0b;
+}
+.svc-grid .icon-card:hover .card,
+.svc-grid .icon-card.is-hot .card,
+.svc-grid .icon-card.is-open .card {
+  outline-color: #0e0d0b;
 }
 .icon-card-stage {
   display: flex;
@@ -2612,11 +2615,10 @@ p, h1, h2, h3, li, dd {
 .svc-grid .svc-for,
 .svc-grid .svc-get,
 .svc-grid .svc-body { margin: 0 0 8px; }
-.svc-grid .icon-card:focus-within {
+.svc-grid .card:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
-.svc-grid .card:focus-visible { outline: none; }
 @media (min-width: 761px) {
   .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; row-gap: 32px; }
 }
