@@ -1732,8 +1732,9 @@ a:focus-visible, button:focus-visible {
   color: var(--ink);
   background: var(--signal);
   box-shadow: none;
+  border: 1px solid var(--ink);
   min-height: 48px;
-  padding: 0.7rem 1.15rem;
+  padding: calc(0.7rem - 1px) calc(1.15rem - 1px);
   font-weight: 600;
   text-decoration: none;
 }
@@ -2255,8 +2256,9 @@ body {
   color: var(--ink);
   background: var(--signal);
   box-shadow: none;
+  border: 1px solid var(--ink);
   min-height: 48px;
-  padding: 0.7rem 1.15rem;
+  padding: calc(0.7rem - 1px) calc(1.15rem - 1px);
   font-weight: 600;
   text-decoration: none;
 }
