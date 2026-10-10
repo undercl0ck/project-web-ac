@@ -21,7 +21,7 @@ body {
   background: var(--ink);
   color: var(--bone);
   font-family: "Libre Franklin", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 1.0625rem;
+  font-size: clamp(1rem, 0.945rem + 0.2vw, 1.125rem);
   line-height: 1.5;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
@@ -113,7 +113,7 @@ a:focus-visible, button:focus-visible {
   font-weight: 450;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-size: 0.58rem;
+  font-size: 0.75rem;
   line-height: 1.2;
 }
 .mark { width: 2.35rem; height: 2.35rem; display: block; flex: none; }
@@ -280,7 +280,7 @@ a:focus-visible, button:focus-visible {
   text-transform: none;
 }
 p { margin: 0 0 0.75rem; }
-.quiet { color: var(--quiet); font-size: 0.92rem; }
+.quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
 .strip, .cards, .slots, .sources, .map, .brief {
   list-style: none;
@@ -384,12 +384,11 @@ p { margin: 0 0 0.75rem; }
 }
 .sources li { margin: 0.15rem 0; }
 .table-wrap { overflow-x: auto; max-width: 100%; }
-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+table { width: 100%; border-collapse: collapse; }
 caption {
   caption-side: bottom;
   text-align: left;
   color: var(--quiet);
-  font-size: 0.85rem;
   padding: 0.7rem 0;
 }
 th, td {
@@ -400,7 +399,7 @@ th, td {
   font-weight: 400;
 }
 th {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding-top: 0.8rem;
@@ -414,7 +413,7 @@ th {
 .brief dt {
   margin: 0;
   padding-top: 0.7rem;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -453,7 +452,6 @@ th {
   border-top: 1px solid var(--rule-dark);
   padding-top: 0.85rem;
   color: var(--quiet-dark);
-  font-size: 0.85rem;
 }
 .foot-legal p { margin: 0; }
 .foot-legal a, .foot-side a, .colophon .wordmark { color: var(--bone); }
@@ -566,7 +564,7 @@ th {
   text-decoration: none;
   font-weight: 520;
 }
-.archive time { flex: none; color: var(--quiet); font-size: 0.85rem; }
+.archive time { flex: none; color: var(--quiet); }
 .archive p { margin: 0.15rem 0 0; color: var(--quiet); }
 .opening main { display: flex; flex-direction: column; }
 .opening .hero { flex: 1; min-height: 0; }
@@ -599,7 +597,6 @@ th {
   .folio, .mast-action { display: none; }
 }
 body {
-  font-size: clamp(1rem, 0.94rem + 0.22vw, 1.125rem);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   overflow-x: clip;
@@ -653,7 +650,7 @@ body {
 .lede { font-size: clamp(1.12rem, 0.4vw + 1rem, 1.38rem); max-width: 40rem; }
 .eyebrow {
   margin: 0 0 0.8rem;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -770,6 +767,13 @@ body {
   .mark-lg { max-height: min(16rem, 34vh); }
   .mast .frame { position: relative; }
   .folio, .mast-action { display: none; }
+  .wordmark {
+    justify-self: start;
+    width: max-content;
+    max-width: calc(100% - 44px - 16px);
+    height: 44px;
+    min-height: 44px;
+  }
   .nav {
     position: absolute;
     top: 0.35rem;
@@ -825,6 +829,24 @@ p, h1, h2, h3, li, dd {
 }
 @media (max-width: 480px) {
   .hero { padding-top: 2.15rem; }
+}
+@media (max-width: 440px) {
+  .logo-row {
+    justify-content: center;
+  }
+  .seal-grid,
+  .photo-grid,
+  .recog-grid,
+  .portrait,
+  .hero-photo {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .seal-grid li:last-child:nth-child(odd),
+  .photo-grid li:last-child:nth-child(odd),
+  .recog-grid li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 }
 @media (max-width: 390px) {
   .frame { width: min(76rem, calc(100% - 1.25rem)); }
