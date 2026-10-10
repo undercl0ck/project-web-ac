@@ -693,8 +693,9 @@ class Site:
         data = Site.bundle()
         photos = [
             row for row in Site.catalog()
-            if row["id"] in {"who-speaker", "who-room", "who-ftc"}
+            if row["id"] in {"who-speaker", "who-room"}
         ]
+        seals = [row for row in Site.catalog() if row["id"] == "who-ftc"]
         lines = "".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])
         return f"""
 <h1>Who it is for</h1>
@@ -702,6 +703,7 @@ class Site:
 {"".join(blocks)}
 {Site.row("06", escape(data["who_credentials_heading"]), f"<ul class=\"plain\">{lines}</ul>")}
 {Site.row("07", escape(data["who_value_heading"]), f"<p>{Site.linked(data['who_value'])}</p>")}
+{Site.pictures("who", seals, "seal-grid")}
 {Site.pictures("who", photos, "photo-grid")}
 """
 
@@ -905,7 +907,7 @@ class Site:
     @staticmethod
     def pictures(slug: str, rows: list, kind: str) -> str:
         sizes = {
-            "seal-grid": "(max-width: 767px) 40vw, 12rem",
+            "seal-grid": "160px",
             "photo-grid": "(max-width: 767px) 46vw, (max-width: 1023px) 30vw, 22rem",
             "recog-grid": "(max-width: 767px) 46vw, (max-width: 1023px) 30vw, 20rem",
         }.get(kind, "(max-width: 767px) 100vw, 40rem")
@@ -1686,15 +1688,14 @@ th {
   margin: 0.6rem 0 1.4rem;
   padding: 0;
 }
-.seal-grid, .photo-grid, .recog-grid, .name-wall {
+.photo-grid, .recog-grid, .name-wall {
   display: grid;
   border-top: 1px solid var(--ink);
   border-left: 1px solid var(--ink);
 }
-.seal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .photo-grid, .recog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .name-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.seal-grid li, .photo-grid li, .recog-grid li, .name-wall li {
+.photo-grid li, .recog-grid li, .name-wall li {
   margin: 0;
   min-height: 8.75rem;
   padding: 1rem;
@@ -1711,16 +1712,68 @@ th {
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
-.seal-grid img, .photo-grid img, .recog-grid img {
+.photo-grid img, .recog-grid img {
   display: block;
   width: 100%;
   height: 8.75rem;
   object-fit: contain;
 }
+.seal-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0.6rem 0 1.4rem;
+  padding: 0;
+  background: transparent;
+}
+.seal-grid li {
+  box-sizing: border-box;
+  width: 160px;
+  max-width: 160px;
+  height: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--ink);
+}
+.seal-grid img {
+  display: block;
+  width: auto;
+  height: 48px;
+  max-width: 160px;
+  max-height: 48px;
+  object-fit: contain;
+  background: transparent;
+}
 .photo-grid li, .recog-grid li { background: var(--ink); }
 .photo-grid img, .recog-grid img { height: 12rem; }
-.portrait { margin: 0 0 1.4rem; max-width: 22rem; }
-.portrait img { display: block; width: 100%; height: auto; }
+.portrait {
+  box-sizing: border-box;
+  width: 160px;
+  max-width: 160px;
+  height: 48px;
+  margin: 0 0 1.4rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--ink);
+}
+.portrait img {
+  display: block;
+  width: auto;
+  height: 48px;
+  max-width: 160px;
+  max-height: 48px;
+  object-fit: contain;
+  background: transparent;
+}
 .plain li { margin: 0; padding: 0.85rem 0; border-top: 1px solid var(--rule); }
 .month-nav, .part-nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.35rem; margin: 0 0 1.4rem; }
 .month-nav a, .part-nav a {
@@ -1763,14 +1816,12 @@ th {
   .brief { grid-template-columns: 1fr; }
   .foot { grid-template-columns: 1fr; padding-top: 2.2rem; }
   .foot-legal { flex-direction: column; }
-  .seal-grid, .photo-grid, .recog-grid, .name-wall { grid-template-columns: 1fr 1fr; }
+  .photo-grid, .recog-grid, .name-wall { grid-template-columns: 1fr 1fr; }
   .name-wall { grid-template-columns: 1fr 1fr; }
   .archive a { flex-direction: column; gap: 0.15rem; align-items: flex-start; }
   .close-grid { grid-template-columns: 1fr; align-items: start; padding: 2.2rem 0 2.4rem; }
   .cards, .figures, .offerings { grid-template-columns: 1fr; }
   .folio, .mast-action { display: none; }
-  .seal-grid li { min-height: 9rem; }
-  .seal-grid img { width: 6.25rem; height: 6.25rem; }
 }
 body {
   font-size: clamp(1rem, 0.94rem + 0.22vw, 1.125rem);
@@ -1780,7 +1831,15 @@ body {
 }
 .mast { padding-top: env(safe-area-inset-top); }
 .colophon { padding-bottom: env(safe-area-inset-bottom); }
-.logo { width: 3rem; height: auto; max-width: 3rem; display: block; object-fit: cover; }
+.logo {
+  width: auto;
+  height: 48px;
+  max-width: 160px;
+  max-height: 48px;
+  display: block;
+  object-fit: contain;
+  background: transparent;
+}
 .nav { display: flex; position: relative; }
 .nav-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 0 0.1rem; }
 .nav-bars, .nav-bars::before, .nav-bars::after {
@@ -1840,8 +1899,6 @@ body {
   font-weight: 560;
   letter-spacing: -0.03em;
 }
-.seal-grid li { min-height: 11.5rem; }
-.seal-grid img { width: 8.5rem; height: 8.5rem; max-width: 86%; object-fit: contain; }
 .name-wall { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .name-wall li {
   min-height: 4.25rem;
@@ -2001,11 +2058,13 @@ body {
   .cards, .figures, .offerings { grid-template-columns: 1fr; }
   .name-wall { grid-template-columns: 1fr 1fr; }
   .close-grid { grid-template-columns: 1fr; align-items: start; }
-  .seal-grid li { min-height: 9rem; }
-  .seal-grid img { width: 6.25rem; height: 6.25rem; }
 }
 p, h1, h2, h3, li, dd {
   overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  .seal-grid li, .portrait { height: 40px; min-height: 40px; }
+  .seal-grid img, .portrait img, .logo { height: 40px; max-height: 40px; }
 }
 @media (max-width: 390px) {
   .frame { width: min(76rem, calc(100% - 1.25rem)); }
@@ -2120,6 +2179,8 @@ p, h1, h2, h3, li, dd {
             problems.append("client row still animates")
         if re.search(r"grayscale|sepia|mix-blend-mode|duotone", css):
             problems.append("image color treatment remains")
+        if "max-width: 160px" not in css or "height: 48px" not in css:
+            problems.append("logo box size missing")
         if "outline: 2px solid var(--ink)" not in css or "outline: 2px solid var(--bone)" not in css:
             problems.append("focus rings missing")
         if "outline-offset: 2px" not in css:
