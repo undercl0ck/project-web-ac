@@ -88,6 +88,8 @@ class Site:
             "name": "Cyber Enterprise Risk Management Training",
             "card": "Cyber Enterprise Risk Management Training",
             "card_line": "For directors and the C-suite, on site or by webinar.",
+            "audience": "For board members and C-suite executives.",
+            "receive": "You receive cyber risk training for your board or executive team, on site or by webinar.",
             "home": True,
             "body": (
                 "Designed for Board members or C-Suite executives (on site or via Webinar). "
@@ -99,6 +101,8 @@ class Site:
             "name": "Board View Cyber Risk Assessment",
             "card": "Board View Cyber Risk Assessment",
             "card_line": "A third-party report of material threats, written for the board.",
+            "audience": "For boards and their committees.",
+            "receive": "You receive a third-party report on material cyber threats you did not know about.",
             "home": True,
             "body": (
                 "A third-party report identifying material cyber threats previously "
@@ -111,6 +115,8 @@ class Site:
             "name": "M&A Risk Assessment",
             "card": "M&A Risk Assessment",
             "card_line": "A report on whether a company being acquired is already compromised.",
+            "audience": "For deal teams, general counsel and private equity.",
+            "receive": "You receive a report on whether a target company is already compromised or breached.",
             "home": True,
             "body": (
                 "a report detailing whether a target company is compromised or breached "
@@ -122,6 +128,8 @@ class Site:
             "name": "Supply Chain Risk Assessment",
             "card": "Supply Chain Risk Assessment",
             "card_line": "A report on which suppliers present a cyber risk.",
+            "audience": "For general counsel, security leaders and procurement.",
+            "receive": "You receive a report on which suppliers present a cyber risk to your organization.",
             "home": True,
             "body": (
                 "A report identifying which suppliers are infecting your organization "
@@ -133,6 +141,8 @@ class Site:
             "name": "Cybersecurity Program Assessment",
             "card": "Cybersecurity Program Assessment",
             "card_line": "A report of gaps between the program and current threats.",
+            "audience": "For executive teams and security leaders.",
+            "receive": "You receive a third-party report on gaps between your program and current threats.",
             "home": True,
             "body": (
                 "An expedient third-party report identifying gaps between current "
@@ -144,6 +154,8 @@ class Site:
             "name": "External Security Posture Assessment",
             "card": "External Security Posture Assessment",
             "card_line": "What is visible from outside, including a dark-web and deep-net search.",
+            "audience": "For boards, general counsel and security leaders.",
+            "receive": "You receive a report on what outsiders can see, including a dark-web and deep-net search.",
             "home": True,
             "body": (
                 'A report detailing what bad actors can see from the "outside-in" '
@@ -175,6 +187,9 @@ class Site:
             ),
         },
     )
+
+    # Home band order. Capabilities keeps OFFERINGS order.
+    HOME_ORDER = ("training", "board-view", "supply", "ma", "external", "program")
 
     BANNED = (
         "did you know",
@@ -595,80 +610,103 @@ class Site:
         }
         return writers[slug](slug)
 
-    # Lucide line icons (lucide-static 0.544.0, ISC).
-    # Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT).
-    # All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+    # 24-grid line icons, drawn at 32px with a 1.5px stroke. Ink only. Decorative.
     ICONS = {
         "training": (
-            '<path d="M2 3h20"/>'
-            '<path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/>'
-            '<path d="m7 21 5-5 5 5"/>'
+            '<rect x="6.5" y="9" width="11" height="6"/>'
+            '<rect x="6.5" y="4.6" width="2.4" height="2.4"/>'
+            '<rect x="10.8" y="4.6" width="2.4" height="2.4"/>'
+            '<rect x="15.1" y="4.6" width="2.4" height="2.4"/>'
+            '<rect x="6.5" y="17" width="2.4" height="2.4"/>'
+            '<rect x="10.8" y="17" width="2.4" height="2.4"/>'
+            '<rect x="15.1" y="17" width="2.4" height="2.4"/>'
         ),
         "board-view": (
-            '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>'
-            '<path d="M14 2v4a2 2 0 0 0 2 2h4"/>'
-            '<path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>'
-        ),
-        "ma": (
-            '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>'
-            '<path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/>'
-            '<path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/>'
-            '<path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>'
+            '<rect x="5.5" y="3" width="13" height="18"/>'
+            '<path d="M9 8 H16"/>'
+            '<path d="M9 12 H16"/>'
+            '<path d="M8 11.1 V12.9"/>'
+            '<path d="M9 16 H16"/>'
         ),
         "supply": (
-            '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>'
-            '<path d="M15 18H9"/>'
-            '<path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>'
-            '<circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>'
+            '<circle cx="4.5" cy="12" r="2"/>'
+            '<circle cx="12" cy="12" r="2"/>'
+            '<circle cx="19.4" cy="12" r="2"/>'
+            '<path d="M6.5 12 H10"/>'
+            '<path d="M14 12 H17.4"/>'
         ),
-        "program": (
-            '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>'
-            '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>'
+        "ma": (
+            '<rect x="3.5" y="4.5" width="10" height="10"/>'
+            '<rect x="10.4" y="9.4" width="10" height="10"/>'
         ),
         "external": (
-            '<circle cx="12" cy="12" r="10"/>'
-            '<path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>'
-            '<path d="M2 12h20"/>'
+            '<circle cx="10" cy="10" r="5"/>'
+            '<path d="M13.6 13.6 L20.2 20.2"/>'
+        ),
+        "program": (
+            '<path d="M3 6.2 L4.7 7.9 L8.2 4.3"/>'
+            '<path d="M10.2 6.2 H21"/>'
+            '<path d="M3 12.2 L4.7 13.9 L8.2 10.3"/>'
+            '<path d="M10.2 12.2 H21"/>'
+            '<path d="M3 18.2 L4.7 19.9 L8.2 16.3"/>'
+            '<path d="M10.2 18.2 H21"/>'
         ),
         "internal": (
-            '<path d="M15 12h-5"/><path d="M15 8h-5"/>'
-            '<path d="M19 17V5a2 2 0 0 0-2-2H4"/>'
-            '<path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/>'
+            '<rect x="5" y="3" width="14" height="18"/>'
+            '<path d="M8 7.2 H16"/>'
+            '<path d="M8 10.4 H14"/>'
+            '<path d="M8 13.6 H17"/>'
+            '<path d="M8 16.8 H13"/>'
         ),
         "proactive": (
-            '<path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/>'
-            '<circle cx="12" cy="12" r="10"/>'
+            '<path d="M18.4 4.4 V19.4"/>'
+            '<path d="M3 12 H13"/>'
+            '<path d="M10 9 L13.5 12 L10 15"/>'
         ),
     }
 
     @staticmethod
     def icon(offer_id: str) -> str:
         return (
-            '<span class="svc-icon" aria-hidden="true">'
-            "<!-- @license lucide-static 0.544.0 - ISC -->"
-            '<svg viewBox="0 0 24 24" width="32" height="32" '
-            'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
-            'stroke-linejoin="round">'
-            f"{Site.ICONS[offer_id]}</svg></span>"
+            '<svg class="svc-icon" viewBox="0 0 24 24" width="32" height="32" '
+            'fill="none" stroke="currentColor" stroke-width="1.5" '
+            'stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">'
+            '<g fill="none" stroke="currentColor" stroke-width="1.5" '
+            'stroke-linecap="square" stroke-linejoin="miter" vector-effect="non-scaling-stroke">'
+            f"{Site.ICONS[offer_id]}</g></svg>"
+        )
+
+    @staticmethod
+    def service_card(offer: dict, slug: str, *, full: bool) -> str:
+        name = offer["name"] if full else offer["card"]
+        name_id = f'{offer["id"]}-name'
+        if full:
+            href = f'#{escape(offer["id"])}'
+            anchor = f' id="{escape(offer["id"])}"'
+            detail = f'<p class="svc-body">{escape(offer["body"])}</p>'
+            heading = f'<h2 class="svc-name" id="{name_id}">{escape(name)}</h2>'
+        else:
+            href = f'{Site.href(slug, "capabilities")}#{escape(offer["id"])}'
+            anchor = ""
+            detail = (
+                f'<p class="svc-for">{escape(offer["audience"])}</p>'
+                f'<p class="svc-get">{escape(offer["receive"])}</p>'
+            )
+            heading = f'<span class="svc-name" id="{name_id}">{escape(name)}</span>'
+        return (
+            "<li>"
+            f'<a class="card"{anchor} href="{href}" aria-labelledby="{name_id}">'
+            f"{Site.icon(offer['id'])}"
+            f"{heading}"
+            f"{detail}"
+            '<span class="svc-more">See the full service</span>'
+            "</a></li>"
         )
 
     @staticmethod
     def home_body(_slug: str) -> str:
-        cards = []
-        index = 0
-        for offer in Site.OFFERINGS:
-            if not offer["home"]:
-                continue
-            index += 1
-            cards.append(
-                '<li class="card">'
-                '<div class="card-body">'
-                f"{Site.icon(offer['id'])}"
-                f'<p class="idx">{index:02d}</p>'
-                f'<h3><a href="capabilities/#{escape(offer["id"])}">{escape(offer["card"])}</a></h3>'
-                f"<p>{escape(offer['card_line'])}</p>"
-                "</div></li>"
-            )
+        by_id = {offer["id"]: offer for offer in Site.OFFERINGS}
+        cards = [Site.service_card(by_id[offer_id], "", full=False) for offer_id in Site.HOME_ORDER]
         data = Site.bundle()
         recognized = escape(data["who_credentials"][1])
         return f"""
@@ -704,7 +742,7 @@ class Site:
 </section>
 <section class="services">
 <h2>Services</h2>
-<ol class="cards">{"".join(cards)}</ol>
+<ol class="svc-grid">{"".join(cards)}</ol>
 </section>
 </div>
 </div>
@@ -712,21 +750,11 @@ class Site:
 
     @staticmethod
     def capabilities_body(_slug: str) -> str:
-        blocks = []
-        for index, offer in enumerate(Site.OFFERINGS, start=1):
-            blocks.append(
-                f'<li class="offering" id="{escape(offer["id"])}">'
-                '<div class="offering-body">'
-                f"{Site.icon(offer['id'])}"
-                f'<p class="idx">{index:02d}</p>'
-                f"<h2>{escape(offer['name'])}</h2>"
-                f"<p>{escape(offer['body'])}</p>"
-                "</div></li>"
-            )
+        blocks = [Site.service_card(offer, "capabilities", full=True) for offer in Site.OFFERINGS]
         return f"""
 <h1>Capabilities</h1>
 <p class="lede">Eight lines of board training and pre-emptive cyber risk work.</p>
-<ol class="offerings">{"".join(blocks)}</ol>
+<ol class="svc-grid">{"".join(blocks)}</ol>
 """
 
     @staticmethod
@@ -2206,6 +2234,99 @@ p, h1, h2, h3, li, dd {
   .menu-trigger::after {
     animation: none;
     transition: none;
+  }
+}
+.svc-grid {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 368px);
+  column-gap: 48px;
+  row-gap: 48px;
+  justify-content: start;
+  border: 0;
+}
+.svc-grid > li {
+  display: flex;
+  width: 368px;
+  min-height: 280px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.svc-grid .card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 368px;
+  min-height: 280px;
+  margin: 0;
+  padding: 24px 0 0;
+  border: 0;
+  border-top: 1px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+  text-decoration: none;
+  overflow: visible;
+  transition: none;
+}
+.svc-grid .svc-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.svc-grid .svc-name,
+.svc-grid .svc-for,
+.svc-grid .svc-get,
+.svc-grid .svc-body,
+.svc-grid .svc-more {
+  margin: 0;
+  max-width: none;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.svc-grid .svc-name {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+.svc-grid .svc-for { margin: 0 0 8px; }
+.svc-grid .svc-more {
+  margin-top: auto;
+  padding-top: 24px;
+}
+.svc-grid .card:hover .svc-name {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.12em;
+  transition: none;
+}
+.svc-grid .card:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+@media (max-width: 1279px) {
+  .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .svc-grid > li, .svc-grid .card { width: 100%; }
+}
+@media (max-width: 760px) {
+  .svc-grid { grid-template-columns: 1fr; }
+  .svc-grid .svc-name,
+  .svc-grid .svc-for,
+  .svc-grid .svc-get,
+  .svc-grid .svc-body,
+  .svc-grid .svc-more {
+    font-size: 16px;
+    line-height: 24px;
   }
 }
 """
