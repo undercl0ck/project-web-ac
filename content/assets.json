@@ -45,6 +45,17 @@
       "bytes": 4584
     },
     {
+      "id": "hero-briefing",
+      "file": "hero-briefing.webp",
+      "alt": "A speaker at a lectern briefing a seated audience.",
+      "source": "https://axoncyber.com/wp-content/uploads/2025/02/senior-adults-business-admiring-male-public-speake-2024-12-02-08-00-12-utc-scaled.jpg",
+      "page": "https://axoncyber.com/who-we-are/",
+      "kind": "photo",
+      "width": 1200,
+      "height": 804,
+      "bytes": 64122
+    },
+    {
       "id": "who-speaker",
       "file": "who-speaker.webp",
       "alt": "Who We Are photograph",

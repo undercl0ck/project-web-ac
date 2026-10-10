@@ -7,11 +7,11 @@
     "Founded in 2003, graduate of the Federally Certified 8(a) program"
   ],
   "who_value_heading": "Our Unique Business Value",
-  "who_value": "Axon Global has been a trusted, vetted and contracted entity with the Department of Homeland Security (DHS) and/or the Cybersecurity Infrastructure Security Agency (CISA) authorized to operate in the private sector, while simultaneously protecting the critical infrastructure security agency. Axon is also executing critical infrastructure security cyber-monitoring; threat intelligence; and defending critical infrastructure under The Task Force on National and Homeland Security, established under a bi-partisan U.S. Congressional Committee. Axon Global has provided Cyber Enterprise Risk Management Training for over 200 Fortune 500 Directors, Officers, and General Counsel and over 300 Executive Leadership Teams across all major industries including but not limited to the following listed at: https://axoncyber.com/our-clients/. Also see for Awards and Recognitions. https://axoncyber.com/recognitions/",
+  "who_value": "Axon Global has been a trusted, vetted and contracted entity with the Department of Homeland Security (DHS) and/or the Cybersecurity Infrastructure Security Agency (CISA) authorized to operate in the private sector, while simultaneously protecting the critical infrastructure security agency. Axon is also executing critical infrastructure security cyber-monitoring; threat intelligence; and defending critical infrastructure under The Task Force on National and Homeland Security, established under a bi-partisan U.S. Congressional Committee. Axon Global has provided Cyber Enterprise Risk Management Training for over 200 Fortune 500 Directors, Officers, and Generals Counsel and over 300 Executive Leadership Teams across all major industries including but not limited to the following listed at: https://axoncyber.com/our-clients/. Also See for Awards and Recognitions. https://axoncyber.com/recognitions/",
   "clients_intro": [
-    "Axon has conducted Cyber Enterprise Risk Management training to over 220 of the F500 Directors, Officers, General Counsel and Executive Leadership Teams.",
+    "Axon has Conducted Cyber Enterprise Risk Management training to over 220 of the F500 Directors, Officers, Generals Counsel and Executive Leadership Teams.",
     "Axon focuses on protecting the valuation, reputation, safety and operations of its clients with boardroom intelligence and strategy. Our Clients are almost exclusively Director & Officer level contracts with F500 and Global 1000 companies or at the most senior levels with government agencies - most of our contracts are confidential. Engagements include Cyber Risk, Governance, Strategy and Innovation. Confidential engagements include a variety of cyber boardroom intelligence; cyber counter intelligence; and/or cyber counter terrorism services.",
-    "Axon Global has provided Cyber Enterprise Risk Management Training for over 200 Fortune 500 Directors, Officers, and General Counsel and over 300 Executive Leadership Teams across all major industries including but not limited to the following:"
+    "Axon Global has provided Cyber Enterprise Risk Management Training for over 200 Fortune 500 Directors, Officers, and Generals Counsel and over 300 Executive Leadership Teams across all major industries including but not limited to the following:"
   ],
   "clients": [
     "American Bar Association",
@@ -88,7 +88,7 @@
     "Experienced with a $400 Million U.S. company (90% of employees w/security clearance)",
     "20 years experience in enterprise IT solutions including latest techniques in Fortune 500 financial services",
     "Access to security clearances",
-    "Recognized by the Wall Street Journal as, \"[One of] the most influential, forward thinking and successful IT Leaders\"",
+    "Recognized by the Wall Street Journal as, \"One of the most influential, forward thinking and successful IT Leaders\"",
     "Advisors to the American University Kogod Cyber Governance Center",
     "Experience with F500, Government, Financial Services, Healthcare and Defense",
     "Members of the Global Institute for Cybersecurity Research partnered with NASA and NATO",
@@ -108,11 +108,11 @@
     "View our Extended Capabilities"
   ],
   "faq_intro": [
-    "Axon Global has trained over 250 F500 Board Directors, General Counsel and Executive Leadership Team members in Cyber Enterprise Risk Management (ERM)",
+    "Axon Global has trained over 250 F500 Board Directors, Generals Counsel and Executive Leadership Team members in Cyber Enterprise Risk Management (ERM)",
     "Here are the current Frequently Asked Questions by Board Members in “Cyber ERM Training for Directors”"
   ],
   "faq_questions": [
-    "How will recent breaches and judicial rulings at Yahoo!, Capital One, Marriott, and facebook impact the board and executive leadership team [ELT] members?",
+    "How will recent breaches and judicial rulings at Yahoo!, Capital One, Marriott, and facebook impact the board and executive leadership team ELT members?",
     "Why is 3rd party attorney-client privilege no longer enough to protect directors and ELT (e.g. Capital One – Mandiant recent ruling)?",
     "How will the post COVID-19 Work From Home environment impact my risk management strategy?",
     "How and why is Directors and Officers (D&O) liability insurance now suing the individual members of the ELT after a cyber breach? How can I mitigate that risk?",
@@ -153,7 +153,7 @@
     },
     {
       "quote": "“Is that what you meant about our officer’s email being compromised?”",
-      "note": "“They [bad actors] know both the log-in AND the passwords? They can read everything?” Question was asked by a C-level executive, three months into an active cyber breach investigation, who did not understand the implications of compromised email accounts."
+      "note": "“They bad actors know both the log-in AND the passwords? They can read everything?” Question was asked by a C-level executive, three months into an active cyber breach investigation, who did not understand the implications of compromised email accounts."
     },
     {
       "quote": "“What’s the consequence if we do nothing?”",
@@ -174,10 +174,6 @@
     {
       "quote": "“No, we don’t want to receive that report, I don’t care who asked for it!”",
       "note": "A critical infrastructure company executive infected with Black Energy advanced persistent malware, when auditors asked for an “active-exploits” report."
-    },
-    {
-      "quote": "“We’re just a small manufacturing company; we don’t have time for that cyber [poop]!”",
-      "note": "CEO to a company supplying parts to key military bases."
     }
   ],
   "faq_lessons_intro": [
@@ -202,7 +198,7 @@
     "Presume that cyber risk, risk transfer, risk mitigation, risk reporting, and escalation are not defined for the company. Lead and get these defined.",
     "Presume that the evidence of what your organization did/did not do, and what the organization should/should not have done, with respect to cyber security/compromises/breaches, already exists beyond company walls and are openly discoverable by other stakeholders.",
     "Meeting compliance standards is no longer an acceptable standard for reasonable cybersecurity. Directors will be held accountable for what they knew, and what they should have known.",
-    "Do not let IT “black-box” or mystify the cybersecurity risk for your company. Keep asking the questions until you get satisfactory answers. Are we at risk? How do you know? How do you measure that? Is that enough? Has that been audited? By whom? Can I trust it? How do we know that? Would it stand up to [fill in the blank]?",
+    "Do not let IT “black-box” or mystify the cybersecurity risk for your company. Keep asking the questions until you get satisfactory answers. Are we at risk? How do you know? How do you measure that? Is that enough? Has that been audited? By whom? Can I trust it? How do we know that? Would it stand up to review by your board, your regulator, or a court?",
     "It’s not the compromise or breach that causes most of the liability; it’s the lack of governance and the potential unethical behavior surrounding the event that costs the most."
   ],
   "fyi_heading": "European General Data Protection Regulation (EU GDPR",
