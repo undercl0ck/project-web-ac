@@ -167,7 +167,9 @@ class Site:
             "name": "Internal Security Posture Assessment",
             "card": "Internal Security Posture Assessment",
             "card_line": "",
-            "home": False,
+            "audience": "For security leaders and executive teams.",
+            "receive": "You receive a secure third-party log review for espionage and unsignatured threats.",
+            "home": True,
             "body": (
                 "A third-party, secure, and expedient review of logs identifying "
                 "espionage and other unsignatured threats."
@@ -178,7 +180,9 @@ class Site:
             "name": "Cyber Proactive Defense®",
             "card": "Cyber Proactive Defense",
             "card_line": "",
-            "home": False,
+            "audience": "For general counsel and security leaders who need to act on a finding.",
+            "receive": "You receive discrete services, within U.S. and/or international law, that stop the attack.",
+            "home": True,
             "body": (
                 "Discrete services performed within the U.S. and/or international law "
                 "that stop the attack or eliminate liability. "
@@ -188,8 +192,29 @@ class Site:
         },
     )
 
-    # Home band order. Capabilities keeps OFFERINGS order.
-    HOME_ORDER = ("training", "board-view", "supply", "ma", "external", "program")
+    # One order for Home and Capabilities. Internal and Defense are last.
+    HOME_ORDER = (
+        "training",
+        "board-view",
+        "supply",
+        "ma",
+        "external",
+        "program",
+        "internal",
+        "proactive",
+    )
+    CAP_ORDER = HOME_ORDER
+    # Short label drawn on the card. Each word is contained in that service's full name.
+    WORDS = {
+        "training": "Training",
+        "board-view": "Board",
+        "supply": "Supply",
+        "ma": "M&A",
+        "external": "External",
+        "program": "Program",
+        "internal": "Internal",
+        "proactive": "Defense",
+    }
 
     BANNED = (
         "did you know",
@@ -610,97 +635,95 @@ class Site:
         }
         return writers[slug](slug)
 
-    # 24-grid line icons, drawn at 32px with a 1.5px stroke. Ink only. Decorative.
+    # 160-grid line icons for the square cards. Ink only, no fills. Decorative.
     ICONS = {
         "training": (
-            '<rect x="6.5" y="9" width="11" height="6"/>'
-            '<rect x="6.5" y="4.6" width="2.4" height="2.4"/>'
-            '<rect x="10.8" y="4.6" width="2.4" height="2.4"/>'
-            '<rect x="15.1" y="4.6" width="2.4" height="2.4"/>'
-            '<rect x="6.5" y="17" width="2.4" height="2.4"/>'
-            '<rect x="10.8" y="17" width="2.4" height="2.4"/>'
-            '<rect x="15.1" y="17" width="2.4" height="2.4"/>'
+            '<rect x="28" y="22" width="22" height="18"/>'
+            '<rect x="69" y="22" width="22" height="18"/>'
+            '<rect x="110" y="22" width="22" height="18"/>'
+            '<rect x="32" y="62" width="96" height="36"/>'
+            '<rect x="28" y="120" width="22" height="18"/>'
+            '<rect x="69" y="120" width="22" height="18"/>'
+            '<rect x="110" y="120" width="22" height="18"/>'
         ),
         "board-view": (
-            '<rect x="5.5" y="3" width="13" height="18"/>'
-            '<path d="M9 8 H16"/>'
-            '<path d="M9 12 H16"/>'
-            '<path d="M8 11.1 V12.9"/>'
-            '<path d="M9 16 H16"/>'
+            '<rect x="46" y="16" width="68" height="128"/>'
+            '<path d="M62 48 H98"/>'
+            '<path d="M62 76 H98"/>'
+            '<path d="M54 68 V84"/>'
+            '<path d="M62 104 H98"/>'
+            '<path d="M62 128 H98"/>'
         ),
         "supply": (
-            '<circle cx="4.5" cy="12" r="2"/>'
-            '<circle cx="12" cy="12" r="2"/>'
-            '<circle cx="19.4" cy="12" r="2"/>'
-            '<path d="M6.5 12 H10"/>'
-            '<path d="M14 12 H17.4"/>'
+            '<circle cx="30" cy="80" r="16"/>'
+            '<circle cx="80" cy="80" r="16"/>'
+            '<circle cx="130" cy="80" r="16"/>'
+            '<path d="M46 80 H64"/>'
+            '<path d="M96 80 H114"/>'
         ),
         "ma": (
-            '<rect x="3.5" y="4.5" width="10" height="10"/>'
-            '<rect x="10.4" y="9.4" width="10" height="10"/>'
+            '<rect x="24" y="28" width="68" height="68"/>'
+            '<rect x="68" y="64" width="68" height="68"/>'
         ),
         "external": (
-            '<circle cx="10" cy="10" r="5"/>'
-            '<path d="M13.6 13.6 L20.2 20.2"/>'
+            '<circle cx="68" cy="62" r="34"/>'
+            '<path d="M92 86 L132 126"/>'
         ),
         "program": (
-            '<path d="M3 6.2 L4.7 7.9 L8.2 4.3"/>'
-            '<path d="M10.2 6.2 H21"/>'
-            '<path d="M3 12.2 L4.7 13.9 L8.2 10.3"/>'
-            '<path d="M10.2 12.2 H21"/>'
-            '<path d="M3 18.2 L4.7 19.9 L8.2 16.3"/>'
-            '<path d="M10.2 18.2 H21"/>'
+            '<path d="M28 46 L40 58 L60 34"/>'
+            '<path d="M76 46 H136"/>'
+            '<path d="M28 84 L40 96 L60 72"/>'
+            '<path d="M76 84 H136"/>'
+            '<path d="M28 122 L40 134 L60 110"/>'
+            '<path d="M76 122 H136"/>'
         ),
         "internal": (
-            '<rect x="5" y="3" width="14" height="18"/>'
-            '<path d="M8 7.2 H16"/>'
-            '<path d="M8 10.4 H14"/>'
-            '<path d="M8 13.6 H17"/>'
-            '<path d="M8 16.8 H13"/>'
+            '<rect x="40" y="16" width="80" height="128"/>'
+            '<path d="M56 44 H108"/>'
+            '<path d="M56 68 H96"/>'
+            '<path d="M56 92 H116"/>'
+            '<path d="M56 116 H88"/>'
         ),
         "proactive": (
-            '<path d="M18.4 4.4 V19.4"/>'
-            '<path d="M3 12 H13"/>'
-            '<path d="M10 9 L13.5 12 L10 15"/>'
+            '<path d="M124 24 V136"/>'
+            '<path d="M24 80 H96"/>'
+            '<path d="M78 58 L100 80 L78 102"/>'
         ),
     }
 
     @staticmethod
     def icon(offer_id: str) -> str:
         return (
-            '<svg class="svc-icon" viewBox="0 0 24 24" width="32" height="32" '
-            'fill="none" stroke="currentColor" stroke-width="1.5" '
+            '<svg class="svc-icon" viewBox="0 0 160 160" width="160" height="160" '
+            'fill="none" stroke="currentColor" stroke-width="2" '
             'stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">'
-            '<g fill="none" stroke="currentColor" stroke-width="1.5" '
-            'stroke-linecap="square" stroke-linejoin="miter" vector-effect="non-scaling-stroke">'
-            f"{Site.ICONS[offer_id]}</g></svg>"
+            f"{Site.ICONS[offer_id]}</svg>"
         )
 
     @staticmethod
     def service_card(offer: dict, slug: str, *, full: bool) -> str:
-        name = offer["name"] if full else offer["card"]
+        name = offer["name"]
+        word = Site.WORDS[offer["id"]]
+        if word not in name:
+            raise RuntimeError(f"{word!r} is not inside {name!r}")
         name_id = f'{offer["id"]}-name'
+        tag = "h2" if full else "p"
+        parts = [f'<{tag} class="svc-name" id="{name_id}">{escape(name)}</{tag}>']
+        if offer.get("audience") and offer.get("receive"):
+            parts.append(f'<p class="svc-for">{escape(offer["audience"])}</p>')
+            parts.append(f'<p class="svc-get">{escape(offer["receive"])}</p>')
         if full:
-            href = f'#{escape(offer["id"])}'
             anchor = f' id="{escape(offer["id"])}"'
-            detail = f'<p class="svc-body">{escape(offer["body"])}</p>'
-            heading = f'<h2 class="svc-name" id="{name_id}">{escape(name)}</h2>'
+            parts.append(f'<p class="svc-body">{escape(offer["body"])}</p>')
         else:
-            href = f'{Site.href(slug, "capabilities")}#{escape(offer["id"])}'
             anchor = ""
-            detail = (
-                f'<p class="svc-for">{escape(offer["audience"])}</p>'
-                f'<p class="svc-get">{escape(offer["receive"])}</p>'
-            )
-            heading = f'<span class="svc-name" id="{name_id}">{escape(name)}</span>'
         return (
-            "<li>"
-            f'<a class="card"{anchor} href="{href}" aria-labelledby="{name_id}">'
-            f"{Site.icon(offer['id'])}"
-            f"{heading}"
-            f"{detail}"
-            '<span class="svc-more">See the full service</span>'
-            "</a></li>"
+            f'<li class="icon-card">'
+            f'<article class="card" tabindex="0" aria-labelledby="{name_id}"{anchor}>'
+            f'<div class="icon-card-stage">{Site.icon(offer["id"])}'
+            f'<span class="svc-word" aria-hidden="true">{escape(word)}</span></div>'
+            f'<div class="icon-card-panel">{"".join(parts)}</div>'
+            "</article></li>"
         )
 
     @staticmethod
@@ -750,7 +773,11 @@ class Site:
 
     @staticmethod
     def capabilities_body(_slug: str) -> str:
-        blocks = [Site.service_card(offer, "capabilities", full=True) for offer in Site.OFFERINGS]
+        by_id = {offer["id"]: offer for offer in Site.OFFERINGS}
+        blocks = [
+            Site.service_card(by_id[offer_id], "capabilities", full=True)
+            for offer_id in Site.CAP_ORDER
+        ]
         return f"""
 <h1>Capabilities</h1>
 <p class="lede">Eight lines of board training and pre-emptive cyber risk work.</p>
@@ -1403,6 +1430,70 @@ class Site:
       toggle.setAttribute("aria-label", "Open menu");
     }
   });
+})();
+(function () {
+  var cards = document.querySelectorAll(".icon-card");
+  if (!cards.length) return;
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+  function cardOf(node) {
+    if (!node || !node.closest) return null;
+    return node.classList && node.classList.contains("icon-card") ? node : node.closest(".icon-card");
+  }
+
+  function waitMs() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 120;
+  }
+
+  Array.prototype.forEach.call(cards, function (card) {
+    card.addEventListener("pointerenter", function () {
+      if (!fine.matches) return;
+      clearTimeout(card._hotTimer);
+      card._hotTimer = setTimeout(function () {
+        if (!card.classList.contains("is-suppressed")) card.classList.add("is-hot");
+      }, waitMs());
+    });
+    card.addEventListener("pointerleave", function () {
+      clearTimeout(card._hotTimer);
+      card.classList.remove("is-hot");
+      card.classList.remove("is-suppressed");
+    });
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape" || !fine.matches) return;
+    var hovered = null;
+    Array.prototype.forEach.call(cards, function (card) {
+      if (card.matches(":hover")) hovered = card;
+    });
+    var focused = cardOf(document.activeElement);
+    var card = focused || hovered;
+    if (!card) return;
+    clearTimeout(card._hotTimer);
+    card.classList.remove("is-hot");
+    card.classList.add("is-suppressed");
+    if (focused && document.activeElement && card.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
+  });
+
+  document.addEventListener("focusin", function (event) {
+    var card = cardOf(event.target);
+    if (card) card.classList.remove("is-suppressed");
+  });
+
+  function openFromHash() {
+    var id = (location.hash || "").replace(/^#/, "");
+    if (!id) return;
+    var node = document.getElementById(id);
+    var card = cardOf(node);
+    if (!card) return;
+    card.classList.remove("is-suppressed");
+    card.classList.add("is-open");
+  }
+
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
 })();
 """
 
@@ -2231,7 +2322,11 @@ p, h1, h2, h3, li, dd {
 @media (prefers-reduced-motion: reduce) {
   .mark-lg .mass,
   .nav-bars, .nav-bars::before, .nav-bars::after,
-  .menu-trigger::after {
+  .menu-trigger::after,
+  .icon-card .svc-icon,
+  .icon-card-panel,
+  .svc-word,
+  .svc-grid .card {
     animation: none;
     transition: none;
   }
@@ -2241,94 +2336,188 @@ p, h1, h2, h3, li, dd {
   margin: 0.4rem 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, 368px);
-  column-gap: 48px;
-  row-gap: 48px;
+  grid-template-columns: 1fr;
+  gap: 28px;
   justify-content: start;
   border: 0;
 }
 .svc-grid > li {
   display: flex;
-  width: 368px;
-  min-height: 280px;
   margin: 0;
   padding: 0;
   border: 0;
+  min-width: 0;
 }
 .svc-grid .card {
+  position: relative;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 368px;
-  min-height: 280px;
+  display: block;
+  width: 100%;
   margin: 0;
-  padding: 24px 0 0;
+  padding: 4px 0 16px;
   border: 0;
   border-top: 1px solid var(--ink);
   border-radius: 0;
   background: transparent;
-  box-shadow: none;
   color: var(--ink);
-  text-decoration: none;
-  overflow: visible;
-  transition: none;
+}
+.icon-card-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 .svc-grid .svc-icon {
   display: block;
-  width: 32px;
-  height: 32px;
-  margin: 0 0 16px;
+  width: 96px;
+  height: 96px;
+  margin: 0;
+  flex: none;
   color: var(--ink);
 }
+.svc-word {
+  margin: 0;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+}
+.icon-card-panel { padding: 16px 2px 0; }
 .svc-grid .svc-name,
 .svc-grid .svc-for,
 .svc-grid .svc-get,
-.svc-grid .svc-body,
-.svc-grid .svc-more {
+.svc-grid .svc-body {
   margin: 0;
   max-width: none;
   color: var(--ink);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 28px;
+  line-height: 22px;
   letter-spacing: 0;
   text-transform: none;
 }
 .svc-grid .svc-name {
   margin: 0 0 8px;
+  font-size: 22px;
   font-weight: 600;
+  line-height: 28px;
 }
-.svc-grid .svc-for { margin: 0 0 8px; }
-.svc-grid .svc-more {
-  margin-top: auto;
-  padding-top: 24px;
-}
-.svc-grid .card:hover .svc-name {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.12em;
-  transition: none;
-}
-.svc-grid .card:focus-visible {
+.svc-grid .svc-for,
+.svc-grid .svc-get,
+.svc-grid .svc-body { margin: 0 0 8px; }
+.svc-grid .icon-card:focus-within {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
-@media (max-width: 1279px) {
-  .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .svc-grid > li, .svc-grid .card { width: 100%; }
+.svc-grid .card:focus-visible { outline: none; }
+@media (min-width: 761px) {
+  .svc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; row-gap: 32px; }
+}
+@media (min-width: 1280px) {
+  .svc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 760px) {
-  .svc-grid { grid-template-columns: 1fr; }
-  .svc-grid .svc-name,
-  .svc-grid .svc-for,
-  .svc-grid .svc-get,
-  .svc-grid .svc-body,
-  .svc-grid .svc-more {
-    font-size: 16px;
-    line-height: 24px;
+  .svc-word,
+  .svc-grid .svc-name {
+    font-size: 20px;
+    line-height: 26px;
   }
 }
+@media (hover: hover) and (pointer: fine) {
+  .svc-grid {
+    grid-template-columns: repeat(3, 368px);
+    column-gap: 48px;
+    row-gap: 48px;
+    align-items: start;
+  }
+  .svc-grid > li,
+  .svc-grid .card {
+    width: 368px;
+    height: 368px;
+    padding: 0;
+    overflow: hidden;
+  }
+  .icon-card-stage,
+  .icon-card-panel {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    transition: opacity 220ms ease;
+    transition-delay: 0s;
+  }
+  .icon-card-stage {
+    z-index: 1;
+    justify-content: center;
+    gap: 16px;
+    padding: 0;
+    opacity: 1;
+    pointer-events: none;
+  }
+  .svc-grid .svc-icon {
+    position: static;
+    width: 160px;
+    height: 160px;
+  }
+  .icon-card-panel {
+    z-index: 2;
+    padding: 28px 24px;
+    overflow: auto;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .icon-card.is-hot:not(.is-suppressed) .icon-card-stage,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-stage,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-stage {
+    opacity: 0;
+  }
+  .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .page .icon-card.is-hot:not(.is-suppressed),
+  .page .icon-card:focus-within:not(.is-suppressed),
+  .page .icon-card.is-open:not(.is-suppressed),
+  .page .icon-card.is-hot:not(.is-suppressed) .card,
+  .page .icon-card:focus-within:not(.is-suppressed) .card,
+  .page .icon-card.is-open:not(.is-suppressed) .card {
+    height: auto;
+    min-height: 368px;
+    overflow: visible;
+  }
+  .page .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
+  .page .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
+  .page .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
+    position: relative;
+    inset: auto;
+    min-height: 368px;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (max-width: 1263px) {
+  .svc-grid { grid-template-columns: repeat(2, 368px); }
+}
+@media (hover: hover) and (pointer: fine) and (max-width: 847px) {
+  .svc-grid { grid-template-columns: 368px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .icon-card-stage,
+  .icon-card-panel,
+  .svc-grid .svc-icon,
+  .svc-word,
+  .svc-grid .card,
+  .icon-card.is-hot .icon-card-stage,
+  .icon-card.is-hot .icon-card-panel,
+  .icon-card:focus-within .icon-card-stage,
+  .icon-card:focus-within .icon-card-panel,
+  .icon-card.is-open .icon-card-stage,
+  .icon-card.is-open .icon-card-panel {
+    transition: none;
+  }
+}
+
 """
 
     @staticmethod
@@ -2394,8 +2583,16 @@ p, h1, h2, h3, li, dd {
             problems.append("menu toggle is not a labeled button")
         if "checkbox" in home:
             problems.append("menu still uses a checkbox")
-        if home.count('class="card"') != 6:
-            problems.append("home card count is not 6")
+        if home.count('class="card"') != 8:
+            problems.append("home card count is not 8")
+        for line in (
+            "For security leaders and executive teams.",
+            "You receive a secure third-party log review for espionage and unsignatured threats.",
+            "For general counsel and security leaders who need to act on a finding.",
+            "You receive discrete services, within U.S. and/or international law, that stop the attack.",
+        ):
+            if line not in home or line not in caps:
+                problems.append(f"missing card line {line!r}")
         if "gtag" in blob or "google-analytics" in blob or "plausible" in blob:
             problems.append("analytics marker")
         for offer in Site.OFFERINGS:

@@ -75,3 +75,67 @@
     }
   });
 })();
+(function () {
+  var cards = document.querySelectorAll(".icon-card");
+  if (!cards.length) return;
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+  function cardOf(node) {
+    if (!node || !node.closest) return null;
+    return node.classList && node.classList.contains("icon-card") ? node : node.closest(".icon-card");
+  }
+
+  function waitMs() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 120;
+  }
+
+  Array.prototype.forEach.call(cards, function (card) {
+    card.addEventListener("pointerenter", function () {
+      if (!fine.matches) return;
+      clearTimeout(card._hotTimer);
+      card._hotTimer = setTimeout(function () {
+        if (!card.classList.contains("is-suppressed")) card.classList.add("is-hot");
+      }, waitMs());
+    });
+    card.addEventListener("pointerleave", function () {
+      clearTimeout(card._hotTimer);
+      card.classList.remove("is-hot");
+      card.classList.remove("is-suppressed");
+    });
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape" || !fine.matches) return;
+    var hovered = null;
+    Array.prototype.forEach.call(cards, function (card) {
+      if (card.matches(":hover")) hovered = card;
+    });
+    var focused = cardOf(document.activeElement);
+    var card = focused || hovered;
+    if (!card) return;
+    clearTimeout(card._hotTimer);
+    card.classList.remove("is-hot");
+    card.classList.add("is-suppressed");
+    if (focused && document.activeElement && card.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
+  });
+
+  document.addEventListener("focusin", function (event) {
+    var card = cardOf(event.target);
+    if (card) card.classList.remove("is-suppressed");
+  });
+
+  function openFromHash() {
+    var id = (location.hash || "").replace(/^#/, "");
+    if (!id) return;
+    var node = document.getElementById(id);
+    var card = cardOf(node);
+    if (!card) return;
+    card.classList.remove("is-suppressed");
+    card.classList.add("is-open");
+  }
+
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
+})();
