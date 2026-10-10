@@ -943,7 +943,7 @@ p, h1, h2, h3, li, dd {
     position: absolute;
     inset: 0;
     box-sizing: border-box;
-    transition: opacity 220ms ease;
+    transition: opacity 140ms ease;
     transition-delay: 0s;
   }
   .icon-card-stage {
@@ -966,33 +966,26 @@ p, h1, h2, h3, li, dd {
     opacity: 0;
     pointer-events: none;
   }
+  .svc-grid .svc-for,
+  .svc-grid .svc-get,
+  .svc-grid .svc-body {
+    font-size: 18px;
+    line-height: 28px;
+  }
   .icon-card.is-hot:not(.is-suppressed) .icon-card-stage,
   .icon-card:focus-within:not(.is-suppressed) .icon-card-stage,
   .icon-card.is-open:not(.is-suppressed) .icon-card-stage {
     opacity: 0;
+    transition: opacity 160ms ease;
+    transition-delay: 60ms;
   }
   .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
   .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
   .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
     opacity: 1;
     pointer-events: auto;
-  }
-  .page .icon-card.is-hot:not(.is-suppressed),
-  .page .icon-card:focus-within:not(.is-suppressed),
-  .page .icon-card.is-open:not(.is-suppressed),
-  .page .icon-card.is-hot:not(.is-suppressed) .card,
-  .page .icon-card:focus-within:not(.is-suppressed) .card,
-  .page .icon-card.is-open:not(.is-suppressed) .card {
-    height: auto;
-    min-height: 368px;
-    overflow: visible;
-  }
-  .page .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
-  .page .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
-  .page .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
-    position: relative;
-    inset: auto;
-    min-height: 368px;
+    transition: opacity 160ms ease;
+    transition-delay: 60ms;
   }
 }
 @media (hover: hover) and (pointer: fine) and (max-width: 1263px) {
@@ -1001,18 +994,26 @@ p, h1, h2, h3, li, dd {
 @media (hover: hover) and (pointer: fine) and (max-width: 847px) {
   .svc-grid { grid-template-columns: 368px; }
 }
+@media (hover: hover) and (pointer: fine) and (max-width: 440px) {
+  .svc-grid .svc-for,
+  .svc-grid .svc-get,
+  .svc-grid .svc-body {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .icon-card-stage,
   .icon-card-panel,
   .svc-grid .svc-icon,
   .svc-word,
   .svc-grid .card,
-  .icon-card.is-hot .icon-card-stage,
-  .icon-card.is-hot .icon-card-panel,
-  .icon-card:focus-within .icon-card-stage,
-  .icon-card:focus-within .icon-card-panel,
-  .icon-card.is-open .icon-card-stage,
-  .icon-card.is-open .icon-card-panel {
+  .icon-card.is-hot:not(.is-suppressed) .icon-card-stage,
+  .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-stage,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-stage,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
     transition: none;
   }
 }

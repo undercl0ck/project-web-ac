@@ -169,7 +169,7 @@ class Site:
             "card_line": "",
             "audience": "For security leaders and executive teams.",
             "receive": "You receive a secure third-party log review for espionage and unsignatured threats.",
-            "home": True,
+            "home": False,
             "body": (
                 "A third-party, secure, and expedient review of logs identifying "
                 "espionage and other unsignatured threats."
@@ -182,7 +182,7 @@ class Site:
             "card_line": "",
             "audience": "For general counsel and security leaders who need to act on a finding.",
             "receive": "You receive discrete services, within U.S. and/or international law, that stop the attack.",
-            "home": True,
+            "home": False,
             "body": (
                 "Discrete services performed within the U.S. and/or international law "
                 "that stop the attack or eliminate liability. "
@@ -192,18 +192,9 @@ class Site:
         },
     )
 
-    # One order for Home and Capabilities. Internal and Defense are last.
-    HOME_ORDER = (
-        "training",
-        "board-view",
-        "supply",
-        "ma",
-        "external",
-        "program",
-        "internal",
-        "proactive",
-    )
-    CAP_ORDER = HOME_ORDER
+    # Home shows the first six. Capabilities uses that order, then Internal and Defense.
+    HOME_ORDER = ("training", "board-view", "supply", "ma", "external", "program")
+    CAP_ORDER = HOME_ORDER + ("internal", "proactive")
     # Short label drawn on the card. Each word is contained in that service's full name.
     WORDS = {
         "training": "Training",
@@ -695,7 +686,7 @@ class Site:
     def icon(offer_id: str) -> str:
         return (
             '<svg class="svc-icon" viewBox="0 0 160 160" width="160" height="160" '
-            'fill="none" stroke="currentColor" stroke-width="2" '
+            'fill="none" stroke="currentColor" stroke-width="3" '
             'stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">'
             f"{Site.ICONS[offer_id]}</svg>"
         )
@@ -1494,6 +1485,45 @@ class Site:
 
   openFromHash();
   window.addEventListener("hashchange", openFromHash);
+
+  function lockRows() {
+    var grid = document.querySelector(".page .svc-grid");
+    if (!grid) return;
+    var items = grid.querySelectorAll(".icon-card");
+    Array.prototype.forEach.call(items, function (card) {
+      card.style.minHeight = "";
+      var article = card.querySelector(".card");
+      if (article) article.style.minHeight = "";
+    });
+    if (!fine.matches) return;
+    var rows = [];
+    Array.prototype.forEach.call(items, function (card) {
+      var top = Math.round(card.getBoundingClientRect().top);
+      var row = rows.length && Math.abs(rows[rows.length - 1].top - top) < 2 ? rows[rows.length - 1] : null;
+      if (!row) {
+        row = { top: top, items: [] };
+        rows.push(row);
+      }
+      var panel = card.querySelector(".icon-card-panel");
+      var border = parseFloat(getComputedStyle(card.querySelector(".card")).borderTopWidth) || 0;
+      row.items.push({ card: card, openH: Math.max(368, Math.ceil(panel.scrollHeight + border)) });
+    });
+    rows.forEach(function (row) {
+      var tall = 368;
+      row.items.forEach(function (item) {
+        if (item.openH > tall) tall = item.openH;
+      });
+      var px = tall + "px";
+      row.items.forEach(function (item) {
+        item.card.style.minHeight = px;
+        item.card.querySelector(".card").style.minHeight = px;
+      });
+    });
+  }
+
+  lockRows();
+  window.addEventListener("resize", lockRows);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockRows);
 })();
 """
 
@@ -2444,7 +2474,7 @@ p, h1, h2, h3, li, dd {
     position: absolute;
     inset: 0;
     box-sizing: border-box;
-    transition: opacity 220ms ease;
+    transition: opacity 140ms ease;
     transition-delay: 0s;
   }
   .icon-card-stage {
@@ -2467,33 +2497,26 @@ p, h1, h2, h3, li, dd {
     opacity: 0;
     pointer-events: none;
   }
+  .svc-grid .svc-for,
+  .svc-grid .svc-get,
+  .svc-grid .svc-body {
+    font-size: 18px;
+    line-height: 28px;
+  }
   .icon-card.is-hot:not(.is-suppressed) .icon-card-stage,
   .icon-card:focus-within:not(.is-suppressed) .icon-card-stage,
   .icon-card.is-open:not(.is-suppressed) .icon-card-stage {
     opacity: 0;
+    transition: opacity 160ms ease;
+    transition-delay: 60ms;
   }
   .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
   .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
   .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
     opacity: 1;
     pointer-events: auto;
-  }
-  .page .icon-card.is-hot:not(.is-suppressed),
-  .page .icon-card:focus-within:not(.is-suppressed),
-  .page .icon-card.is-open:not(.is-suppressed),
-  .page .icon-card.is-hot:not(.is-suppressed) .card,
-  .page .icon-card:focus-within:not(.is-suppressed) .card,
-  .page .icon-card.is-open:not(.is-suppressed) .card {
-    height: auto;
-    min-height: 368px;
-    overflow: visible;
-  }
-  .page .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
-  .page .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
-  .page .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
-    position: relative;
-    inset: auto;
-    min-height: 368px;
+    transition: opacity 160ms ease;
+    transition-delay: 60ms;
   }
 }
 @media (hover: hover) and (pointer: fine) and (max-width: 1263px) {
@@ -2502,18 +2525,26 @@ p, h1, h2, h3, li, dd {
 @media (hover: hover) and (pointer: fine) and (max-width: 847px) {
   .svc-grid { grid-template-columns: 368px; }
 }
+@media (hover: hover) and (pointer: fine) and (max-width: 440px) {
+  .svc-grid .svc-for,
+  .svc-grid .svc-get,
+  .svc-grid .svc-body {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .icon-card-stage,
   .icon-card-panel,
   .svc-grid .svc-icon,
   .svc-word,
   .svc-grid .card,
-  .icon-card.is-hot .icon-card-stage,
-  .icon-card.is-hot .icon-card-panel,
-  .icon-card:focus-within .icon-card-stage,
-  .icon-card:focus-within .icon-card-panel,
-  .icon-card.is-open .icon-card-stage,
-  .icon-card.is-open .icon-card-panel {
+  .icon-card.is-hot:not(.is-suppressed) .icon-card-stage,
+  .icon-card.is-hot:not(.is-suppressed) .icon-card-panel,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-stage,
+  .icon-card:focus-within:not(.is-suppressed) .icon-card-panel,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-stage,
+  .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
     transition: none;
   }
 }
@@ -2583,15 +2614,17 @@ p, h1, h2, h3, li, dd {
             problems.append("menu toggle is not a labeled button")
         if "checkbox" in home:
             problems.append("menu still uses a checkbox")
-        if home.count('class="card"') != 8:
-            problems.append("home card count is not 8")
+        if home.count('class="card"') != 6:
+            problems.append("home card count is not 6")
+        if "Internal Security Posture Assessment" in home or "Cyber Proactive Defense" in home:
+            problems.append("internal or defense card is on home")
         for line in (
             "For security leaders and executive teams.",
             "You receive a secure third-party log review for espionage and unsignatured threats.",
             "For general counsel and security leaders who need to act on a finding.",
             "You receive discrete services, within U.S. and/or international law, that stop the attack.",
         ):
-            if line not in home or line not in caps:
+            if line not in caps:
                 problems.append(f"missing card line {line!r}")
         if "gtag" in blob or "google-analytics" in blob or "plausible" in blob:
             problems.append("analytics marker")
