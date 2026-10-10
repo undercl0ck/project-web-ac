@@ -138,4 +138,43 @@
 
   openFromHash();
   window.addEventListener("hashchange", openFromHash);
+
+  function lockRows() {
+    var grid = document.querySelector(".page .svc-grid");
+    if (!grid) return;
+    var items = grid.querySelectorAll(".icon-card");
+    Array.prototype.forEach.call(items, function (card) {
+      card.style.minHeight = "";
+      var article = card.querySelector(".card");
+      if (article) article.style.minHeight = "";
+    });
+    if (!fine.matches) return;
+    var rows = [];
+    Array.prototype.forEach.call(items, function (card) {
+      var top = Math.round(card.getBoundingClientRect().top);
+      var row = rows.length && Math.abs(rows[rows.length - 1].top - top) < 2 ? rows[rows.length - 1] : null;
+      if (!row) {
+        row = { top: top, items: [] };
+        rows.push(row);
+      }
+      var panel = card.querySelector(".icon-card-panel");
+      var border = parseFloat(getComputedStyle(card.querySelector(".card")).borderTopWidth) || 0;
+      row.items.push({ card: card, openH: Math.max(368, Math.ceil(panel.scrollHeight + border)) });
+    });
+    rows.forEach(function (row) {
+      var tall = 368;
+      row.items.forEach(function (item) {
+        if (item.openH > tall) tall = item.openH;
+      });
+      var px = tall + "px";
+      row.items.forEach(function (item) {
+        item.card.style.minHeight = px;
+        item.card.querySelector(".card").style.minHeight = px;
+      });
+    });
+  }
+
+  lockRows();
+  window.addEventListener("resize", lockRows);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockRows);
 })();
