@@ -292,9 +292,9 @@
   },
   {
     "name": "Time Warner Cable",
-    "file": "time-warner-cable.webp",
-    "source": "https://commons.wikimedia.org/wiki/File:Time_Warner_Cable_Spectrum.png",
-    "commons": "Time_Warner_Cable_Spectrum.png"
+    "file": "time-warner-cable.svg",
+    "source": "https://en.wikipedia.org/wiki/File:Time_Warner_Cable_logo.svg",
+    "note": "official Time Warner Cable eye wordmark, before the Spectrum mark"
   },
   {
     "name": "USG",

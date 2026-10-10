@@ -638,7 +638,8 @@ class Site:
 <div class="frame">
 <section class="proofband">
 <h2>Our Clients</h2>
-{Site.marquee(data["clients"])}
+{Site.client_logo_row("", Site.HOME_LOGOS)}
+<p class="logo-more"><a href="{Site.href("", "clients")}">All clients</a></p>
 {Site.figures()}
 </section>
 <section class="services">
@@ -918,9 +919,32 @@ class Site:
         items = [f"<li>{Site.image(slug, row, sizes)}</li>" for row in rows]
         return f'<ul class="{kind}">{"".join(items)}</ul>'
 
+    # Recognizable wordmarks for the home band. The full list stays on /clients/.
+    HOME_LOGOS = (
+        "Google",
+        "Microsoft",
+        "Coca Cola",
+        "McDonalds",
+        "Walmart",
+        "Target",
+        "Ford",
+        "Bank of America",
+        "Wells Fargo",
+        "Delta",
+        "Dell",
+        "Intel",
+        "The Home Depot",
+        "General Motors",
+        "General Electric",
+        "Capital One",
+    )
+
     @staticmethod
-    def client_logo_row(slug: str) -> str:
+    def client_logo_row(slug: str, names: tuple | None = None) -> str:
         rows = json.loads((Site.ROOT / "content" / "client-logos.json").read_text(encoding="utf-8"))
+        if names:
+            by_name = {row["name"]: row for row in rows}
+            rows = [by_name[name] for name in names]
         items = []
         for row in rows:
             name = escape(row["name"])
@@ -932,11 +956,6 @@ class Site:
             else:
                 items.append(f'<li class="logo-fallback"><span>{name}</span></li>')
         return f'<ul class="logo-row">{"".join(items)}</ul>'
-
-    @staticmethod
-    def marquee(names: list) -> str:
-        items = "".join(f"<li>{escape(name)}</li>" for name in names)
-        return f'<ul class="client-row">{items}</ul>'
 
     @staticmethod
     def figures() -> str:
@@ -1782,6 +1801,8 @@ th {
   text-align: center;
   overflow: hidden;
 }
+.logo-more { margin: -0.2rem 0 1.2rem; }
+.logo-more a { font-weight: 560; text-decoration: none; }
 .plain li { margin: 0; padding: 0.85rem 0; border-top: 1px solid var(--rule); }
 .month-nav, .part-nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.35rem; margin: 0 0 1.4rem; }
 .month-nav a, .part-nav a {
@@ -1935,26 +1956,6 @@ body {
   font-weight: 560;
   letter-spacing: -0.045em;
   line-height: 0.95;
-}
-.client-row {
-  display: flex;
-  flex-wrap: wrap;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--ink);
-  border-left: 1px solid var(--ink);
-}
-.client-row li {
-  display: flex;
-  align-items: center;
-  min-height: 3.15rem;
-  margin: 0;
-  padding: 0.35rem 1.05rem;
-  border-right: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  font-weight: 560;
-  letter-spacing: -0.02em;
 }
 .card, .offering { padding: 0; overflow: hidden; }
 .card-plate { height: 7.25rem; background: var(--ink); }

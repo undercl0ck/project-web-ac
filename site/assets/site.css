@@ -531,6 +531,8 @@ th {
   text-align: center;
   overflow: hidden;
 }
+.logo-more { margin: -0.2rem 0 1.2rem; }
+.logo-more a { font-weight: 560; text-decoration: none; }
 .plain li { margin: 0; padding: 0.85rem 0; border-top: 1px solid var(--rule); }
 .month-nav, .part-nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.35rem; margin: 0 0 1.4rem; }
 .month-nav a, .part-nav a {
@@ -684,26 +686,6 @@ body {
   font-weight: 560;
   letter-spacing: -0.045em;
   line-height: 0.95;
-}
-.client-row {
-  display: flex;
-  flex-wrap: wrap;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--ink);
-  border-left: 1px solid var(--ink);
-}
-.client-row li {
-  display: flex;
-  align-items: center;
-  min-height: 3.15rem;
-  margin: 0;
-  padding: 0.35rem 1.05rem;
-  border-right: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  font-weight: 560;
-  letter-spacing: -0.02em;
 }
 .card, .offering { padding: 0; overflow: hidden; }
 .card-plate { height: 7.25rem; background: var(--ink); }
