@@ -85,8 +85,21 @@
     return node.classList && node.classList.contains("icon-card") ? node : node.closest(".icon-card");
   }
 
+  function waitMs() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 120;
+  }
+
   Array.prototype.forEach.call(cards, function (card) {
+    card.addEventListener("pointerenter", function () {
+      if (!fine.matches) return;
+      clearTimeout(card._hotTimer);
+      card._hotTimer = setTimeout(function () {
+        if (!card.classList.contains("is-suppressed")) card.classList.add("is-hot");
+      }, waitMs());
+    });
     card.addEventListener("pointerleave", function () {
+      clearTimeout(card._hotTimer);
+      card.classList.remove("is-hot");
       card.classList.remove("is-suppressed");
     });
   });
@@ -100,6 +113,8 @@
     var focused = cardOf(document.activeElement);
     var card = focused || hovered;
     if (!card) return;
+    clearTimeout(card._hotTimer);
+    card.classList.remove("is-hot");
     card.classList.add("is-suppressed");
     if (focused && document.activeElement && card.contains(document.activeElement)) {
       document.activeElement.blur();
