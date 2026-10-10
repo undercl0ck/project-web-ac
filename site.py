@@ -1546,7 +1546,11 @@ class Site:
         }
         var article = card.querySelector(".card");
         var panel = card.querySelector(".icon-card-panel");
-        var border = article ? parseFloat(getComputedStyle(article).borderTopWidth) || 0 : 0;
+        var border = 0;
+        if (article) {
+          var box = getComputedStyle(article);
+          border = (parseFloat(box.borderTopWidth) || 0) + (parseFloat(box.borderBottomWidth) || 0);
+        }
         var square = Math.round(card.getBoundingClientRect().width);
         var openH = Math.max(square, Math.ceil(panel.scrollHeight + border));
         row.items.push({ card: card, article: article, openH: openH });
@@ -2549,11 +2553,18 @@ p, h1, h2, h3, li, dd {
   width: 100%;
   margin: 0;
   padding: 4px 0 16px;
-  border: 0;
-  border-top: 1px solid var(--ink);
+  border: 1px solid #5e584e;
   border-radius: 0;
-  background: transparent;
+  background: #e4dccb;
   color: var(--ink);
+  transition: background-color 120ms, border-color 120ms;
+}
+.svc-grid .icon-card:hover .card,
+.svc-grid .icon-card.is-hot .card,
+.svc-grid .icon-card.is-open .card,
+.svc-grid .icon-card:focus-within .card {
+  background: #ddd4c1;
+  border-color: #0e0d0b;
 }
 .icon-card-stage {
   display: flex;

@@ -158,7 +158,11 @@
         }
         var article = card.querySelector(".card");
         var panel = card.querySelector(".icon-card-panel");
-        var border = article ? parseFloat(getComputedStyle(article).borderTopWidth) || 0 : 0;
+        var border = 0;
+        if (article) {
+          var box = getComputedStyle(article);
+          border = (parseFloat(box.borderTopWidth) || 0) + (parseFloat(box.borderBottomWidth) || 0);
+        }
         var square = Math.round(card.getBoundingClientRect().width);
         var openH = Math.max(square, Math.ceil(panel.scrollHeight + border));
         row.items.push({ card: card, article: article, openH: openH });
