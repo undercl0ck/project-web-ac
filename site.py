@@ -292,6 +292,11 @@ class Site:
         media_out.mkdir(parents=True, exist_ok=True)
         for src in sorted((Site.ROOT / "media").glob("*.webp")):
             (media_out / src.name).write_bytes(src.read_bytes())
+        logo_dir = Site.ROOT / "media" / "logos"
+        if logo_dir.is_dir():
+            for src in sorted(logo_dir.iterdir()):
+                if src.suffix.lower() in {".svg", ".webp", ".png"}:
+                    (media_out / src.name).write_bytes(src.read_bytes())
         css_path = Site.OUT / "assets" / "site.css"
         css_path.write_text(Site.css(), encoding="utf-8")
         (Site.OUT / "assets" / "menu.js").write_text(Site.menu_script(), encoding="utf-8")
@@ -710,7 +715,6 @@ class Site:
     @staticmethod
     def proof_body(slug: str) -> str:
         data = Site.bundle()
-        names = "".join(f"<li>{escape(name)}</li>" for name in data["clients"])
         return f"""
 <h1>Proof</h1>
 <p class="lede">{escape(data["who_credentials_heading"])}</p>
@@ -718,7 +722,7 @@ class Site:
 <ul class="plain">{"".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])}</ul>
 {Site.figures()}
 <h2>Our Clients</h2>
-<ul class="name-wall">{names}</ul>
+{Site.client_logo_row(slug)}
 """
 
     @staticmethod
@@ -907,12 +911,27 @@ class Site:
     @staticmethod
     def pictures(slug: str, rows: list, kind: str) -> str:
         sizes = {
-            "seal-grid": "160px",
+            "seal-grid": "(max-width: 767px) 40vw, 12rem",
             "photo-grid": "(max-width: 767px) 46vw, (max-width: 1023px) 30vw, 22rem",
             "recog-grid": "(max-width: 767px) 46vw, (max-width: 1023px) 30vw, 20rem",
         }.get(kind, "(max-width: 767px) 100vw, 40rem")
         items = [f"<li>{Site.image(slug, row, sizes)}</li>" for row in rows]
         return f'<ul class="{kind}">{"".join(items)}</ul>'
+
+    @staticmethod
+    def client_logo_row(slug: str) -> str:
+        rows = json.loads((Site.ROOT / "content" / "client-logos.json").read_text(encoding="utf-8"))
+        items = []
+        for row in rows:
+            name = escape(row["name"])
+            if row.get("file"):
+                src = Site.media_src(slug, row["file"])
+                items.append(
+                    f'<li><img src="{src}" alt="{name}" width="160" height="48"></li>'
+                )
+            else:
+                items.append(f'<li class="logo-fallback"><span>{name}</span></li>')
+        return f'<ul class="logo-row">{"".join(items)}</ul>'
 
     @staticmethod
     def marquee(names: list) -> str:
@@ -956,12 +975,11 @@ class Site:
     def clients_body(slug: str) -> str:
         data = Site.bundle()
         intro = "".join(f"<p>{Site.linked(line)}</p>" for line in data["clients_intro"])
-        names = "".join(f"<li>{escape(name)}</li>" for name in data["clients"])
         photos = [row for row in Site.catalog() if row["id"].startswith("client-")]
         return f"""
 <h1>Our Clients</h1>
 {intro}
-<ul class="name-wall">{names}</ul>
+{Site.client_logo_row(slug)}
 {Site.pictures(slug, photos, "photo-grid")}
 """
 
@@ -1688,14 +1706,15 @@ th {
   margin: 0.6rem 0 1.4rem;
   padding: 0;
 }
-.photo-grid, .recog-grid, .name-wall {
+.seal-grid, .photo-grid, .recog-grid, .name-wall {
   display: grid;
   border-top: 1px solid var(--ink);
   border-left: 1px solid var(--ink);
 }
+.seal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .photo-grid, .recog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .name-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.photo-grid li, .recog-grid li, .name-wall li {
+.seal-grid li, .photo-grid li, .recog-grid li, .name-wall li {
   margin: 0;
   min-height: 8.75rem;
   padding: 1rem;
@@ -1712,13 +1731,17 @@ th {
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
-.photo-grid img, .recog-grid img {
+.seal-grid img, .photo-grid img, .recog-grid img {
   display: block;
   width: 100%;
   height: 8.75rem;
   object-fit: contain;
 }
-.seal-grid {
+.photo-grid li, .recog-grid li { background: var(--ink); }
+.photo-grid img, .recog-grid img { height: 12rem; }
+.portrait { margin: 0 0 1.4rem; max-width: 22rem; }
+.portrait img { display: block; width: 100%; height: auto; }
+.logo-row {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
@@ -1727,52 +1750,37 @@ th {
   padding: 0;
   background: transparent;
 }
-.seal-grid li {
+.logo-row li {
   box-sizing: border-box;
   width: 160px;
   max-width: 160px;
   height: 48px;
   min-height: 48px;
   margin: 0;
-  padding: 0;
+  padding: 0 0.45rem;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: 1px solid var(--ink);
 }
-.seal-grid img {
+.logo-row img {
   display: block;
   width: auto;
   height: 48px;
-  max-width: 160px;
+  max-width: 148px;
   max-height: 48px;
   object-fit: contain;
   background: transparent;
 }
-.photo-grid li, .recog-grid li { background: var(--ink); }
-.photo-grid img, .recog-grid img { height: 12rem; }
-.portrait {
-  box-sizing: border-box;
-  width: 160px;
-  max-width: 160px;
-  height: 48px;
-  margin: 0 0 1.4rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid var(--ink);
-}
-.portrait img {
-  display: block;
-  width: auto;
-  height: 48px;
-  max-width: 160px;
-  max-height: 48px;
-  object-fit: contain;
-  background: transparent;
+.logo-row .logo-fallback {
+  padding: 0 0.3rem;
+  font-weight: 560;
+  font-size: 0.68rem;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-align: center;
+  overflow: hidden;
 }
 .plain li { margin: 0; padding: 0.85rem 0; border-top: 1px solid var(--rule); }
 .month-nav, .part-nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.35rem; margin: 0 0 1.4rem; }
@@ -1816,7 +1824,9 @@ th {
   .brief { grid-template-columns: 1fr; }
   .foot { grid-template-columns: 1fr; padding-top: 2.2rem; }
   .foot-legal { flex-direction: column; }
-  .photo-grid, .recog-grid, .name-wall { grid-template-columns: 1fr 1fr; }
+  .seal-grid, .photo-grid, .recog-grid, .name-wall { grid-template-columns: 1fr 1fr; }
+  .seal-grid li { min-height: 9rem; }
+  .seal-grid img { width: 6.25rem; height: 6.25rem; }
   .name-wall { grid-template-columns: 1fr 1fr; }
   .archive a { flex-direction: column; gap: 0.15rem; align-items: flex-start; }
   .close-grid { grid-template-columns: 1fr; align-items: start; padding: 2.2rem 0 2.4rem; }
@@ -1831,15 +1841,7 @@ body {
 }
 .mast { padding-top: env(safe-area-inset-top); }
 .colophon { padding-bottom: env(safe-area-inset-bottom); }
-.logo {
-  width: auto;
-  height: 48px;
-  max-width: 160px;
-  max-height: 48px;
-  display: block;
-  object-fit: contain;
-  background: transparent;
-}
+.logo { width: 3rem; height: auto; max-width: 3rem; display: block; object-fit: cover; }
 .nav { display: flex; position: relative; }
 .nav-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 0 0.1rem; }
 .nav-bars, .nav-bars::before, .nav-bars::after {
@@ -1899,6 +1901,8 @@ body {
   font-weight: 560;
   letter-spacing: -0.03em;
 }
+.seal-grid li { min-height: 11.5rem; }
+.seal-grid img { width: 8.5rem; height: 8.5rem; max-width: 86%; object-fit: contain; }
 .name-wall { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .name-wall li {
   min-height: 4.25rem;
@@ -2058,13 +2062,15 @@ body {
   .cards, .figures, .offerings { grid-template-columns: 1fr; }
   .name-wall { grid-template-columns: 1fr 1fr; }
   .close-grid { grid-template-columns: 1fr; align-items: start; }
+  .seal-grid li { min-height: 9rem; }
+  .seal-grid img { width: 6.25rem; height: 6.25rem; }
 }
 p, h1, h2, h3, li, dd {
   overflow-wrap: anywhere;
 }
 @media (max-width: 700px) {
-  .seal-grid li, .portrait { height: 40px; min-height: 40px; }
-  .seal-grid img, .portrait img, .logo { height: 40px; max-height: 40px; }
+  .logo-row li { height: 40px; min-height: 40px; }
+  .logo-row img { height: 40px; max-height: 40px; }
 }
 @media (max-width: 390px) {
   .frame { width: min(76rem, calc(100% - 1.25rem)); }
