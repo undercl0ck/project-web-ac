@@ -595,17 +595,61 @@ class Site:
         }
         return writers[slug](slug)
 
+    # Lucide line icons (lucide-static 0.544.0, ISC).
+    # Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2023 as part of Feather (MIT).
+    # All other copyright (c) for Lucide are held by Lucide Contributors 2025.
+    ICONS = {
+        "training": (
+            '<path d="M2 3h20"/>'
+            '<path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/>'
+            '<path d="m7 21 5-5 5 5"/>'
+        ),
+        "board-view": (
+            '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>'
+            '<path d="M14 2v4a2 2 0 0 0 2 2h4"/>'
+            '<path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>'
+        ),
+        "ma": (
+            '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>'
+            '<path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/>'
+            '<path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/>'
+            '<path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>'
+        ),
+        "supply": (
+            '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>'
+            '<path d="M15 18H9"/>'
+            '<path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>'
+            '<circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>'
+        ),
+        "program": (
+            '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>'
+            '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>'
+        ),
+        "external": (
+            '<circle cx="12" cy="12" r="10"/>'
+            '<path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>'
+            '<path d="M2 12h20"/>'
+        ),
+        "internal": (
+            '<path d="M15 12h-5"/><path d="M15 8h-5"/>'
+            '<path d="M19 17V5a2 2 0 0 0-2-2H4"/>'
+            '<path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/>'
+        ),
+        "proactive": (
+            '<path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/>'
+            '<circle cx="12" cy="12" r="10"/>'
+        ),
+    }
+
     @staticmethod
-    def plate(index: int) -> str:
-        shift = (index - 1) * 16
+    def icon(offer_id: str) -> str:
         return (
-            '<div class="card-plate" aria-hidden="true">'
-            '<svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice">'
-            f'<rect x="{16 + shift}" y="22" width="190" height="130" fill="none" stroke="#f3efe6" stroke-width="1"/>'
-            f'<rect x="{78 + shift}" y="-6" width="160" height="108" fill="none" stroke="#f3efe6" stroke-width="1"/>'
-            f'<rect x="{96 + shift}" y="40" width="72" height="72" fill="#f3efe6"/>'
-            f'<rect x="{96 + shift}" y="40" width="72" height="3" fill="#c6a36a"/>'
-            "</svg></div>"
+            '<span class="svc-icon" aria-hidden="true">'
+            "<!-- @license lucide-static 0.544.0 - ISC -->"
+            '<svg viewBox="0 0 24 24" width="32" height="32" '
+            'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+            'stroke-linejoin="round">'
+            f"{Site.ICONS[offer_id]}</svg></span>"
         )
 
     @staticmethod
@@ -618,8 +662,8 @@ class Site:
             index += 1
             cards.append(
                 '<li class="card">'
-                f"{Site.plate(index)}"
                 '<div class="card-body">'
+                f"{Site.icon(offer['id'])}"
                 f'<p class="idx">{index:02d}</p>'
                 f'<h3><a href="capabilities/#{escape(offer["id"])}">{escape(offer["card"])}</a></h3>'
                 f"<p>{escape(offer['card_line'])}</p>"
@@ -672,8 +716,8 @@ class Site:
         for index, offer in enumerate(Site.OFFERINGS, start=1):
             blocks.append(
                 f'<li class="offering" id="{escape(offer["id"])}">'
-                f"{Site.plate(index)}"
                 '<div class="offering-body">'
+                f"{Site.icon(offer['id'])}"
                 f'<p class="idx">{index:02d}</p>'
                 f"<h2>{escape(offer['name'])}</h2>"
                 f"<p>{escape(offer['body'])}</p>"
@@ -1856,9 +1900,9 @@ th {
 .logo-row img {
   display: block;
   width: auto;
-  height: 48px;
-  max-width: 148px;
-  max-height: 48px;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   background: transparent;
 }
@@ -2028,8 +2072,14 @@ body {
   line-height: 0.95;
 }
 .card, .offering { padding: 0; overflow: hidden; }
-.card-plate { height: 7.25rem; background: var(--ink); }
-.card-plate svg { display: block; width: 100%; height: 100%; }
+.svc-icon {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  margin: 0 0 0.85rem;
+  color: var(--ink);
+}
+.svc-icon svg { display: block; width: 2rem; height: 2rem; }
 .card-body, .offering-body { display: flex; flex-direction: column; flex: 1; padding: 1.15rem 1.15rem 1.35rem; }
 .card .idx { margin: 0 0 0.85rem; }
 .card h3 { margin: 0 0 0.4rem; }
@@ -2141,7 +2191,9 @@ p, h1, h2, h3, li, dd {
 }
 @media (max-width: 700px) {
   .logo-row li { height: 40px; min-height: 40px; }
-  .logo-row img { height: 40px; max-height: 40px; }
+}
+@media (max-width: 480px) {
+  .hero { padding-top: 2.15rem; }
 }
 @media (max-width: 390px) {
   .frame { width: min(76rem, calc(100% - 1.25rem)); }
