@@ -382,6 +382,12 @@ class Site:
         )
 
     @staticmethod
+    def hero_photo(slug: str) -> str:
+        row = next(item for item in Site.catalog() if item["id"] == "hero-briefing")
+        sizes = "(max-width: 800px) calc(100vw - 1.5rem), 28rem"
+        return f'<figure class="hero-photo">{Site.image(slug, row, sizes)}</figure>'
+
+    @staticmethod
     def wordmark(slug: str) -> str:
         src = Site.media_src(slug, "mark-logo.webp")
         small = Site.media_src(slug, "mark-logo-96.webp")
@@ -623,7 +629,7 @@ class Site:
 <a class="hero-phone" href="tel:+12022485050">{Site.PHONE}</a>
 </div>
 </div>
-<div class="hero-mark">{Site.mark(True)}</div>
+{Site.hero_photo("")}
 </div>
 </div>
 </section>
@@ -1482,11 +1488,12 @@ a:focus-visible, button:focus-visible {
   text-decoration: none;
   font-weight: 560;
 }
-.hero-mark {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-height: 0;
+.hero-photo { margin: 0; min-width: 0; }
+.hero-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: transparent;
 }
 .mark-lg { width: 100%; height: auto; max-height: min(26rem, 52vh); }
 .recess { fill: var(--ink); }
@@ -1834,8 +1841,8 @@ th {
   .hero-title { font-size: clamp(1.7rem, 6.4vw, 2.15rem); max-width: 22ch; }
   .hero-sub { margin-top: 0.55rem; font-size: 1rem; }
   .hero-cta { margin-top: 0.75rem; }
-  .hero-mark { justify-content: flex-start; }
-  .mark-lg { width: min(100%, 9.5rem); height: auto; max-height: 8rem; }
+  .hero-grid { align-content: start; }
+  .hero-photo { margin-top: 0.35rem; }
   .offerings { grid-template-columns: 1fr; }
   .offering { min-height: 0; }
   .page h1 { max-width: none; font-size: clamp(2.7rem, 12vw, 3.5rem); padding-top: 1.7rem; }
