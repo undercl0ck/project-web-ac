@@ -357,7 +357,17 @@ class Site:
         css_path = Site.OUT / "assets" / "site.css"
         css_path.write_text(Site.css(), encoding="utf-8")
         (Site.OUT / "assets" / "menu.js").write_text(Site.menu_script(), encoding="utf-8")
-        (Site.OUT / "favicon.png").write_bytes((Site.ROOT / "media" / "favicon-32.png").read_bytes())
+        for name in (
+            "favicon.ico",
+            "favicon.svg",
+            "favicon.png",
+            "favicon-192.png",
+            "favicon-512.png",
+        ):
+            src = Site.ROOT / "media" / name
+            if name == "favicon.png":
+                src = Site.ROOT / "media" / "favicon-32.png"
+            (Site.OUT / name).write_bytes(src.read_bytes())
         (Site.OUT / "apple-touch-icon.png").write_bytes(
             (Site.ROOT / "media" / "favicon-180.png").read_bytes()
         )
@@ -588,8 +598,11 @@ class Site:
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#0e0d0b">
 <link rel="canonical" href="{escape(Site.canonical(slug))}">
-<link rel="icon" href="{depth}favicon.png" type="image/png" sizes="32x32">
-<link rel="apple-touch-icon" href="{depth}apple-touch-icon.png">
+<link rel="icon" href="{depth}favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" href="{depth}favicon.svg" type="image/svg+xml">
+<link rel="icon" href="{depth}favicon-192.png" type="image/png" sizes="192x192">
+<link rel="icon" href="{depth}favicon-512.png" type="image/png" sizes="512x512">
+<link rel="apple-touch-icon" href="{depth}apple-touch-icon.png" sizes="180x180">
 <link rel="stylesheet" href="{depth}assets/site.css">
 </head>
 <body{body_class}>
@@ -3481,7 +3494,10 @@ p, h1, h2, h3, li, dd {
         for needle in (
             f"{mount}assets/site.css",
             f"{mount}assets/menu.js",
-            f"{mount}favicon.png",
+            f"{mount}favicon.ico",
+            f"{mount}favicon.svg",
+            f"{mount}favicon-192.png",
+            f"{mount}favicon-512.png",
             f"{mount}apple-touch-icon.png",
             f'href="{mount}"',
         ):
@@ -3608,7 +3624,7 @@ p, h1, h2, h3, li, dd {
             html_bytes = path.stat().st_size
             seen = set()
             image_bytes = 0
-            for icon_name in ("favicon.png", "apple-touch-icon.png"):
+            for icon_name in ("favicon.ico", "apple-touch-icon.png"):
                 icon = (Site.OUT / icon_name).resolve()
                 if icon.is_file() and icon not in seen:
                     seen.add(icon)
