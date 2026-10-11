@@ -6,6 +6,7 @@ One class. Static methods. Plain HTML, one stylesheet, one menu script, one self
 from __future__ import annotations
 
 import json
+import os
 import re
 from datetime import date
 from html import escape
@@ -46,6 +47,9 @@ class Site:
         {"slug": "insights", "nav": "Insights", "title": "Insights"},
         {"slug": "about", "nav": "About", "title": "About"},
         {"slug": "engage", "nav": "Engage", "title": "Engage"},
+        {"slug": "extended-capabilities", "nav": None, "title": "Extended Capabilities"},
+        {"slug": "how-we-engage", "nav": None, "title": "How We Engage"},
+        {"slug": "our-ceo", "nav": None, "title": "Our CEO & Global CTO"},
         {"slug": "sitemap", "nav": None, "title": "Sitemap"},
     )
 
@@ -353,6 +357,19 @@ class Site:
             path = Site.page_path(page["slug"])
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(html, encoding="utf-8")
+        for article in Site.articles():
+            if article["kind"] != "news":
+                continue
+            page = {"slug": article["slug"], "nav": None, "title": article["title"]}
+            path = Site.page_path(article["slug"])
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(Site.document(page, Site.article_body(article)), encoding="utf-8")
+        for note in Site.insight_notes():
+            slug = "insights/" + note["slug"]
+            page = {"slug": slug, "nav": None, "title": note["title"]}
+            path = Site.page_path(slug)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(Site.document(page, Site.insight_article(note)), encoding="utf-8")
         missing = Site.document(
             {"slug": "", "nav": None, "title": "Not found", "missing": True},
             Site.missing_body(),
@@ -366,14 +383,19 @@ class Site:
         return Site.OUT / slug / "index.html"
 
     @staticmethod
+    def depth(slug: str) -> str:
+        if slug == "":
+            return ""
+        return "../" * len([part for part in slug.split("/") if part])
+
+    @staticmethod
     def href(from_slug: str, to_slug: str) -> str:
-        if to_slug == "":
-            return "./" if from_slug == "" else "../"
-        if from_slug == "":
-            return to_slug + "/"
-        if from_slug == to_slug:
+        origin = Path(from_slug or ".")
+        target = Path(to_slug or ".")
+        rel = os.path.relpath(target, origin).replace("\\", "/")
+        if rel == ".":
             return "./"
-        return "../" + to_slug + "/"
+        return rel + "/"
 
     @staticmethod
     def canonical(slug: str) -> str:
@@ -383,15 +405,16 @@ class Site:
 
     @staticmethod
     def folio(slug: str) -> str:
+        top = slug.split("/")[0] if slug else ""
         for index, item in enumerate(Site.MENU, start=1):
             slugs = {item["slug"], *[dest for _label, dest in item["children"]]}
-            if slug in slugs or (item["slug"] == "credentials" and slug.startswith("recognition")):
+            if top in slugs or (item["slug"] == "credentials" and top.startswith("recognition")):
                 return f"{index:02d}"
         return ""
 
     @staticmethod
     def current(slug: str, dest: str) -> bool:
-        if slug == dest:
+        if slug == dest or slug.startswith(dest + "/"):
             return True
         return dest == "recognition" and slug.startswith("recognition")
 
@@ -462,7 +485,7 @@ class Site:
         slug = page["slug"]
         title = escape(page["title"])
         body_class = ' class="opening"' if page.get("home") else ""
-        depth = "" if slug == "" else "../"
+        depth = Site.depth(slug)
         description = escape(
             "Training on site or by webinar, and assessments explained in plain business language."
             if page.get("home")
@@ -622,6 +645,9 @@ class Site:
             "insights": Site.insights_body,
             "about": Site.about_body,
             "engage": Site.engage_body,
+            "extended-capabilities": Site.imported_body,
+            "how-we-engage": Site.imported_body,
+            "our-ceo": Site.imported_body,
             "sitemap": Site.sitemap_body,
         }
         return writers[slug](slug)
@@ -857,9 +883,10 @@ class Site:
 """
 
     @staticmethod
-    def insights_body(_slug: str) -> str:
-        notes = (
+    def insight_notes() -> tuple:
+        return (
             {
+                "slug": "board-oversight",
                 "title": "Board oversight is a disclosure item",
                 "body": (
                     "Regulation S-K Item 106 asks a registrant to describe its processes for "
@@ -879,6 +906,7 @@ class Site:
                 ),
             },
             {
+                "slug": "material-incident",
                 "title": "A material incident is a Form 8-K item",
                 "body": (
                     "The same adopting release requires an Item 1.05 Form 8-K within four business "
@@ -895,6 +923,7 @@ class Site:
                 ),
             },
             {
+                "slug": "nist-govern",
                 "title": "Govern sits beside the other enterprise risks",
                 "body": (
                     "NIST Cybersecurity Framework 2.0 adds a Govern function beside Identify, Protect, "
@@ -911,22 +940,89 @@ class Site:
                 ),
             },
         )
-        blocks = []
-        for index, note in enumerate(notes, start=1):
-            sources = "".join(
-                f'<li><a href="{escape(url)}">{escape(label)}</a></li>'
-                for label, url in note["sources"]
+
+    @staticmethod
+    def insights_body(slug: str) -> str:
+        items = []
+        for note in Site.insight_notes():
+            items.append(
+                "<li>"
+                f'<a href="{Site.href(slug, "insights/" + note["slug"])}">'
+                f"{escape(note['title'])}</a></li>"
             )
-            inner = (
-                f"<p>{escape(note['body'])}</p>"
-                f'<ul class="sources">{sources}</ul>'
-            )
-            blocks.append(Site.row(f"{index:02d}", escape(note["title"]), inner))
         return f"""
 <h1>Insights</h1>
 <p class="lede">Short board notes. Each one is a reading of a public document.</p>
-{"".join(blocks)}
+<ol class="archive">{"".join(items)}</ol>
 """
+
+    @staticmethod
+    def insight_article(note: dict) -> str:
+        slug = "insights/" + note["slug"]
+        sources = "".join(
+            f'<li><a class="external" rel="external" href="{escape(url)}">{escape(label)}</a></li>'
+            for label, url in note["sources"]
+        )
+        return f"""
+<h1>{escape(note["title"])}</h1>
+<div class="article">
+<p>{escape(note["body"])}</p>
+<ul class="sources">{sources}</ul>
+</div>
+<p class="back"><a href="{Site.href(slug, "insights")}">Insights</a></p>
+"""
+
+    @staticmethod
+    def articles() -> list:
+        data = json.loads((Site.ROOT / "content" / "articles.json").read_text(encoding="utf-8"))
+        return data["articles"]
+
+    @staticmethod
+    def expand_refs(html: str, from_slug: str) -> str:
+        def href_sub(match: re.Match) -> str:
+            target = match.group(1)
+            slug, _, frag = target.partition("#")
+            if slug == "home":
+                slug = ""
+            url = Site.href(from_slug, slug)
+            if frag:
+                url = f"{url}#{frag}"
+            return f'href="{url}"'
+
+        html = re.sub(r'href="site:([^"]*)"', href_sub, html)
+
+        def src_sub(match: re.Match) -> str:
+            return f'src="{Site.media_src(from_slug, match.group(1))}"'
+
+        return re.sub(r'src="media:([^"]+)"', src_sub, html)
+
+    @staticmethod
+    def article_body(article: dict) -> str:
+        slug = article["slug"]
+        when = ""
+        if article.get("date"):
+            when = (
+                f'<p class="lede"><time datetime="{escape(article["date"])}">'
+                f'{escape(article["date"])}</time></p>'
+            )
+        source = ""
+        if article.get("source"):
+            source = f'<p class="source-note">Original source: {escape(article["source"])}</p>'
+        body = Site.expand_refs(article.get("html") or "", slug)
+        back = Site.href(slug, article.get("back") or "news")
+        label = escape(article.get("back_label") or "News")
+        return f"""
+<h1>{escape(article["title"])}</h1>
+{when}
+{source}
+<div class="article">{body}</div>
+<p class="back"><a href="{back}">{label}</a></p>
+"""
+
+    @staticmethod
+    def imported_body(slug: str) -> str:
+        article = next(item for item in Site.articles() if item["slug"] == slug)
+        return Site.article_body(article)
 
     @staticmethod
     def about_body(slug: str) -> str:
@@ -964,9 +1060,27 @@ class Site:
             items.append(
                 f'<li><a href="{Site.href(slug, page["slug"])}"{current}>{escape(label)}</a></li>'
             )
+        news = []
+        for article in Site.articles():
+            if article["kind"] != "news":
+                continue
+            news.append(
+                f'<li><a href="{Site.href(slug, article["slug"])}">{escape(article["title"])}</a></li>'
+            )
+        notes = []
+        for note in Site.insight_notes():
+            notes.append(
+                "<li>"
+                f'<a href="{Site.href(slug, "insights/" + note["slug"])}">'
+                f"{escape(note['title'])}</a></li>"
+            )
         return f"""
 <h1>Sitemap</h1>
 <ol class="map">{"".join(items)}</ol>
+<h2>News</h2>
+<ol class="map">{"".join(news)}</ol>
+<h2>Insights</h2>
+<ol class="map">{"".join(notes)}</ol>
 """
 
     @staticmethod
@@ -980,7 +1094,7 @@ class Site:
 
     @staticmethod
     def media_src(slug: str, filename: str) -> str:
-        return f"{'' if slug == '' else '../'}assets/media/{filename}"
+        return f"{Site.depth(slug)}assets/media/{filename}"
 
     @staticmethod
     def linked(text: str) -> str:
@@ -1089,7 +1203,9 @@ class Site:
         training = "Axon Global has provided" + training
         line_200, line_300 = training.split(" and over 300 ", 1)
         line_300 = "over 300 " + line_300
-        line_300 = line_300[: line_300.find(" https://")].rstrip()
+        cut = line_300.find(" https://")
+        if cut != -1:
+            line_300 = line_300[:cut].rstrip()
         if "while simultaneously" not in government:
             raise SystemExit("government line drifted from the source")
         if "Cybersecurity Infrastructure Security Agency" not in government:
@@ -1231,29 +1347,43 @@ class Site:
         posts = json.loads((Site.ROOT / "content" / "news.json").read_text(encoding="utf-8"))
         months = Site.bundle()["archive_months"]
         month_links = "".join(
-            f'<a href="{escape(url)}">{escape(label)}</a>' for label, url in months
+            f'<a href="#{escape(key)}">{escape(label)}</a>' for label, key in months
         )
-        items = []
+        groups: dict[str, list] = {}
+        order: list[str] = []
         for post in posts:
-            excerpt = f"<p>{escape(post['excerpt'])}</p>" if post.get("excerpt") else ""
-            stamp = Site.news_stamp(post)
-            time = (
-                f'<time datetime="{escape(stamp)}">{escape(stamp)}</time>'
-                if stamp
-                else ""
-            )
-            items.append(
-                "<li>"
-                f'<a href="{escape(post["source"])}">'
-                f"{time}"
-                f"<span>{escape(post['title'])}</span></a>"
-                f"{excerpt}</li>"
+            key = (post.get("date") or "")[:7]
+            if key not in groups:
+                order.append(key)
+                groups[key] = []
+            groups[key].append(post)
+        sections = []
+        for key in order:
+            items = []
+            for post in groups[key]:
+                excerpt = f"<p>{escape(post['excerpt'])}</p>" if post.get("excerpt") else ""
+                stamp = Site.news_stamp(post)
+                time = (
+                    f'<time datetime="{escape(stamp)}">{escape(stamp)}</time>'
+                    if stamp
+                    else ""
+                )
+                article = "news/" + post["source"].rstrip("/").split("/")[-1]
+                items.append(
+                    "<li>"
+                    f'<a href="{Site.href(slug, article)}">'
+                    f"{time}"
+                    f"<span>{escape(post['title'])}</span></a>"
+                    f"{excerpt}</li>"
+                )
+            sections.append(
+                f'<section id="{escape(key)}"><ol class="archive">{"".join(items)}</ol></section>'
             )
         return f"""
 <h1>News</h1>
 <p class="lede">Supporting Documentation for Axon Discourses, Awards and Recognitions</p>
 <nav class="month-nav" aria-label="News archive">{month_links}</nav>
-<ol class="archive">{"".join(items)}</ol>
+{"".join(sections)}
 """
 
     @staticmethod
@@ -1295,8 +1425,9 @@ class Site:
                 continue
             if line == "View our Extended Capabilities":
                 codes.append(
-                    '<li><a href="https://axoncyber.com/extended-capabilities/">'
-                    f"{escape(line)}</a></li>"
+                    '<li><a href="'
+                    + Site.href(_slug, "extended-capabilities")
+                    + f'">{escape(line)}</a></li>'
                 )
                 continue
             target = codes if mode == "codes" else quals
@@ -1314,11 +1445,11 @@ class Site:
         paragraph = escape(data["fyi_paragraph"])
         paragraph = paragraph.replace(
             "Morrison &amp; Foerster, LLP",
-            '<a href="https://www.youtube.com/watch?v=0K6npguJuuc&amp;sns=em">Morrison &amp; Foerster, LLP</a>',
+            '<a class="external" rel="external" href="https://www.youtube.com/watch?v=0K6npguJuuc&amp;sns=em">Morrison &amp; Foerster, LLP</a>',
         )
         paragraph = paragraph.replace(
             "DLA Piper LLP",
-            '<a href="https://www.dlapiper.com/en/uk/focus/eu-data-protection-regulation/key-changes/">DLA Piper LLP</a>',
+            '<a class="external" rel="external" href="https://www.dlapiper.com/en/uk/focus/eu-data-protection-regulation/key-changes/">DLA Piper LLP</a>',
         )
         paragraph = paragraph.replace(
             "AxonInfo@AxonCyber.com",
@@ -1328,7 +1459,9 @@ class Site:
         for item in data["fyi_readings"]:
             text = escape(item["text"])
             if item.get("href"):
-                readings.append(f'<li><a href="{escape(item["href"])}">{text}</a></li>')
+                readings.append(
+                    f'<li><a class="external" rel="external" href="{escape(item["href"])}">{text}</a></li>'
+                )
             else:
                 readings.append(f"<li>{text}</li>")
         return f"""
@@ -1357,9 +1490,12 @@ class Site:
 
     @staticmethod
     def sitemap_xml() -> str:
+        slugs = [page["slug"] for page in Site.PAGES]
+        slugs += [article["slug"] for article in Site.articles() if article["kind"] == "news"]
+        slugs += ["insights/" + note["slug"] for note in Site.insight_notes()]
         urls = []
-        for page in Site.PAGES:
-            loc = Site.canonical(page["slug"])
+        for slug in slugs:
+            loc = Site.canonical(slug)
             urls.append(
                 "  <url>\n"
                 f"    <loc>{escape(loc)}</loc>\n"
@@ -2141,6 +2277,12 @@ th {
 }
 .archive time { flex: none; color: var(--quiet); }
 .archive p { margin: 0.15rem 0 0; color: var(--quiet); }
+.article { overflow-wrap: anywhere; }
+.article-figure { margin: 1rem 0; }
+.article img, .article-figure img { max-width: 100%; height: auto; }
+.source-note { color: var(--quiet); overflow-wrap: anywhere; }
+.back { margin-top: 2rem; }
+a.external::after { content: " (external)"; }
 .opening main { display: flex; flex-direction: column; }
 .opening .hero { flex: 1; min-height: 0; }
 @media (max-width: 800px) {
@@ -2750,8 +2892,10 @@ p, h1, h2, h3, li, dd {
             if 'name="referrer" content="no-referrer"' not in text:
                 problems.append(f"missing referrer policy in {path}")
             scripts = re.findall(r"<script\b([^>]*)>", text, re.I)
-            expected = ' src="' + ("../" if path.parent != Site.OUT else "") + 'assets/menu.js"'
-            rel = str(path.relative_to(Site.OUT))
+            rel_path = path.relative_to(Site.OUT)
+            ups = "../" * (len(rel_path.parts) - 1)
+            expected = f' src="{ups}assets/menu.js"'
+            rel = str(rel_path)
             if scripts != [expected]:
                 problems.append(f"unexpected script in {rel}")
             if re.search(r"<script\b[^>]*>\s*[^<\s]", text, re.I):
@@ -2759,8 +2903,16 @@ p, h1, h2, h3, li, dd {
             if "NACD" in text:
                 nacd_files.append(str(path.relative_to(Site.OUT)))
             for phrase in Site.BANNED:
-                if phrase in lowered:
+                if phrase not in lowered:
+                    continue
+                kept = rel in ("how-we-engage/index.html",) and phrase in ("72 hour", "within 72")
+                if not kept:
                     problems.append(f"banned phrase {phrase!r} in {path}")
+            for href in re.findall(r'href="([^"]*)"', text, re.I):
+                if href.startswith("site:") or href.startswith("media:"):
+                    problems.append(f"unexpanded ref {href} in {rel}")
+                if "axoncyber.com" in href.casefold() and not href.casefold().startswith("mailto:"):
+                    problems.append(f"old site href in {rel}")
         if "capabilities/index.html" not in nacd_files:
             problems.append(f"NACD missing from capabilities: {nacd_files}")
         caps = (Site.OUT / "capabilities" / "index.html").read_text(encoding="utf-8")
