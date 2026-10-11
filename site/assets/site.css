@@ -791,7 +791,9 @@ body {
 @media (max-width: 759px) {
   .mandate-row {
     grid-template-columns: 1fr;
-    row-gap: 16px;
+    row-gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--ink);
   }
   .mandate-row > p,
   .mandate-pair,
@@ -800,7 +802,14 @@ body {
   }
   .mandate-pair {
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    column-gap: 24px;
+    row-gap: 24px;
+  }
+  .mandate-pair li > p:not(.mandate-num) {
+    padding-left: 0;
+  }
+  .mandate-pair li > p:not(.mandate-num)::before {
+    content: none;
   }
   .mandate-pair .mandate-num {
     white-space: nowrap;
