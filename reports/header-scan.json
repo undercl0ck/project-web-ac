@@ -201,6 +201,51 @@
       ]
     },
     {
+      "path": "contact/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
+        },
+        {
+          "http-equiv": "refresh",
+          "content": "0; url=../engage/"
+        },
+        {
+          "name": "robots",
+          "content": "noindex"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 1,
+      "external_urls": [
+        "https://undercl0ck.github.io/project-web-ac/contact/"
+      ]
+    },
+    {
       "path": "credentials/index.html",
       "meta": [
         {
@@ -347,6 +392,51 @@
       "scripts": 1,
       "external_urls": [
         "https://undercl0ck.github.io/project-web-ac/faq/"
+      ]
+    },
+    {
+      "path": "faqs/index.html",
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1, viewport-fit=cover"
+        },
+        {
+          "http-equiv": "refresh",
+          "content": "0; url=../faq/"
+        },
+        {
+          "name": "robots",
+          "content": "noindex"
+        },
+        {
+          "name": "description",
+          "content": "Axon Global Services. Board training and pre-emptive cyber risk work."
+        },
+        {
+          "name": "referrer",
+          "content": "no-referrer"
+        },
+        {
+          "http-equiv": "Content-Security-Policy",
+          "content": "default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+        },
+        {
+          "name": "color-scheme",
+          "content": "light"
+        },
+        {
+          "name": "theme-color",
+          "content": "#0e0d0b"
+        }
+      ],
+      "forms": 0,
+      "scripts": 1,
+      "external_urls": [
+        "https://undercl0ck.github.io/project-web-ac/faqs/"
       ]
     },
     {
