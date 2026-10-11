@@ -5,9 +5,11 @@ One class. Static methods. Plain HTML, one stylesheet, one menu script, one self
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
+from dataclasses import dataclass, fields, is_dataclass
 from datetime import date
 from html import escape
 from pathlib import Path
@@ -500,6 +502,13 @@ class Site:
         )
         folio = Site.folio(slug)
         folio_html = f'<p class="folio">{folio}</p>' if folio else '<p class="folio"></p>'
+        refresh = ""
+        if slug == "our-ceo":
+            refresh = (
+                '<meta http-equiv="refresh" content="0; url='
+                + Site.href(slug, "about")
+                + '#leadership">\n'
+            )
         if page.get("home"):
             content = main
         else:
@@ -509,7 +518,7 @@ class Site:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>{title} — Axon Global Services</title>
+{refresh}<title>{title} — Axon Global Services</title>
 <meta name="description" content="{description}">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="{csp}">
@@ -647,7 +656,7 @@ class Site:
             "engage": Site.engage_body,
             "extended-capabilities": Site.imported_body,
             "how-we-engage": Site.imported_body,
-            "our-ceo": Site.imported_body,
+            "our-ceo": Site.ceo_redirect_body,
             "sitemap": Site.sitemap_body,
         }
         return writers[slug](slug)
@@ -848,6 +857,9 @@ class Site:
     @staticmethod
     def proof_body(slug: str) -> str:
         data = Site.bundle()
+        segments = "".join(
+            f"<li>{escape(line)}</li>" for line in Site.who_we_are().proof.client_segments
+        )
         return f"""
 <h1>Proof</h1>
 <p class="lede">{escape(data["who_credentials_heading"])}</p>
@@ -856,6 +868,7 @@ class Site:
 {Site.figures()}
 <section id="clients">
 <h2>Our Clients</h2>
+<ul class="plain">{segments}</ul>
 {Site.client_logo_row(slug)}
 </section>
 """
@@ -1025,15 +1038,68 @@ class Site:
         return Site.article_body(article)
 
     @staticmethod
-    def about_body(slug: str) -> str:
-        data = Site.bundle()
-        lines = "".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])
-        logo = next(row for row in Site.catalog() if row["id"] == "mark-logo")
+    def ceo_redirect_body(slug: str) -> str:
+        href = Site.href(slug, "about") + "#leadership"
         return f"""
-<h1>About</h1>
-<p class="lede">Axon Global Services prepares board training and pre-emptive cyber risk work for the readers on Who it is for.</p>
-<figure class="portrait">{Site.image(slug, logo, "12rem")}</figure>
-<ul class="plain">{lines}</ul>
+<h1>Our CEO &amp; Global CTO</h1>
+<p><a href="{href}">Leadership</a></p>
+"""
+
+    @staticmethod
+    def portrait_sizes() -> str:
+        cap = Site.PORTRAIT_MAX_REM * 16
+        gutter = Site.NARROW_FRAME_GUTTER_REM * 16
+        edge = int(cap + gutter) - 1
+        return (
+            f"(max-width: {edge}px) calc(100vw - {Site.NARROW_FRAME_GUTTER_REM}rem), "
+            f"{Site.PORTRAIT_MAX_REM}rem"
+        )
+
+    @staticmethod
+    def team_photo_sizes(width: int) -> str:
+        gutter = Site.NARROW_FRAME_GUTTER_REM
+        return (
+            f"(max-width: 390px) calc(100vw - {gutter}rem), "
+            f"(max-width: 640px) calc(100vw - 1.5rem), "
+            f"(max-width: 800px) {width}px, "
+            "calc((min(76rem, 100vw - 4rem) - 7.75rem) / 2)"
+        )
+
+    @staticmethod
+    def about_body(slug: str) -> str:
+        about = Site.who_we_are().about
+        leader, team = about.leader, about.team
+        creds = "".join(f"<li>{escape(line)}</li>" for line in Site.bundle()["who_credentials"])
+        bio = "".join(f"<p>{escape(text)}</p>" for text in leader.bio)
+        roles = "".join(
+            f"<p>{escape(group.lead)}</p>"
+            f'<ul class="plain">{"".join(f"<li>{escape(line)}</li>" for line in group.lines)}</ul>'
+            for group in (team.executive, team.cyber_response)
+        )
+        clients = (
+            f'<p><a href="{Site.href(slug, "proof")}#clients">{escape(team.closing)}</a></p>'
+        )
+        portrait = Site.image(slug, leader.portrait, Site.portrait_sizes())
+        leadership = (
+            f'<figure class="portrait">{portrait}</figure>'
+            f'<div class="prose"><h3>{escape(leader.name)}</h3>'
+            f'<p class="quiet">{escape(leader.role)}</p>{bio}</div>'
+        )
+        photo = Site.image(slug, team.photo, Site.team_photo_sizes(int(team.photo["width"])))
+        team_copy = (
+            f'<div class="prose"><p>{escape(team.nda)}</p></div>'
+            f'<div class="team-split">'
+            f'<div class="prose">{roles}{clients}</div>'
+            f'<figure class="team-photo">{photo}</figure>'
+            f"</div>"
+        )
+        return f"""
+<h1>{escape(about.title)}</h1>
+<p class="lede">{escape(about.subtitle)}</p>
+<p class="prose">{escape(about.intro)}</p>
+<ul class="plain">{creds}</ul>
+{Site.row("01", "Leadership", leadership, "leadership")}
+{Site.row("02", "Team", team_copy, "team")}
 """
 
     @staticmethod
@@ -1057,8 +1123,12 @@ class Site:
         for page in Site.PAGES:
             label = "Sitemap" if page["slug"] == "sitemap" else page["title"]
             current = ' aria-current="page"' if page["slug"] == "sitemap" else ""
+            href = Site.href(slug, page["slug"])
+            if page["slug"] == "our-ceo":
+                href = Site.href(slug, "about") + "#leadership"
+                current = ""
             items.append(
-                f'<li><a href="{Site.href(slug, page["slug"])}"{current}>{escape(label)}</a></li>'
+                f'<li><a href="{href}"{current}>{escape(label)}</a></li>'
             )
         news = []
         for article in Site.articles():
@@ -1082,6 +1152,109 @@ class Site:
 <h2>Insights</h2>
 <ol class="map">{"".join(notes)}</ol>
 """
+
+    PORTRAIT_MAX_REM = 22
+    NARROW_FRAME_GUTTER_REM = 1.25
+    TEAM_PHOTO_ID = "uscert-our-team"
+    WHO_WE_ARE_CANON_SHA256 = "26e5bb3a6f4af7713546d6bc515e2b48ffa43968ef0935b334ecf0e4d3d0fbf6"
+
+    @dataclass(frozen=True)
+    class RoleList:
+        lead: str
+        lines: tuple[str, ...]
+
+    @dataclass(frozen=True)
+    class Team:
+        nda: str
+        executive: Site.RoleList
+        cyber_response: Site.RoleList
+        closing: str
+        photo: dict
+
+    @dataclass(frozen=True)
+    class Leader:
+        name: str
+        role: str
+        portrait: dict
+        bio: tuple[str, ...]
+
+    @dataclass(frozen=True)
+    class AboutCopy:
+        title: str
+        subtitle: str
+        intro: str
+        leader: Site.Leader
+        team: Site.Team
+
+    @dataclass(frozen=True)
+    class ProofCopy:
+        client_segments: tuple[str, ...]
+
+    @dataclass(frozen=True)
+    class WhoWeAre:
+        about: Site.AboutCopy
+        proof: Site.ProofCopy
+
+    @staticmethod
+    def who_we_are() -> Site.WhoWeAre:
+        raw = json.loads((Site.ROOT / "content" / "who-we-are.json").read_text(encoding="utf-8"))
+        canon = json.dumps(raw, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+        digest = hashlib.sha256(canon.encode("ascii")).hexdigest()
+        if digest != Site.WHO_WE_ARE_CANON_SHA256:
+            raise SystemExit(
+                "content/who-we-are.json no longer matches the owner-approved copy. "
+                "The lock is a sha256 of canonical JSON, not the file bytes. "
+                "Restore it (git diff content/who-we-are.json). "
+                f"Set WHO_WE_ARE_CANON_SHA256 = {digest!r} only for wording the owner supplied."
+            )
+        about = raw["about"]
+        leader = about["leader"]
+        team = about["team"]
+        row = Site.media_row(leader["portrait"])
+        photo = Site.media_row(Site.TEAM_PHOTO_ID)
+        narrow = Path(photo["file"]).stem + "-300.webp"
+        if int(photo["width"]) > 300 and not (Site.ROOT / "media" / narrow).is_file():
+            raise SystemExit(f"missing media/{narrow}; the team photo needs its 300w candidate")
+        return Site.WhoWeAre(
+            about=Site.AboutCopy(
+                title=about["title"],
+                subtitle=about["subtitle"],
+                intro=about["intro"],
+                leader=Site.Leader(
+                    name=leader["name"],
+                    role=leader["role"],
+                    portrait=row,
+                    bio=tuple(leader["bio"]),
+                ),
+                team=Site.Team(
+                    nda=team["nda"],
+                    executive=Site.RoleList(
+                        team["executive"]["lead"],
+                        tuple(team["executive"]["lines"]),
+                    ),
+                    cyber_response=Site.RoleList(
+                        team["cyber_response"]["lead"],
+                        tuple(team["cyber_response"]["lines"]),
+                    ),
+                    closing=team["closing"],
+                    photo=photo,
+                ),
+            ),
+            proof=Site.ProofCopy(tuple(raw["proof"]["client_segments"])),
+        )
+
+    @staticmethod
+    def _strings(record) -> tuple[str, ...]:
+        out = []
+        for field in fields(record):
+            value = getattr(record, field.name)
+            if isinstance(value, str):
+                out.append(value)
+            elif isinstance(value, tuple):
+                out.extend(value)
+            elif is_dataclass(value):
+                out.extend(Site._strings(value))
+        return tuple(out)
 
     @staticmethod
     def bundle() -> dict:
@@ -1117,17 +1290,33 @@ class Site:
         ]
 
     @staticmethod
+    def media_row(asset_id: str) -> dict:
+        row = next((item for item in Site.catalog() if item["id"] == asset_id), None)
+        if row is None:
+            raise SystemExit(f"no catalog row for {asset_id}")
+        media = Site.ROOT / "media"
+        if not (media / row["file"]).is_file():
+            raise SystemExit(f"missing media/{row['file']}")
+        small = Path(row["file"]).stem + "-sm.webp"
+        if int(row["width"]) > 640 and not (media / small).is_file():
+            raise SystemExit(f"missing media/{small}; the image needs its 640w candidate")
+        return row
+
+    @staticmethod
     def image(slug: str, row: dict, sizes: str) -> str:
         src = Site.media_src(slug, row["file"])
         width = int(row["width"])
-        small_name = Path(row["file"]).stem + "-sm.webp"
-        small = Site.ROOT / "media" / small_name
-        if small.exists() and width > 640:
-            srcset = f'{Site.media_src(slug, small_name)} 640w, {src} {width}w'
-        else:
-            srcset = f"{src} {width}w"
+        stem = Path(row["file"]).stem
+        parts = []
+        narrow_name = stem + "-300.webp"
+        if width > 300 and (Site.ROOT / "media" / narrow_name).is_file():
+            parts.append(f"{Site.media_src(slug, narrow_name)} 300w")
+        small_name = stem + "-sm.webp"
+        if width > 640 and (Site.ROOT / "media" / small_name).is_file():
+            parts.append(f"{Site.media_src(slug, small_name)} 640w")
+        parts.append(f"{src} {width}w")
         return (
-            f'<img src="{src}" srcset="{srcset}" sizes="{sizes}" '
+            f'<img src="{src}" srcset="{", ".join(parts)}" sizes="{sizes}" '
             f'alt="{escape(row["alt"])}" width="{width}" height="{row["height"]}">'
         )
 
@@ -1709,7 +1898,7 @@ class Site:
 
     @staticmethod
     def css() -> str:
-        return """@font-face {
+        text = """@font-face {
   font-family: "Libre Franklin";
   src: url("fonts/libre-franklin-latin.woff2") format("woff2");
   font-weight: 100 900;
@@ -1990,6 +2179,13 @@ a:focus-visible, button:focus-visible {
   line-height: 1.12;
   text-transform: none;
 }
+.row h3 {
+  margin: 0 0 0.15rem;
+  font-size: clamp(1.2rem, 0.5vw + 1.05rem, 1.45rem);
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
 p { margin: 0 0 0.75rem; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
@@ -2212,7 +2408,16 @@ th {
 .photo-grid li, .recog-grid li { background: var(--ink); }
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
+.prose { max-width: 40rem; }
 .portrait img { display: block; width: 100%; height: auto; }
+.team-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem 1.75rem;
+  align-items: start;
+}
+.team-photo { margin: 0; min-width: 0; }
+.team-photo img { display: block; width: 100%; max-width: 617px; height: auto; aspect-ratio: 617 / 462; }
 .logo-row {
   display: flex;
   flex-wrap: wrap;
@@ -2299,6 +2504,8 @@ a.external::after { content: " (external)"; }
   .offering { min-height: 0; }
   .page h1 { max-width: none; font-size: clamp(2.7rem, 12vw, 3.5rem); padding-top: 1.7rem; }
   .row { grid-template-columns: 1fr; gap: 0.25rem; padding: 1.5rem 0; }
+  .team-split { grid-template-columns: minmax(0, 1fr); }
+  .team-photo img { margin-inline: auto; }
   .strip, .cards, .slots { grid-template-columns: 1fr; }
   .strip li, .card, .slots li { min-height: 0; }
   .brief { grid-template-columns: 1fr; }
@@ -2870,6 +3077,35 @@ p, h1, h2, h3, li, dd {
 }
 
 """
+        portrait = ".portrait { margin: 0 0 1.4rem; max-width: 22rem; }"
+        frame = ".frame { width: min(76rem, calc(100% - 1.25rem)); }"
+        if portrait not in text or frame not in text:
+            raise SystemExit("portrait cap or narrow frame gutter left the stylesheet")
+        text = text.replace(
+            portrait,
+            f".portrait {{ margin: 0 0 1.4rem; max-width: {Site.PORTRAIT_MAX_REM}rem; }}",
+            1,
+        )
+        text = text.replace(
+            frame,
+            f".frame {{ width: min(76rem, calc(100% - {Site.NARROW_FRAME_GUTTER_REM}rem)); }}",
+            1,
+        )
+        photo = Site.media_row(Site.TEAM_PHOTO_ID)
+        width, height = int(photo["width"]), int(photo["height"])
+        team_photo = (
+            ".team-photo img { display: block; width: 100%; max-width: 617px; "
+            "height: auto; aspect-ratio: 617 / 462; }"
+        )
+        if team_photo not in text:
+            raise SystemExit("team photo rule left the stylesheet")
+        text = text.replace(
+            team_photo,
+            ".team-photo img { display: block; width: 100%; "
+            f"max-width: {width}px; height: auto; aspect-ratio: {width} / {height}; }}",
+            1,
+        )
+        return text
 
     @staticmethod
     def audit() -> list[str]:
@@ -2976,6 +3212,26 @@ p, h1, h2, h3, li, dd {
         about = (Site.OUT / "about" / "index.html").read_text(encoding="utf-8")
         if "Slot" in about or "mark-logo.webp" not in about:
             problems.append("about is missing the logo")
+        who = Site.who_we_are()
+        for slug, record in (("about", who.about), ("proof", who.proof)):
+            html = Site.page_path(slug).read_text(encoding="utf-8")
+            for text in Site._strings(record):
+                if escape(text) not in html:
+                    problems.append(f"{slug} is missing restored copy {text[:48]!r}")
+        if who.about.leader.portrait["file"] not in about:
+            problems.append("about is missing the leader portrait")
+        team_photo = who.about.team.photo
+        if team_photo["file"] not in about or 'alt="US-CERT team"' not in about:
+            problems.append("about is missing the US-CERT team photo")
+        if f"{Path(team_photo['file']).stem}-300.webp 300w" not in about:
+            problems.append("about team photo is missing its 300w candidate")
+        ceo = (Site.OUT / "our-ceo" / "index.html").read_text(encoding="utf-8")
+        if 'http-equiv="refresh" content="0; url=../about/#leadership"' not in ceo:
+            problems.append("our-ceo refresh is missing")
+        if 'href="../about/#leadership"' not in ceo:
+            problems.append("our-ceo link is missing")
+        if "linkedin.com/in/israelmartinezcybersecurity" in ceo:
+            problems.append("our-ceo still publishes the archived bio")
         if "viewport-fit=cover" not in home or "mark-logo.webp" not in home:
             problems.append("home logo or viewport-fit missing")
         if "Recognized by" not in home:

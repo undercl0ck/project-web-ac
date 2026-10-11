@@ -279,6 +279,13 @@ a:focus-visible, button:focus-visible {
   line-height: 1.12;
   text-transform: none;
 }
+.row h3 {
+  margin: 0 0 0.15rem;
+  font-size: clamp(1.2rem, 0.5vw + 1.05rem, 1.45rem);
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
 p { margin: 0 0 0.75rem; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
@@ -501,7 +508,16 @@ th {
 .photo-grid li, .recog-grid li { background: var(--ink); }
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
+.prose { max-width: 40rem; }
 .portrait img { display: block; width: 100%; height: auto; }
+.team-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem 1.75rem;
+  align-items: start;
+}
+.team-photo { margin: 0; min-width: 0; }
+.team-photo img { display: block; width: 100%; max-width: 617px; height: auto; aspect-ratio: 617 / 462; }
 .logo-row {
   display: flex;
   flex-wrap: wrap;
@@ -588,6 +604,8 @@ a.external::after { content: " (external)"; }
   .offering { min-height: 0; }
   .page h1 { max-width: none; font-size: clamp(2.7rem, 12vw, 3.5rem); padding-top: 1.7rem; }
   .row { grid-template-columns: 1fr; gap: 0.25rem; padding: 1.5rem 0; }
+  .team-split { grid-template-columns: minmax(0, 1fr); }
+  .team-photo img { margin-inline: auto; }
   .strip, .cards, .slots { grid-template-columns: 1fr; }
   .strip li, .card, .slots li { min-height: 0; }
   .brief { grid-template-columns: 1fr; }
