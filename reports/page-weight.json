@@ -158,12 +158,12 @@
     },
     {
       "path": "index.html",
-      "html_bytes": 14283,
+      "html_bytes": 14480,
       "css_bytes": 32103,
       "font_bytes": 29336,
       "image_bytes": 452118,
       "js_bytes": 7450,
-      "total_bytes": 535290,
+      "total_bytes": 535487,
       "limit_bytes": 1048576,
       "under_limit": true
     },

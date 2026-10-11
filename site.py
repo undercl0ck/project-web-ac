@@ -541,9 +541,14 @@ class Site:
         body_class = ' class="opening"' if page.get("home") else ""
         depth = Site.depth(slug)
         description = escape(
-            "Training on site or by webinar, and assessments explained in plain business language."
+            "Axon Global Services trains boards and general counsel on cyber risk and delivers written board-level risk assessments."
             if page.get("home")
             else "Axon Global Services. Board training and pre-emptive cyber risk work."
+        )
+        og_description = (
+            f'<meta property="og:description" content="{description}">\n'
+            if page.get("home")
+            else ""
         )
         csp = (
             "default-src 'self'; base-uri 'none'; object-src 'none'; "
@@ -578,7 +583,7 @@ class Site:
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 {refresh}{robots}<title>{title} — Axon Global Services</title>
 <meta name="description" content="{description}">
-<meta name="referrer" content="no-referrer">
+{og_description}<meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="{csp}">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#0e0d0b">
