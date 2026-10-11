@@ -9,3 +9,5 @@ python3 site.py
 Output is `site/`. Reports are `reports/header-scan.json` and `reports/page-weight.json`.
 
 GitHub Pages serves the `site/` directory from `main` at the default github.io host. The workflow does not add a custom domain. GitHub Pages cannot set custom HTTP response headers. Each page carries a content-security policy and a referrer policy as meta tags. That is as far as a static file on Pages can go.
+
+The BIMI mark is `bimi/axon-bimi.svg`, copied to `site/bimi/axon-bimi.svg` by the build. Using it in mail clients needs a DNS BIMI TXT record, and Gmail also needs a VMC. That DNS change is waiting on separate owner approval.

@@ -45,6 +45,17 @@
       "bytes": 4584
     },
     {
+      "id": "seal-usss",
+      "file": "seal-usss.svg",
+      "alt": "U.S. Secret Service",
+      "source": "https://commons.wikimedia.org/wiki/File:Logo_of_the_United_States_Secret_Service.svg",
+      "page": "https://axoncyber.com/",
+      "kind": "seal",
+      "width": 721,
+      "height": 709,
+      "bytes": 147650
+    },
+    {
       "id": "hero-briefing",
       "file": "hero-briefing.webp",
       "alt": "A speaker at a lectern briefing a seated audience.",

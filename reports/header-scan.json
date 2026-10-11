@@ -573,7 +573,11 @@
         },
         {
           "name": "description",
-          "content": "Training on site or by webinar, and assessments explained in plain business language."
+          "content": "Axon Global Services trains boards and general counsel on cyber risk and delivers written board-level risk assessments."
+        },
+        {
+          "property": "og:description",
+          "content": "Axon Global Services trains boards and general counsel on cyber risk and delivers written board-level risk assessments."
         },
         {
           "name": "referrer",

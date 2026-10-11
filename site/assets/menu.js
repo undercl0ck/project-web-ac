@@ -181,3 +181,39 @@
   window.addEventListener("resize", lockRows);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockRows);
 })();
+(function () {
+  var lists = document.querySelectorAll(".faq");
+  if (!lists.length) return;
+
+  function triggerIn(node) {
+    var item = node && node.closest ? node.closest(".faq-item") : null;
+    return item ? item.querySelector(".faq-trigger") : null;
+  }
+
+  function setOpen(trigger, open) {
+    trigger.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  function openFromHash() {
+    var id = (location.hash || "").replace(/^#/, "");
+    var trigger = id ? triggerIn(document.getElementById(id)) : null;
+    if (trigger) setOpen(trigger, true);
+  }
+
+  Array.prototype.forEach.call(lists, function (list) {
+    Array.prototype.forEach.call(list.querySelectorAll(".faq-trigger"), function (trigger) {
+      setOpen(trigger, false);
+    });
+    list.addEventListener("click", function (event) {
+      var trigger = event.target.closest(".faq-trigger");
+      if (!trigger || !list.contains(trigger)) return;
+      setOpen(trigger, trigger.getAttribute("aria-expanded") !== "true");
+    });
+  });
+  openFromHash();
+  lists[0].getBoundingClientRect();
+  Array.prototype.forEach.call(lists, function (list) {
+    list.classList.add("faq-live");
+  });
+  window.addEventListener("hashchange", openFromHash);
+})();

@@ -479,7 +479,7 @@ th {
   border-top: 1px solid var(--ink);
   border-left: 1px solid var(--ink);
 }
-.seal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.seal-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .photo-grid, .recog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .name-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .seal-grid li, .photo-grid li, .recog-grid li, .name-wall li {
@@ -1174,5 +1174,69 @@ p, h1, h2, h3, li, dd {
   .icon-card.is-open:not(.is-suppressed) .icon-card-panel {
     transition: none;
   }
+}
+.faq {
+  list-style: none;
+  margin: 0.6rem 0 1.4rem;
+  padding: 0;
+  border-bottom: 1px solid var(--rule);
+}
+.faq-item { border-top: 1px solid var(--rule); }
+.faq-item > h3 { margin: 0; font: inherit; }
+.faq-trigger {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.75rem 0;
+  text-align: left;
+  color: var(--ink);
+  cursor: auto;
+  scroll-margin-top: 1rem;
+}
+.faq-icon { display: none; }
+.faq-panel { display: grid; grid-template-rows: 1fr; }
+.faq-answer { min-height: 0; overflow: hidden; }
+.faq-answer > p { max-width: 66ch; margin: 0; padding-bottom: 1rem; }
+.faq-answer > p.quiet { color: var(--quiet); }
+.faq-item:has(> h3 > [aria-expanded="false"]) > .faq-panel {
+  grid-template-rows: 0fr;
+  visibility: hidden;
+}
+.faq-live .faq-trigger { cursor: pointer; }
+.faq-live .faq-icon {
+  display: block;
+  position: relative;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-top: calc(0.75em - 12px);
+  transition: transform 200ms ease-out;
+}
+.faq-icon::before,
+.faq-icon::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: calc(50% - 0.75px);
+  width: 16px;
+  height: 1.5px;
+  background: currentColor;
+}
+.faq-icon::after { transform: rotate(90deg); }
+.faq-live [aria-expanded="true"] > .faq-icon { transform: rotate(45deg); }
+.faq-live .faq-panel { transition: grid-template-rows 200ms ease-out, visibility 200ms ease-out; }
+@media (hover: hover) {
+  .faq-live .faq-trigger:hover .faq-text {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-live .faq-item .faq-icon,
+  .faq-live .faq-item .faq-panel { transition: none; }
 }
 
