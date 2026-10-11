@@ -2378,7 +2378,7 @@ a:focus-visible, button:focus-visible {
   line-height: 1.15;
 }
 p { margin: 0 0 0.75rem; }
-main p { max-width: 29em; }
+main p { max-width: 27em; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
 .strip, .cards, .slots, .sources, .map, .brief {
@@ -2451,7 +2451,7 @@ main p { max-width: 29em; }
   line-height: 1.15;
   text-transform: none;
 }
-.offering p { margin: 0; max-width: 36rem; }
+.offering p { margin: 0; max-width: 27em; }
 .slot {
   margin: 0 0 0.4rem;
   font-size: 0.95rem;
@@ -2482,6 +2482,7 @@ main p { max-width: 29em; }
   justify-content: flex-end;
 }
 .sources li { margin: 0.15rem 0; }
+.sources > li > a { display: block; max-width: 27em; }
 .table-wrap { overflow-x: auto; max-width: 100%; }
 table { width: 100%; border-collapse: collapse; }
 caption {
@@ -2524,6 +2525,7 @@ th {
   display: flex;
   align-items: center;
   width: 100%;
+  max-width: 27em;
   min-height: 52px;
   text-decoration: none;
   font-size: 1.45rem;
@@ -2601,7 +2603,9 @@ th {
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
 .prose { max-width: 40rem; }
-main :is(p, li), main .prose { max-width: 29em; }
+main .prose,
+main .prose li,
+main ul:not([class]) > li { max-width: 27em; }
 .portrait img { display: block; width: 100%; height: auto; }
 .team-split {
   display: grid;
@@ -2655,6 +2659,7 @@ main :is(p, li), main .prose { max-width: 29em; }
 .logo-more { margin: -0.2rem 0 1.2rem; }
 .logo-more a { font-weight: 560; text-decoration: none; }
 .plain li { margin: 0; padding: 0.85rem 0; border-top: 1px solid var(--rule); }
+.plain > li { padding-right: max(0px, calc(100% - 27em)); }
 .month-nav, .part-nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.35rem; margin: 0 0 1.4rem; }
 .month-nav a, .part-nav a {
   display: inline-flex;
@@ -2669,6 +2674,7 @@ main :is(p, li), main .prose { max-width: 29em; }
   display: flex;
   align-items: baseline;
   gap: 1rem;
+  max-width: 27em;
   min-height: 44px;
   text-decoration: none;
   font-weight: 520;
@@ -2764,7 +2770,7 @@ body {
 .menu.is-open > .menu-panel { display: flex; flex-direction: column; }
 .menu-panel a { width: 100%; }
 .page h1 { font-size: clamp(2.75rem, 4.2vw + 1.1rem, 5.75rem); }
-.lede { font-size: clamp(1.12rem, 0.4vw + 1rem, 1.38rem); max-width: 40rem; }
+.lede { font-size: clamp(1.12rem, 0.4vw + 1rem, 1.38rem); max-width: 27em; }
 .eyebrow {
   margin: 0 0 0.8rem;
   font-size: 0.75rem;
@@ -2772,7 +2778,7 @@ body {
   text-transform: uppercase;
 }
 .trust { padding: 1.45rem 0 0.2rem; }
-.trust-line { max-width: 46rem; margin: 0.15rem 0 0; }
+.trust-line { max-width: 27em; margin: 0.15rem 0 0; }
 .proofband, .services { margin-top: 2.6rem; }
 .proofband h2, .services h2 {
   margin: 0 0 0.9rem;
@@ -3288,7 +3294,7 @@ p, h1, h2, h3, li, dd {
 .faq-icon { display: none; }
 .faq-panel { display: grid; grid-template-rows: 1fr; }
 .faq-answer { min-height: 0; overflow: hidden; }
-.faq-answer > p { max-width: 29em; margin: 0; padding-bottom: 1rem; }
+.faq-answer > p { max-width: 27em; margin: 0; padding-bottom: 1rem; }
 .faq-answer > p.quiet { color: var(--quiet); }
 .faq-item:has(> h3 > [aria-expanded="false"]) > .faq-panel {
   grid-template-rows: 0fr;
