@@ -1041,6 +1041,16 @@ class Site:
         )
 
     @staticmethod
+    def team_photo_sizes(width: int) -> str:
+        gutter = Site.NARROW_FRAME_GUTTER_REM
+        return (
+            f"(max-width: 390px) calc(100vw - {gutter}rem), "
+            f"(max-width: 640px) calc(100vw - 1.5rem), "
+            f"(max-width: 800px) {width}px, "
+            "calc((min(76rem, 100vw - 4rem) - 7.75rem) / 2)"
+        )
+
+    @staticmethod
     def about_body(slug: str) -> str:
         about = Site.who_we_are().about
         leader, team = about.leader, about.team
@@ -1060,13 +1070,21 @@ class Site:
             f'<div class="prose"><h3>{escape(leader.name)}</h3>'
             f'<p class="quiet">{escape(leader.role)}</p>{bio}</div>'
         )
+        photo = Site.image(slug, team.photo, Site.team_photo_sizes(int(team.photo["width"])))
+        team_copy = (
+            f'<div class="prose"><p>{escape(team.nda)}</p></div>'
+            f'<div class="team-split">'
+            f'<div class="prose">{roles}{clients}</div>'
+            f'<figure class="team-photo">{photo}</figure>'
+            f"</div>"
+        )
         return f"""
 <h1>{escape(about.title)}</h1>
 <p class="lede">{escape(about.subtitle)}</p>
 <p class="prose">{escape(about.intro)}</p>
 <ul class="plain">{creds}</ul>
 {Site.row("01", "Leadership", leadership, "leadership")}
-{Site.row("02", "Team", f'<div class="prose"><p>{escape(team.nda)}</p>{roles}{clients}</div>', "team")}
+{Site.row("02", "Team", team_copy, "team")}
 """
 
     @staticmethod
@@ -1118,6 +1136,7 @@ class Site:
 
     PORTRAIT_MAX_REM = 22
     NARROW_FRAME_GUTTER_REM = 1.25
+    TEAM_PHOTO_ID = "uscert-our-team"
     WHO_WE_ARE_CANON_SHA256 = "26e5bb3a6f4af7713546d6bc515e2b48ffa43968ef0935b334ecf0e4d3d0fbf6"
 
     @dataclass(frozen=True)
@@ -1131,6 +1150,7 @@ class Site:
         executive: Site.RoleList
         cyber_response: Site.RoleList
         closing: str
+        photo: dict
 
     @dataclass(frozen=True)
     class Leader:
@@ -1171,15 +1191,11 @@ class Site:
         about = raw["about"]
         leader = about["leader"]
         team = about["team"]
-        row = next((item for item in Site.catalog() if item["id"] == leader["portrait"]), None)
-        if row is None:
-            raise SystemExit(f"no catalog row for portrait {leader['portrait']!r}")
-        media = Site.ROOT / "media"
-        if not (media / row["file"]).is_file():
-            raise SystemExit(f"missing media/{row['file']}")
-        small = Path(row["file"]).stem + "-sm.webp"
-        if int(row["width"]) > 640 and not (media / small).is_file():
-            raise SystemExit(f"missing media/{small}; the portrait needs its 640w candidate")
+        row = Site.media_row(leader["portrait"])
+        photo = Site.media_row(Site.TEAM_PHOTO_ID)
+        narrow = Path(photo["file"]).stem + "-300.webp"
+        if int(photo["width"]) > 300 and not (Site.ROOT / "media" / narrow).is_file():
+            raise SystemExit(f"missing media/{narrow}; the team photo needs its 300w candidate")
         return Site.WhoWeAre(
             about=Site.AboutCopy(
                 title=about["title"],
@@ -1202,6 +1218,7 @@ class Site:
                         tuple(team["cyber_response"]["lines"]),
                     ),
                     closing=team["closing"],
+                    photo=photo,
                 ),
             ),
             proof=Site.ProofCopy(tuple(raw["proof"]["client_segments"])),
@@ -1254,17 +1271,33 @@ class Site:
         ]
 
     @staticmethod
+    def media_row(asset_id: str) -> dict:
+        row = next((item for item in Site.catalog() if item["id"] == asset_id), None)
+        if row is None:
+            raise SystemExit(f"no catalog row for {asset_id}")
+        media = Site.ROOT / "media"
+        if not (media / row["file"]).is_file():
+            raise SystemExit(f"missing media/{row['file']}")
+        small = Path(row["file"]).stem + "-sm.webp"
+        if int(row["width"]) > 640 and not (media / small).is_file():
+            raise SystemExit(f"missing media/{small}; the image needs its 640w candidate")
+        return row
+
+    @staticmethod
     def image(slug: str, row: dict, sizes: str) -> str:
         src = Site.media_src(slug, row["file"])
         width = int(row["width"])
-        small_name = Path(row["file"]).stem + "-sm.webp"
-        small = Site.ROOT / "media" / small_name
-        if small.exists() and width > 640:
-            srcset = f'{Site.media_src(slug, small_name)} 640w, {src} {width}w'
-        else:
-            srcset = f"{src} {width}w"
+        stem = Path(row["file"]).stem
+        parts = []
+        narrow_name = stem + "-300.webp"
+        if width > 300 and (Site.ROOT / "media" / narrow_name).is_file():
+            parts.append(f"{Site.media_src(slug, narrow_name)} 300w")
+        small_name = stem + "-sm.webp"
+        if width > 640 and (Site.ROOT / "media" / small_name).is_file():
+            parts.append(f"{Site.media_src(slug, small_name)} 640w")
+        parts.append(f"{src} {width}w")
         return (
-            f'<img src="{src}" srcset="{srcset}" sizes="{sizes}" '
+            f'<img src="{src}" srcset="{", ".join(parts)}" sizes="{sizes}" '
             f'alt="{escape(row["alt"])}" width="{width}" height="{row["height"]}">'
         )
 
@@ -2358,6 +2391,14 @@ th {
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
 .prose { max-width: 40rem; }
 .portrait img { display: block; width: 100%; height: auto; }
+.team-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem 1.75rem;
+  align-items: start;
+}
+.team-photo { margin: 0; min-width: 0; }
+.team-photo img { display: block; width: 100%; max-width: 617px; height: auto; aspect-ratio: 617 / 462; }
 .logo-row {
   display: flex;
   flex-wrap: wrap;
@@ -2444,6 +2485,7 @@ a.external::after { content: " (external)"; }
   .offering { min-height: 0; }
   .page h1 { max-width: none; font-size: clamp(2.7rem, 12vw, 3.5rem); padding-top: 1.7rem; }
   .row { grid-template-columns: 1fr; gap: 0.25rem; padding: 1.5rem 0; }
+  .team-split { grid-template-columns: minmax(0, 1fr); }
   .strip, .cards, .slots { grid-template-columns: 1fr; }
   .strip li, .card, .slots li { min-height: 0; }
   .brief { grid-template-columns: 1fr; }
@@ -3029,6 +3071,20 @@ p, h1, h2, h3, li, dd {
             f".frame {{ width: min(76rem, calc(100% - {Site.NARROW_FRAME_GUTTER_REM}rem)); }}",
             1,
         )
+        photo = Site.media_row(Site.TEAM_PHOTO_ID)
+        width, height = int(photo["width"]), int(photo["height"])
+        team_photo = (
+            ".team-photo img { display: block; width: 100%; max-width: 617px; "
+            "height: auto; aspect-ratio: 617 / 462; }"
+        )
+        if team_photo not in text:
+            raise SystemExit("team photo rule left the stylesheet")
+        text = text.replace(
+            team_photo,
+            ".team-photo img { display: block; width: 100%; "
+            f"max-width: {width}px; height: auto; aspect-ratio: {width} / {height}; }}",
+            1,
+        )
         return text
 
     @staticmethod
@@ -3144,6 +3200,11 @@ p, h1, h2, h3, li, dd {
                     problems.append(f"{slug} is missing restored copy {text[:48]!r}")
         if who.about.leader.portrait["file"] not in about:
             problems.append("about is missing the leader portrait")
+        team_photo = who.about.team.photo
+        if team_photo["file"] not in about or 'alt="US-CERT team"' not in about:
+            problems.append("about is missing the US-CERT team photo")
+        if f"{Path(team_photo['file']).stem}-300.webp 300w" not in about:
+            problems.append("about team photo is missing its 300w candidate")
         if "viewport-fit=cover" not in home or "mark-logo.webp" not in home:
             problems.append("home logo or viewport-fit missing")
         if "Recognized by" not in home:

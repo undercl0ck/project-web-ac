@@ -1396,6 +1396,17 @@
       "width": 706,
       "height": 1024,
       "bytes": 37062
+    },
+    {
+      "id": "uscert-our-team",
+      "file": "uscert-our-team.webp",
+      "alt": "US-CERT team",
+      "source": "https://axoncyber.com/wp-content/uploads/2020/10/uscert-our-team2-1.jpg",
+      "page": "https://axoncyber.com/our-team/",
+      "kind": "photo",
+      "width": 617,
+      "height": 462,
+      "bytes": 42172
     }
   ],
   "skipped": []
