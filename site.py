@@ -1672,7 +1672,11 @@ class Site:
         for key in order:
             items = []
             for post in groups[key]:
-                excerpt = f"<p>{escape(post['excerpt'])}</p>" if post.get("excerpt") else ""
+                excerpt = (
+                    f"<p>{Site.wrap_bare_tokens(escape(post['excerpt']))}</p>"
+                    if post.get("excerpt")
+                    else ""
+                )
                 stamp = Site.news_stamp(post)
                 time = (
                     f'<time datetime="{escape(stamp)}">{escape(stamp)}</time>'
@@ -2675,22 +2679,13 @@ main ul:not([class]) > li { max-width: 27em; }
   background: transparent;
 }
 .logo-row .logo-fallback {
-  width: 160px;
-  max-width: 160px;
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
+  padding: 0 0.3rem;
   font-weight: 560;
   font-size: 1em;
   letter-spacing: -0.02em;
   line-height: 1.15;
   text-align: center;
-  overflow: visible;
-  white-space: normal;
-}
-.logo-row .logo-fallback span {
-  min-width: 0;
-  max-width: 100%;
+  overflow: hidden;
 }
 .logo-more { margin: -0.2rem 0 1.2rem; }
 .logo-more a { font-weight: 560; text-decoration: none; }
@@ -2879,19 +2874,14 @@ body {
   margin: 0;
   padding: 0;
 }
-.mandate-pair li { margin: 0; padding-left: 0; position: relative; }
-.mandate-pair li > p:not(.mandate-num) {
-  position: relative;
-  padding-left: 0.95rem;
-}
-.mandate-pair li > p:not(.mandate-num)::before {
+.mandate-pair li { margin: 0; padding-left: 0.95rem; position: relative; }
+.mandate-pair li::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.75em;
+  top: 1.7rem;
   width: 0.4rem;
   height: 0.4rem;
-  margin-top: -0.2rem;
   border-radius: 50%;
   background: currentColor;
 }
@@ -2904,7 +2894,20 @@ body {
   white-space: nowrap;
 }
 .mandate-pair p { word-break: normal; hyphens: none; }
-@media (max-width: 759px) {
+@media (max-width: 760px) {
+  .logo-row .logo-fallback {
+    width: 160px;
+    max-width: 160px;
+    height: auto;
+    min-height: 40px;
+    padding: 8px 16px;
+    overflow: visible;
+    white-space: normal;
+  }
+  .logo-row .logo-fallback span {
+    min-width: 0;
+    max-width: 100%;
+  }
   .mandate-row {
     grid-template-columns: 1fr;
     row-gap: 12px;
@@ -2921,12 +2924,8 @@ body {
     column-gap: 24px;
     row-gap: 24px;
   }
-  .mandate-pair li > p:not(.mandate-num) {
-    padding-left: 0;
-  }
-  .mandate-pair li > p:not(.mandate-num)::before {
-    content: none;
-  }
+  .mandate-pair li { padding-left: 0; }
+  .mandate-pair li::before { content: none; }
   .mandate-pair .mandate-num {
     white-space: nowrap;
     font-size: clamp(44px, 12vw, 64px);
