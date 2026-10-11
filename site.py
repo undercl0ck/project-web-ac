@@ -2378,7 +2378,7 @@ a:focus-visible, button:focus-visible {
   line-height: 1.15;
 }
 p { margin: 0 0 0.75rem; }
-main p { max-width: 66ch; }
+main p { max-width: 29em; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
 .strip, .cards, .slots, .sources, .map, .brief {
@@ -3156,7 +3156,6 @@ p, h1, h2, h3, li, dd {
 .svc-grid .svc-for,
 .svc-grid .svc-get,
 .svc-grid .svc-body { margin: 0 0 8px; }
-.icon-card-panel > :last-child { margin-bottom: 0; }
 .svc-grid .icon-card:has(.card:focus-visible),
 .svc-grid .icon-card:focus-within {
   outline: 2px solid var(--ink);
@@ -3174,6 +3173,10 @@ p, h1, h2, h3, li, dd {
     font-size: 20px;
     line-height: 26px;
   }
+  .icon-card-panel > :last-child { margin-bottom: 0; }
+}
+@media (hover: none), (pointer: coarse) {
+  .icon-card-panel > :last-child { margin-bottom: 0; }
 }
 @media (hover: hover) and (pointer: fine) and (min-width: 761px) {
   .svc-grid {
@@ -3214,7 +3217,7 @@ p, h1, h2, h3, li, dd {
   }
   .icon-card-panel {
     z-index: 2;
-    padding: 28px 24px 24px;
+    padding: 28px 24px;
     overflow: auto;
     opacity: 0;
     pointer-events: none;
@@ -3284,7 +3287,7 @@ p, h1, h2, h3, li, dd {
 .faq-icon { display: none; }
 .faq-panel { display: grid; grid-template-rows: 1fr; }
 .faq-answer { min-height: 0; overflow: hidden; }
-.faq-answer > p { max-width: 66ch; margin: 0; padding-bottom: 1rem; }
+.faq-answer > p { max-width: 29em; margin: 0; padding-bottom: 1rem; }
 .faq-answer > p.quiet { color: var(--quiet); }
 .faq-item:has(> h3 > [aria-expanded="false"]) > .faq-panel {
   grid-template-rows: 0fr;
