@@ -502,6 +502,13 @@ class Site:
         )
         folio = Site.folio(slug)
         folio_html = f'<p class="folio">{folio}</p>' if folio else '<p class="folio"></p>'
+        refresh = ""
+        if slug == "our-ceo":
+            refresh = (
+                '<meta http-equiv="refresh" content="0; url='
+                + Site.href(slug, "about")
+                + '#leadership">\n'
+            )
         if page.get("home"):
             content = main
         else:
@@ -511,7 +518,7 @@ class Site:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>{title} — Axon Global Services</title>
+{refresh}<title>{title} — Axon Global Services</title>
 <meta name="description" content="{description}">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="{csp}">
@@ -649,7 +656,7 @@ class Site:
             "engage": Site.engage_body,
             "extended-capabilities": Site.imported_body,
             "how-we-engage": Site.imported_body,
-            "our-ceo": Site.imported_body,
+            "our-ceo": Site.ceo_redirect_body,
             "sitemap": Site.sitemap_body,
         }
         return writers[slug](slug)
@@ -1031,6 +1038,14 @@ class Site:
         return Site.article_body(article)
 
     @staticmethod
+    def ceo_redirect_body(slug: str) -> str:
+        href = Site.href(slug, "about") + "#leadership"
+        return f"""
+<h1>Our CEO &amp; Global CTO</h1>
+<p><a href="{href}">Leadership</a></p>
+"""
+
+    @staticmethod
     def portrait_sizes() -> str:
         cap = Site.PORTRAIT_MAX_REM * 16
         gutter = Site.NARROW_FRAME_GUTTER_REM * 16
@@ -1108,8 +1123,12 @@ class Site:
         for page in Site.PAGES:
             label = "Sitemap" if page["slug"] == "sitemap" else page["title"]
             current = ' aria-current="page"' if page["slug"] == "sitemap" else ""
+            href = Site.href(slug, page["slug"])
+            if page["slug"] == "our-ceo":
+                href = Site.href(slug, "about") + "#leadership"
+                current = ""
             items.append(
-                f'<li><a href="{Site.href(slug, page["slug"])}"{current}>{escape(label)}</a></li>'
+                f'<li><a href="{href}"{current}>{escape(label)}</a></li>'
             )
         news = []
         for article in Site.articles():
@@ -3206,6 +3225,13 @@ p, h1, h2, h3, li, dd {
             problems.append("about is missing the US-CERT team photo")
         if f"{Path(team_photo['file']).stem}-300.webp 300w" not in about:
             problems.append("about team photo is missing its 300w candidate")
+        ceo = (Site.OUT / "our-ceo" / "index.html").read_text(encoding="utf-8")
+        if 'http-equiv="refresh" content="0; url=../about/#leadership"' not in ceo:
+            problems.append("our-ceo refresh is missing")
+        if 'href="../about/#leadership"' not in ceo:
+            problems.append("our-ceo link is missing")
+        if "linkedin.com/in/israelmartinezcybersecurity" in ceo:
+            problems.append("our-ceo still publishes the archived bio")
         if "viewport-fit=cover" not in home or "mark-logo.webp" not in home:
             problems.append("home logo or viewport-fit missing")
         if "Recognized by" not in home:
