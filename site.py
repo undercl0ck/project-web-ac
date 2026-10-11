@@ -1031,6 +1031,16 @@ class Site:
         return Site.article_body(article)
 
     @staticmethod
+    def portrait_sizes() -> str:
+        cap = Site.PORTRAIT_MAX_REM * 16
+        gutter = Site.NARROW_FRAME_GUTTER_REM * 16
+        edge = int(cap + gutter) - 1
+        return (
+            f"(max-width: {edge}px) calc(100vw - {Site.NARROW_FRAME_GUTTER_REM}rem), "
+            f"{Site.PORTRAIT_MAX_REM}rem"
+        )
+
+    @staticmethod
     def about_body(slug: str) -> str:
         about = Site.who_we_are().about
         leader, team = about.leader, about.team
@@ -1041,13 +1051,7 @@ class Site:
             f'<ul class="plain">{"".join(f"<li>{escape(line)}</li>" for line in group.lines)}</ul>'
             for group in (team.executive, team.cyber_response)
         )
-        # .portrait caps the image at 22rem (352px). The 1.25rem frame gutter
-        # makes that slot narrower only at a viewport of 371px or below.
-        portrait = Site.image(
-            slug,
-            leader.portrait,
-            "(max-width: 371px) calc(100vw - 1.25rem), 22rem",
-        )
+        portrait = Site.image(slug, leader.portrait, Site.portrait_sizes())
         leadership = (
             f'<figure class="portrait">{portrait}</figure>'
             f'<div class="prose"><h3>{escape(leader.name)}</h3>'
@@ -1109,8 +1113,9 @@ class Site:
 <ol class="map">{"".join(notes)}</ol>
 """
 
-    # Canonical JSON, not the file bytes. Reindenting the file does not change the lock.
-    WHO_WE_ARE_SHA256 = "ca6660697d65b8d4a5840b90bfc3baa7b7fbf9a0d3e2b57e4a25122c87df4387"
+    PORTRAIT_MAX_REM = 22
+    NARROW_FRAME_GUTTER_REM = 1.25
+    WHO_WE_ARE_CANON_SHA256 = "ca6660697d65b8d4a5840b90bfc3baa7b7fbf9a0d3e2b57e4a25122c87df4387"
 
     @dataclass(frozen=True)
     class RoleList:
@@ -1144,8 +1149,6 @@ class Site:
 
     @dataclass(frozen=True)
     class WhoWeAre:
-        """Field names are page slugs. audit() opens each page by that name."""
-
         about: Site.AboutCopy
         proof: Site.ProofCopy
 
@@ -1154,12 +1157,12 @@ class Site:
         raw = json.loads((Site.ROOT / "content" / "who-we-are.json").read_text(encoding="utf-8"))
         canon = json.dumps(raw, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
         digest = hashlib.sha256(canon.encode("ascii")).hexdigest()
-        if digest != Site.WHO_WE_ARE_SHA256:
+        if digest != Site.WHO_WE_ARE_CANON_SHA256:
             raise SystemExit(
                 "content/who-we-are.json no longer matches the owner-approved copy. "
-                "It is copied word for word from axoncyber.com, NBSPs and curly quotes included. "
+                "The lock is a sha256 of canonical JSON, not the file bytes. "
                 "Restore it (git diff content/who-we-are.json). "
-                f"Set WHO_WE_ARE_SHA256 = {digest!r} only for wording the owner supplied."
+                f"Set WHO_WE_ARE_CANON_SHA256 = {digest!r} only for wording the owner supplied."
             )
         about = raw["about"]
         leader = about["leader"]
@@ -1201,7 +1204,6 @@ class Site:
 
     @staticmethod
     def _strings(record) -> tuple[str, ...]:
-        # Leader.portrait is a catalog row. audit() checks its file name on its own.
         out = []
         for field in fields(record):
             value = getattr(record, field.name)
@@ -1839,7 +1841,7 @@ class Site:
 
     @staticmethod
     def css() -> str:
-        return """@font-face {
+        text = """@font-face {
   font-family: "Libre Franklin";
   src: url("fonts/libre-franklin-latin.woff2") format("woff2");
   font-weight: 100 900;
@@ -3008,6 +3010,21 @@ p, h1, h2, h3, li, dd {
 }
 
 """
+        portrait = ".portrait { margin: 0 0 1.4rem; max-width: 22rem; }"
+        frame = ".frame { width: min(76rem, calc(100% - 1.25rem)); }"
+        if portrait not in text or frame not in text:
+            raise SystemExit("portrait cap or narrow frame gutter left the stylesheet")
+        text = text.replace(
+            portrait,
+            f".portrait {{ margin: 0 0 1.4rem; max-width: {Site.PORTRAIT_MAX_REM}rem; }}",
+            1,
+        )
+        text = text.replace(
+            frame,
+            f".frame {{ width: min(76rem, calc(100% - {Site.NARROW_FRAME_GUTTER_REM}rem)); }}",
+            1,
+        )
+        return text
 
     @staticmethod
     def audit() -> list[str]:
@@ -3115,11 +3132,11 @@ p, h1, h2, h3, li, dd {
         if "Slot" in about or "mark-logo.webp" not in about:
             problems.append("about is missing the logo")
         who = Site.who_we_are()
-        for group in fields(who):
-            html = Site.page_path(group.name).read_text(encoding="utf-8")
-            for text in Site._strings(getattr(who, group.name)):
+        for slug, record in (("about", who.about), ("proof", who.proof)):
+            html = Site.page_path(slug).read_text(encoding="utf-8")
+            for text in Site._strings(record):
                 if escape(text) not in html:
-                    problems.append(f"{group.name} is missing restored copy {text[:48]!r}")
+                    problems.append(f"{slug} is missing restored copy {text[:48]!r}")
         if who.about.leader.portrait["file"] not in about:
             problems.append("about is missing the leader portrait")
         if "viewport-fit=cover" not in home or "mark-logo.webp" not in home:
