@@ -2601,6 +2601,7 @@ th {
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
 .prose { max-width: 40rem; }
+main :is(p, li), main .prose { max-width: 29em; }
 .portrait img { display: block; width: 100%; height: auto; }
 .team-split {
   display: grid;
