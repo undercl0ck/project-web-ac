@@ -2486,6 +2486,7 @@ a.external::after { content: " (external)"; }
   .page h1 { max-width: none; font-size: clamp(2.7rem, 12vw, 3.5rem); padding-top: 1.7rem; }
   .row { grid-template-columns: 1fr; gap: 0.25rem; padding: 1.5rem 0; }
   .team-split { grid-template-columns: minmax(0, 1fr); }
+  .team-photo img { margin-inline: auto; }
   .strip, .cards, .slots { grid-template-columns: 1fr; }
   .strip li, .card, .slots li { min-height: 0; }
   .brief { grid-template-columns: 1fr; }
