@@ -26,12 +26,12 @@
     },
     {
       "path": "authority/index.html",
-      "html_bytes": 8391,
+      "html_bytes": 8575,
       "css_bytes": 32103,
       "font_bytes": 29336,
-      "image_bytes": 137154,
+      "image_bytes": 284804,
       "js_bytes": 7450,
-      "total_bytes": 214434,
+      "total_bytes": 362268,
       "limit_bytes": 1048576,
       "under_limit": true
     },
@@ -70,12 +70,12 @@
     },
     {
       "path": "credentials/index.html",
-      "html_bytes": 7689,
+      "html_bytes": 7873,
       "css_bytes": 32103,
       "font_bytes": 29336,
-      "image_bytes": 137154,
+      "image_bytes": 284804,
       "js_bytes": 7450,
-      "total_bytes": 213732,
+      "total_bytes": 361566,
       "limit_bytes": 1048576,
       "under_limit": true
     },
@@ -158,12 +158,12 @@
     },
     {
       "path": "index.html",
-      "html_bytes": 14105,
+      "html_bytes": 14283,
       "css_bytes": 32103,
       "font_bytes": 29336,
-      "image_bytes": 304468,
+      "image_bytes": 452118,
       "js_bytes": 7450,
-      "total_bytes": 387462,
+      "total_bytes": 535290,
       "limit_bytes": 1048576,
       "under_limit": true
     },
@@ -2501,12 +2501,12 @@
     },
     {
       "path": "proof/index.html",
-      "html_bytes": 12162,
+      "html_bytes": 12346,
       "css_bytes": 32103,
       "font_bytes": 29336,
-      "image_bytes": 479367,
+      "image_bytes": 627017,
       "js_bytes": 7450,
-      "total_bytes": 560418,
+      "total_bytes": 708252,
       "limit_bytes": 1048576,
       "under_limit": true
     },

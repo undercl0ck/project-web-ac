@@ -347,6 +347,8 @@ class Site:
         media_out.mkdir(parents=True, exist_ok=True)
         for src in sorted((Site.ROOT / "media").glob("*.webp")):
             (media_out / src.name).write_bytes(src.read_bytes())
+        for src in sorted((Site.ROOT / "media").glob("*.svg")):
+            (media_out / src.name).write_bytes(src.read_bytes())
         logo_dir = Site.ROOT / "media" / "logos"
         if logo_dir.is_dir():
             for src in sorted(logo_dir.iterdir()):
@@ -2546,7 +2548,7 @@ th {
   border-top: 1px solid var(--ink);
   border-left: 1px solid var(--ink);
 }
-.seal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.seal-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .photo-grid, .recog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .name-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .seal-grid li, .photo-grid li, .recog-grid li, .name-wall li {
