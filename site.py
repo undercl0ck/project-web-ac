@@ -1947,6 +1947,7 @@ class Site:
   var cards = document.querySelectorAll(".icon-card");
   if (!cards.length) return;
   var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+  var wide = window.matchMedia("(min-width: 761px)");
 
   function cardOf(node) {
     if (!node || !node.closest) return null;
@@ -2015,7 +2016,7 @@ class Site:
         var article = card.querySelector(".card");
         if (article) article.style.minHeight = "";
       });
-      if (!fine.matches) return;
+      if (!fine.matches || !wide.matches) return;
       var rows = [];
       Array.prototype.forEach.call(items, function (card) {
         var top = Math.round(card.getBoundingClientRect().top);
@@ -2047,6 +2048,8 @@ class Site:
 
   lockRows();
   window.addEventListener("resize", lockRows);
+  if (fine.addEventListener) fine.addEventListener("change", lockRows);
+  if (wide.addEventListener) wide.addEventListener("change", lockRows);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockRows);
 })();
 (function () {
@@ -3132,7 +3135,7 @@ p, h1, h2, h3, li, dd {
   letter-spacing: 0;
   text-align: center;
 }
-.icon-card-panel { padding: 16px 2px 0; }
+.icon-card-panel { padding: 16px 24px 24px; }
 .svc-grid .svc-name,
 .svc-grid .svc-for,
 .svc-grid .svc-get,
@@ -3155,6 +3158,7 @@ p, h1, h2, h3, li, dd {
 .svc-grid .svc-for,
 .svc-grid .svc-get,
 .svc-grid .svc-body { margin: 0 0 8px; }
+.icon-card-panel > :last-child { margin-bottom: 0; }
 .svc-grid .icon-card:has(.card:focus-visible),
 .svc-grid .icon-card:focus-within {
   outline: 2px solid var(--ink);
@@ -3173,7 +3177,7 @@ p, h1, h2, h3, li, dd {
     line-height: 26px;
   }
 }
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
   .svc-grid {
     grid-template-columns: minmax(0, 368px);
     column-gap: 48px;
@@ -3212,7 +3216,7 @@ p, h1, h2, h3, li, dd {
   }
   .icon-card-panel {
     z-index: 2;
-    padding: 28px 24px;
+    padding: 28px 24px 24px;
     overflow: auto;
     opacity: 0;
     pointer-events: none;
@@ -3242,14 +3246,6 @@ p, h1, h2, h3, li, dd {
 }
 @media (hover: hover) and (pointer: fine) and (min-width: 1280px) {
   .svc-grid { grid-template-columns: repeat(3, minmax(0, 368px)); }
-}
-@media (hover: hover) and (pointer: fine) and (max-width: 440px) {
-  .svc-grid .svc-for,
-  .svc-grid .svc-get,
-  .svc-grid .svc-body {
-    font-size: 16px;
-    line-height: 22px;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .icon-card-stage,
