@@ -566,6 +566,12 @@ th {
 }
 .archive time { flex: none; color: var(--quiet); }
 .archive p { margin: 0.15rem 0 0; color: var(--quiet); }
+.article { overflow-wrap: anywhere; }
+.article-figure { margin: 1rem 0; }
+.article img, .article-figure img { max-width: 100%; height: auto; }
+.source-note { color: var(--quiet); overflow-wrap: anywhere; }
+.back { margin-top: 2rem; }
+a.external::after { content: " (external)"; }
 .opening main { display: flex; flex-direction: column; }
 .opening .hero { flex: 1; min-height: 0; }
 @media (max-width: 800px) {
