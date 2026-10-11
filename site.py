@@ -39,8 +39,8 @@ class Site:
         {"slug": "clients", "nav": "Clients", "title": "Our Clients"},
         {"slug": "credentials", "nav": "Credentials", "title": "Credentials"},
         {"slug": "recognition", "nav": "Recognitions", "title": "Recognitions"},
-        {"slug": "recognition-2", "nav": None, "title": "Recognitions, continued"},
-        {"slug": "recognition-3", "nav": None, "title": "Recognitions, continued"},
+        {"slug": "recognition-2", "nav": None, "title": "Recognitions (2 of 3)"},
+        {"slug": "recognition-3", "nav": None, "title": "Recognitions (3 of 3)"},
         {"slug": "news", "nav": "News", "title": "News"},
         {"slug": "faq", "nav": "FAQs", "title": "FAQs"},
         {"slug": "government", "nav": "Government Quals", "title": "Government Quals"},
@@ -1567,12 +1567,12 @@ class Site:
         groups = Site.recognition_groups()
         parts = ("recognition", "recognition-2", "recognition-3")
         links = []
+        titles = ("Recognitions", "Recognitions (2 of 3)", "Recognitions (3 of 3)")
         for number, part in enumerate(parts):
-            label = "Recognitions" if number == 0 else f"Continued {number + 1}"
             current = ' aria-current="page"' if part == slug else ""
-            links.append(f'<a href="{Site.href(slug, part)}"{current}>{label}</a>')
+            links.append(f'<a href="{Site.href(slug, part)}"{current}>{titles[number]}</a>')
         lede = '<p class="lede">General Photos, Letters, and Other</p>' if index == 0 else ""
-        title = "Recognitions" if index == 0 else "Recognitions, continued"
+        title = titles[index]
         return f"""
 <h1>{title}</h1>
 {lede}
@@ -1724,8 +1724,7 @@ class Site:
                 "</h3>"
                 f'<div class="faq-panel" id="{panel_id}" role="region" '
                 f'aria-labelledby="{anchor}">'
-                f'<div class="faq-answer"><p>{escape(item.trigger)}</p>'
-                f'<p class="quiet">{escape(item.panel)}</p></div>'
+                f'<div class="faq-answer"><p class="quiet">{escape(item.panel)}</p></div>'
                 "</div>"
                 "</li>"
             )
@@ -1735,16 +1734,12 @@ class Site:
     def faq_body(_slug: str) -> str:
         data = Site.bundle()
         intro = "".join(f"<p>{escape(line)}</p>" for line in data["faq_intro"])
-        questions = "".join(f"<li>{escape(line)}</li>" for line in data["faq_questions"])
         quotes = Site.accordion(Site.quote_disclosures(data["faq_quotes"]))
         lessons = "".join(f"<li>{escape(line)}</li>" for line in data["faq_lessons"])
         lesson_intro = "".join(f"<p>{escape(line)}</p>" for line in data["faq_lessons_intro"])
         return f"""
 <h1>FAQs</h1>
 {intro}
-<!--
-<ol class="plain">{questions}</ol>
--->
 <h2>Top Quotes</h2>
 <p>{escape(data["faq_disclaimer"])}</p>
 {quotes}
@@ -2213,8 +2208,9 @@ a:focus-visible, button:focus-visible {
 .mark { width: 2.35rem; height: 2.35rem; display: block; flex: none; }
 .folio {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 1em;
   letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--quiet-dark);
   min-width: 1.5rem;
 }
@@ -2292,7 +2288,7 @@ a:focus-visible, button:focus-visible {
 .hero-sub {
   margin: 0.9rem 0 0;
   max-width: 36rem;
-  color: var(--quiet-dark);
+  color: var(--bone);
   font-size: 1.125rem;
 }
 .hero-cta {
@@ -2361,9 +2357,10 @@ a:focus-visible, button:focus-visible {
 }
 .num {
   margin: 0.35rem 0 0;
-  font-size: 0.78rem;
+  font-size: 1em;
   letter-spacing: 0.14em;
   font-weight: 500;
+  text-transform: uppercase;
 }
 .row h2 {
   margin: 0 0 0.7rem;
@@ -2381,6 +2378,7 @@ a:focus-visible, button:focus-visible {
   line-height: 1.15;
 }
 p { margin: 0 0 0.75rem; }
+main p { max-width: 66ch; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
 .strip, .cards, .slots, .sources, .map, .brief {
@@ -2647,9 +2645,9 @@ th {
 .logo-row .logo-fallback {
   padding: 0 0.3rem;
   font-weight: 560;
-  font-size: 0.75rem;
+  font-size: 1em;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.15;
   text-align: center;
   overflow: hidden;
 }
@@ -3539,8 +3537,10 @@ p, h1, h2, h3, li, dd {
         faq = (Site.OUT / "faq" / "index.html").read_text(encoding="utf-8")
         fyi = (Site.OUT / "fyi" / "index.html").read_text(encoding="utf-8")
         news = (Site.OUT / "news" / "index.html").read_text(encoding="utf-8")
-        if "safe harbor" not in faq:
-            problems.append("faq missing safe harbor")
+        if "safe harbor" not in "\n".join(Site.bundle()["faq_questions"]).casefold():
+            problems.append("faq questions missing safe harbor")
+        if "<!--" in faq or "Is cyber espionage something we should report?" in faq:
+            problems.append("faq still ships the held-back questions")
         if "safe haven" not in fyi:
             problems.append("fyi missing safe haven")
         if "[poop]" in faq or "[fill in the blank]" in faq or "[ELT]" in faq or "[bad actors]" in faq:

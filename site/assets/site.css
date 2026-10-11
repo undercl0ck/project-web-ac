@@ -119,8 +119,9 @@ a:focus-visible, button:focus-visible {
 .mark { width: 2.35rem; height: 2.35rem; display: block; flex: none; }
 .folio {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 1em;
   letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--quiet-dark);
   min-width: 1.5rem;
 }
@@ -198,7 +199,7 @@ a:focus-visible, button:focus-visible {
 .hero-sub {
   margin: 0.9rem 0 0;
   max-width: 36rem;
-  color: var(--quiet-dark);
+  color: var(--bone);
   font-size: 1.125rem;
 }
 .hero-cta {
@@ -267,9 +268,10 @@ a:focus-visible, button:focus-visible {
 }
 .num {
   margin: 0.35rem 0 0;
-  font-size: 0.78rem;
+  font-size: 1em;
   letter-spacing: 0.14em;
   font-weight: 500;
+  text-transform: uppercase;
 }
 .row h2 {
   margin: 0 0 0.7rem;
@@ -287,6 +289,7 @@ a:focus-visible, button:focus-visible {
   line-height: 1.15;
 }
 p { margin: 0 0 0.75rem; }
+main p { max-width: 66ch; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
 .strip, .cards, .slots, .sources, .map, .brief {
@@ -553,9 +556,9 @@ th {
 .logo-row .logo-fallback {
   padding: 0 0.3rem;
   font-weight: 560;
-  font-size: 0.75rem;
+  font-size: 1em;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.15;
   text-align: center;
   overflow: hidden;
 }
