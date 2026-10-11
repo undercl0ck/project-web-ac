@@ -1051,6 +1051,9 @@ class Site:
             f'<ul class="plain">{"".join(f"<li>{escape(line)}</li>" for line in group.lines)}</ul>'
             for group in (team.executive, team.cyber_response)
         )
+        clients = (
+            f'<p><a href="{Site.href(slug, "proof")}#clients">{escape(team.closing)}</a></p>'
+        )
         portrait = Site.image(slug, leader.portrait, Site.portrait_sizes())
         leadership = (
             f'<figure class="portrait">{portrait}</figure>'
@@ -1063,7 +1066,7 @@ class Site:
 <p class="prose">{escape(about.intro)}</p>
 <ul class="plain">{creds}</ul>
 {Site.row("01", "Leadership", leadership, "leadership")}
-{Site.row("02", "Team", f'<div class="prose"><p>{escape(team.nda)}</p>{roles}</div>', "team")}
+{Site.row("02", "Team", f'<div class="prose"><p>{escape(team.nda)}</p>{roles}{clients}</div>', "team")}
 """
 
     @staticmethod
@@ -1115,7 +1118,7 @@ class Site:
 
     PORTRAIT_MAX_REM = 22
     NARROW_FRAME_GUTTER_REM = 1.25
-    WHO_WE_ARE_CANON_SHA256 = "ca6660697d65b8d4a5840b90bfc3baa7b7fbf9a0d3e2b57e4a25122c87df4387"
+    WHO_WE_ARE_CANON_SHA256 = "26e5bb3a6f4af7713546d6bc515e2b48ffa43968ef0935b334ecf0e4d3d0fbf6"
 
     @dataclass(frozen=True)
     class RoleList:
@@ -1127,6 +1130,7 @@ class Site:
         nda: str
         executive: Site.RoleList
         cyber_response: Site.RoleList
+        closing: str
 
     @dataclass(frozen=True)
     class Leader:
@@ -1197,6 +1201,7 @@ class Site:
                         team["cyber_response"]["lead"],
                         tuple(team["cyber_response"]["lines"]),
                     ),
+                    closing=team["closing"],
                 ),
             ),
             proof=Site.ProofCopy(tuple(raw["proof"]["client_segments"])),
