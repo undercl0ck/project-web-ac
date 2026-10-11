@@ -3202,7 +3202,7 @@ p, h1, h2, h3, li, dd {
         if who.about.leader.portrait["file"] not in about:
             problems.append("about is missing the leader portrait")
         team_photo = who.about.team.photo
-        if team_photo["file"] not in about or 'alt="US-CERT team"' not in about:
+        if team_photo["file"] not in about or 'alt="Operations floor with Department of Homeland Security displays"' not in about:
             problems.append("about is missing the US-CERT team photo")
         if f"{Path(team_photo['file']).stem}-300.webp 300w" not in about:
             problems.append("about team photo is missing its 300w candidate")
