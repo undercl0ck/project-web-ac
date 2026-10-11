@@ -79,6 +79,7 @@
   var cards = document.querySelectorAll(".icon-card");
   if (!cards.length) return;
   var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+  var wide = window.matchMedia("(min-width: 761px)");
 
   function cardOf(node) {
     if (!node || !node.closest) return null;
@@ -147,7 +148,7 @@
         var article = card.querySelector(".card");
         if (article) article.style.minHeight = "";
       });
-      if (!fine.matches) return;
+      if (!fine.matches || !wide.matches) return;
       var rows = [];
       Array.prototype.forEach.call(items, function (card) {
         var top = Math.round(card.getBoundingClientRect().top);
@@ -179,6 +180,8 @@
 
   lockRows();
   window.addEventListener("resize", lockRows);
+  if (fine.addEventListener) fine.addEventListener("change", lockRows);
+  if (wide.addEventListener) wide.addEventListener("change", lockRows);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockRows);
 })();
 (function () {

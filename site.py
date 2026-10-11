@@ -39,8 +39,8 @@ class Site:
         {"slug": "clients", "nav": "Clients", "title": "Our Clients"},
         {"slug": "credentials", "nav": "Credentials", "title": "Credentials"},
         {"slug": "recognition", "nav": "Recognitions", "title": "Recognitions"},
-        {"slug": "recognition-2", "nav": None, "title": "Recognitions, continued"},
-        {"slug": "recognition-3", "nav": None, "title": "Recognitions, continued"},
+        {"slug": "recognition-2", "nav": None, "title": "Recognitions (2 of 3)"},
+        {"slug": "recognition-3", "nav": None, "title": "Recognitions (3 of 3)"},
         {"slug": "news", "nav": "News", "title": "News"},
         {"slug": "faq", "nav": "FAQs", "title": "FAQs"},
         {"slug": "government", "nav": "Government Quals", "title": "Government Quals"},
@@ -1567,12 +1567,12 @@ class Site:
         groups = Site.recognition_groups()
         parts = ("recognition", "recognition-2", "recognition-3")
         links = []
+        titles = ("Recognitions", "Recognitions (2 of 3)", "Recognitions (3 of 3)")
         for number, part in enumerate(parts):
-            label = "Recognitions" if number == 0 else f"Continued {number + 1}"
             current = ' aria-current="page"' if part == slug else ""
-            links.append(f'<a href="{Site.href(slug, part)}"{current}>{label}</a>')
+            links.append(f'<a href="{Site.href(slug, part)}"{current}>{titles[number]}</a>')
         lede = '<p class="lede">General Photos, Letters, and Other</p>' if index == 0 else ""
-        title = "Recognitions" if index == 0 else "Recognitions, continued"
+        title = titles[index]
         return f"""
 <h1>{title}</h1>
 {lede}
@@ -1724,8 +1724,7 @@ class Site:
                 "</h3>"
                 f'<div class="faq-panel" id="{panel_id}" role="region" '
                 f'aria-labelledby="{anchor}">'
-                f'<div class="faq-answer"><p>{escape(item.trigger)}</p>'
-                f'<p class="quiet">{escape(item.panel)}</p></div>'
+                f'<div class="faq-answer"><p class="quiet">{escape(item.panel)}</p></div>'
                 "</div>"
                 "</li>"
             )
@@ -1735,16 +1734,12 @@ class Site:
     def faq_body(_slug: str) -> str:
         data = Site.bundle()
         intro = "".join(f"<p>{escape(line)}</p>" for line in data["faq_intro"])
-        questions = "".join(f"<li>{escape(line)}</li>" for line in data["faq_questions"])
         quotes = Site.accordion(Site.quote_disclosures(data["faq_quotes"]))
         lessons = "".join(f"<li>{escape(line)}</li>" for line in data["faq_lessons"])
         lesson_intro = "".join(f"<p>{escape(line)}</p>" for line in data["faq_lessons_intro"])
         return f"""
 <h1>FAQs</h1>
 {intro}
-<!--
-<ol class="plain">{questions}</ol>
--->
 <h2>Top Quotes</h2>
 <p>{escape(data["faq_disclaimer"])}</p>
 {quotes}
@@ -1947,6 +1942,7 @@ class Site:
   var cards = document.querySelectorAll(".icon-card");
   if (!cards.length) return;
   var fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+  var wide = window.matchMedia("(min-width: 761px)");
 
   function cardOf(node) {
     if (!node || !node.closest) return null;
@@ -2015,7 +2011,7 @@ class Site:
         var article = card.querySelector(".card");
         if (article) article.style.minHeight = "";
       });
-      if (!fine.matches) return;
+      if (!fine.matches || !wide.matches) return;
       var rows = [];
       Array.prototype.forEach.call(items, function (card) {
         var top = Math.round(card.getBoundingClientRect().top);
@@ -2047,6 +2043,8 @@ class Site:
 
   lockRows();
   window.addEventListener("resize", lockRows);
+  if (fine.addEventListener) fine.addEventListener("change", lockRows);
+  if (wide.addEventListener) wide.addEventListener("change", lockRows);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockRows);
 })();
 (function () {
@@ -2210,8 +2208,9 @@ a:focus-visible, button:focus-visible {
 .mark { width: 2.35rem; height: 2.35rem; display: block; flex: none; }
 .folio {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 1em;
   letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--quiet-dark);
   min-width: 1.5rem;
 }
@@ -2289,7 +2288,7 @@ a:focus-visible, button:focus-visible {
 .hero-sub {
   margin: 0.9rem 0 0;
   max-width: 36rem;
-  color: var(--quiet-dark);
+  color: var(--bone);
   font-size: 1.125rem;
 }
 .hero-cta {
@@ -2358,9 +2357,10 @@ a:focus-visible, button:focus-visible {
 }
 .num {
   margin: 0.35rem 0 0;
-  font-size: 0.78rem;
+  font-size: 1em;
   letter-spacing: 0.14em;
   font-weight: 500;
+  text-transform: uppercase;
 }
 .row h2 {
   margin: 0 0 0.7rem;
@@ -2378,6 +2378,7 @@ a:focus-visible, button:focus-visible {
   line-height: 1.15;
 }
 p { margin: 0 0 0.75rem; }
+main p { max-width: 27em; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
 .strip, .cards, .slots, .sources, .map, .brief {
@@ -2450,7 +2451,7 @@ p { margin: 0 0 0.75rem; }
   line-height: 1.15;
   text-transform: none;
 }
-.offering p { margin: 0; max-width: 36rem; }
+.offering p { margin: 0; max-width: 27em; }
 .slot {
   margin: 0 0 0.4rem;
   font-size: 0.95rem;
@@ -2481,6 +2482,7 @@ p { margin: 0 0 0.75rem; }
   justify-content: flex-end;
 }
 .sources li { margin: 0.15rem 0; }
+.sources > li > a { display: block; max-width: 27em; }
 .table-wrap { overflow-x: auto; max-width: 100%; }
 table { width: 100%; border-collapse: collapse; }
 caption {
@@ -2523,6 +2525,7 @@ th {
   display: flex;
   align-items: center;
   width: 100%;
+  max-width: 27em;
   min-height: 52px;
   text-decoration: none;
   font-size: 1.45rem;
@@ -2600,6 +2603,9 @@ th {
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
 .prose { max-width: 40rem; }
+main .prose,
+main .prose li,
+main ul:not([class]) > li { max-width: 27em; }
 .portrait img { display: block; width: 100%; height: auto; }
 .team-split {
   display: grid;
@@ -2644,15 +2650,16 @@ th {
 .logo-row .logo-fallback {
   padding: 0 0.3rem;
   font-weight: 560;
-  font-size: 0.75rem;
+  font-size: 1em;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.15;
   text-align: center;
   overflow: hidden;
 }
 .logo-more { margin: -0.2rem 0 1.2rem; }
 .logo-more a { font-weight: 560; text-decoration: none; }
 .plain li { margin: 0; padding: 0.85rem 0; border-top: 1px solid var(--rule); }
+.plain > li { padding-right: max(0px, calc(100% - 27em)); }
 .month-nav, .part-nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.35rem; margin: 0 0 1.4rem; }
 .month-nav a, .part-nav a {
   display: inline-flex;
@@ -2667,6 +2674,7 @@ th {
   display: flex;
   align-items: baseline;
   gap: 1rem;
+  max-width: 27em;
   min-height: 44px;
   text-decoration: none;
   font-weight: 520;
@@ -2762,7 +2770,7 @@ body {
 .menu.is-open > .menu-panel { display: flex; flex-direction: column; }
 .menu-panel a { width: 100%; }
 .page h1 { font-size: clamp(2.75rem, 4.2vw + 1.1rem, 5.75rem); }
-.lede { font-size: clamp(1.12rem, 0.4vw + 1rem, 1.38rem); max-width: 40rem; }
+.lede { font-size: clamp(1.12rem, 0.4vw + 1rem, 1.38rem); max-width: 27em; }
 .eyebrow {
   margin: 0 0 0.8rem;
   font-size: 0.75rem;
@@ -2770,7 +2778,7 @@ body {
   text-transform: uppercase;
 }
 .trust { padding: 1.45rem 0 0.2rem; }
-.trust-line { max-width: 46rem; margin: 0.15rem 0 0; }
+.trust-line { max-width: 27em; margin: 0.15rem 0 0; }
 .proofband, .services { margin-top: 2.6rem; }
 .proofband h2, .services h2 {
   margin: 0 0 0.9rem;
@@ -3132,7 +3140,7 @@ p, h1, h2, h3, li, dd {
   letter-spacing: 0;
   text-align: center;
 }
-.icon-card-panel { padding: 16px 2px 0; }
+.icon-card-panel { padding: 16px 24px 24px; }
 .svc-grid .svc-name,
 .svc-grid .svc-for,
 .svc-grid .svc-get,
@@ -3172,8 +3180,12 @@ p, h1, h2, h3, li, dd {
     font-size: 20px;
     line-height: 26px;
   }
+  .icon-card-panel > :last-child { margin-bottom: 0; }
 }
-@media (hover: hover) and (pointer: fine) {
+@media (hover: none), (pointer: coarse) {
+  .icon-card-panel > :last-child { margin-bottom: 0; }
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
   .svc-grid {
     grid-template-columns: minmax(0, 368px);
     column-gap: 48px;
@@ -3243,14 +3255,6 @@ p, h1, h2, h3, li, dd {
 @media (hover: hover) and (pointer: fine) and (min-width: 1280px) {
   .svc-grid { grid-template-columns: repeat(3, minmax(0, 368px)); }
 }
-@media (hover: hover) and (pointer: fine) and (max-width: 440px) {
-  .svc-grid .svc-for,
-  .svc-grid .svc-get,
-  .svc-grid .svc-body {
-    font-size: 16px;
-    line-height: 22px;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .icon-card-stage,
   .icon-card-panel,
@@ -3290,7 +3294,7 @@ p, h1, h2, h3, li, dd {
 .faq-icon { display: none; }
 .faq-panel { display: grid; grid-template-rows: 1fr; }
 .faq-answer { min-height: 0; overflow: hidden; }
-.faq-answer > p { max-width: 66ch; margin: 0; padding-bottom: 1rem; }
+.faq-answer > p { max-width: 27em; margin: 0; padding-bottom: 1rem; }
 .faq-answer > p.quiet { color: var(--quiet); }
 .faq-item:has(> h3 > [aria-expanded="false"]) > .faq-panel {
   grid-template-rows: 0fr;
@@ -3543,8 +3547,10 @@ p, h1, h2, h3, li, dd {
         faq = (Site.OUT / "faq" / "index.html").read_text(encoding="utf-8")
         fyi = (Site.OUT / "fyi" / "index.html").read_text(encoding="utf-8")
         news = (Site.OUT / "news" / "index.html").read_text(encoding="utf-8")
-        if "safe harbor" not in faq:
-            problems.append("faq missing safe harbor")
+        if "safe harbor" not in "\n".join(Site.bundle()["faq_questions"]).casefold():
+            problems.append("faq questions missing safe harbor")
+        if "<!--" in faq or "Is cyber espionage something we should report?" in faq:
+            problems.append("faq still ships the held-back questions")
         if "safe haven" not in fyi:
             problems.append("fyi missing safe haven")
         if "[poop]" in faq or "[fill in the blank]" in faq or "[ELT]" in faq or "[bad actors]" in faq:
