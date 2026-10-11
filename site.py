@@ -347,8 +347,12 @@ class Site:
         media_out.mkdir(parents=True, exist_ok=True)
         for src in sorted((Site.ROOT / "media").glob("*.webp")):
             (media_out / src.name).write_bytes(src.read_bytes())
-        for src in sorted((Site.ROOT / "media").glob("*.svg")):
+        for src in sorted((Site.ROOT / "media").glob("seal-*.svg")):
             (media_out / src.name).write_bytes(src.read_bytes())
+        bimi_src = Site.ROOT / "bimi" / "axon-bimi.svg"
+        bimi_out = Site.OUT / "bimi"
+        bimi_out.mkdir(parents=True, exist_ok=True)
+        (bimi_out / "axon-bimi.svg").write_bytes(bimi_src.read_bytes())
         logo_dir = Site.ROOT / "media" / "logos"
         if logo_dir.is_dir():
             for src in sorted(logo_dir.iterdir()):
