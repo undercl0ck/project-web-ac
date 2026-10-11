@@ -13,6 +13,7 @@ from dataclasses import dataclass, fields, is_dataclass
 from datetime import date
 from html import escape
 from pathlib import Path
+from urllib.parse import urlsplit
 
 
 class Site:
@@ -54,6 +55,13 @@ class Site:
         {"slug": "our-ceo", "nav": None, "title": "Our CEO & Global CTO"},
         {"slug": "sitemap", "nav": None, "title": "Sitemap"},
     )
+
+    REDIRECTS = {
+        "our-ceo": ("about", "#leadership"),
+        "faqs": ("faq", ""),
+        "contact": ("engage", ""),
+    }
+    NOINDEX_SLUGS = frozenset({"faqs", "contact"})
 
     # Six top-level items. The briefing link stays in the mast, beside this menu.
     MENU = (
@@ -377,6 +385,14 @@ class Site:
             Site.missing_body(),
         )
         (Site.OUT / "404.html").write_text(missing, encoding="utf-8")
+        for stub in (
+            {"slug": "faqs", "nav": None, "title": "FAQs"},
+            {"slug": "contact", "nav": None, "title": "Contact"},
+        ):
+            html = Site.document(stub, Site.redirect_stub_body(stub))
+            path = Site.page_path(stub["slug"])
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(html, encoding="utf-8")
 
     @staticmethod
     def page_path(slug: str) -> Path:
@@ -404,6 +420,40 @@ class Site:
         if slug == "":
             return Site.ORIGIN
         return Site.ORIGIN + slug + "/"
+
+    @staticmethod
+    def mount() -> str:
+        path = urlsplit(Site.ORIGIN).path
+        if not path.endswith("/"):
+            path += "/"
+        return path
+
+    @staticmethod
+    def mount_urls(html: str) -> str:
+        def one(url: str) -> str:
+            if url.startswith(("https:", "http:", "mailto:", "tel:", "#", "/")):
+                return url
+            if url.startswith("./"):
+                url = url[2:]
+            return Site.mount() + url
+
+        def repl(match: re.Match) -> str:
+            attr, value = match.group(1), match.group(2)
+            if attr == "srcset":
+                items = []
+                for part in value.split(","):
+                    piece = part.strip()
+                    if not piece:
+                        continue
+                    bits = piece.split()
+                    bits[0] = one(bits[0])
+                    items.append(" ".join(bits))
+                value = ", ".join(items)
+            else:
+                value = one(value)
+            return f'{attr}="{value}"'
+
+        return re.sub(r'\b(srcset|href|src)="([^"]*)"', repl, html)
 
     @staticmethod
     def folio(slug: str) -> str:
@@ -503,22 +553,28 @@ class Site:
         folio = Site.folio(slug)
         folio_html = f'<p class="folio">{folio}</p>' if folio else '<p class="folio"></p>'
         refresh = ""
-        if slug == "our-ceo":
+        redirect = Site.REDIRECTS.get(slug)
+        if redirect:
+            dest, frag = redirect
             refresh = (
                 '<meta http-equiv="refresh" content="0; url='
-                + Site.href(slug, "about")
-                + '#leadership">\n'
+                + Site.href(slug, dest)
+                + frag
+                + '">\n'
             )
+        robots = ""
+        if slug in Site.NOINDEX_SLUGS:
+            robots = '<meta name="robots" content="noindex">\n'
         if page.get("home"):
             content = main
         else:
             content = f'<div class="paper"><div class="frame page">{main}</div></div>'
-        return f"""<!DOCTYPE html>
+        html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-{refresh}<title>{title} — Axon Global Services</title>
+{refresh}{robots}<title>{title} — Axon Global Services</title>
 <meta name="description" content="{description}">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="{csp}">
@@ -565,6 +621,9 @@ class Site:
 </body>
 </html>
 """
+        if page.get("missing"):
+            html = Site.mount_urls(html)
+        return html
 
     @staticmethod
     def menu_links(slug: str, item: dict) -> str:
@@ -1039,10 +1098,22 @@ class Site:
 
     @staticmethod
     def ceo_redirect_body(slug: str) -> str:
-        href = Site.href(slug, "about") + "#leadership"
+        dest, frag = Site.REDIRECTS[slug]
+        href = Site.href(slug, dest) + frag
         return f"""
 <h1>Our CEO &amp; Global CTO</h1>
 <p><a href="{href}">Leadership</a></p>
+"""
+
+    @staticmethod
+    def redirect_stub_body(page: dict) -> str:
+        slug = page["slug"]
+        dest, frag = Site.REDIRECTS[slug]
+        href = Site.href(slug, dest) + frag
+        label = next(item["title"] for item in Site.PAGES if item["slug"] == dest)
+        return f"""
+<h1>{escape(page["title"])}</h1>
+<p><a href="{href}">{escape(label)}</a></p>
 """
 
     @staticmethod
@@ -1679,7 +1750,7 @@ class Site:
 
     @staticmethod
     def sitemap_xml() -> str:
-        slugs = [page["slug"] for page in Site.PAGES]
+        slugs = [page["slug"] for page in Site.PAGES if page["slug"] != "our-ceo"]
         slugs += [article["slug"] for article in Site.articles() if article["kind"] == "news"]
         slugs += ["insights/" + note["slug"] for note in Site.insight_notes()]
         urls = []
@@ -3130,8 +3201,11 @@ p, h1, h2, h3, li, dd {
             scripts = re.findall(r"<script\b([^>]*)>", text, re.I)
             rel_path = path.relative_to(Site.OUT)
             ups = "../" * (len(rel_path.parts) - 1)
-            expected = f' src="{ups}assets/menu.js"'
             rel = str(rel_path)
+            if rel == "404.html":
+                expected = f' src="{Site.mount()}assets/menu.js"'
+            else:
+                expected = f' src="{ups}assets/menu.js"'
             if scripts != [expected]:
                 problems.append(f"unexpected script in {rel}")
             if re.search(r"<script\b[^>]*>\s*[^<\s]", text, re.I):
@@ -3232,6 +3306,34 @@ p, h1, h2, h3, li, dd {
             problems.append("our-ceo link is missing")
         if "linkedin.com/in/israelmartinezcybersecurity" in ceo:
             problems.append("our-ceo still publishes the archived bio")
+        sitemap_xml = (Site.OUT / "sitemap.xml").read_text(encoding="utf-8")
+        if "our-ceo" in sitemap_xml:
+            problems.append("sitemap lists our-ceo")
+        not_found = (Site.OUT / "404.html").read_text(encoding="utf-8")
+        mount = Site.mount()
+        for needle in (
+            f"{mount}assets/site.css",
+            f"{mount}assets/menu.js",
+            f"{mount}favicon.png",
+            f"{mount}apple-touch-icon.png",
+            f'href="{mount}"',
+        ):
+            if needle not in not_found:
+                problems.append(f"404 missing {needle}")
+        if "<base" in not_found:
+            problems.append("404 contains a base tag")
+        if f"{mount}assets/site.css" in home:
+            problems.append("home stylesheet is mount-absolute")
+        for slug, dest in (("faqs", "../faq/"), ("contact", "../engage/")):
+            stub = (Site.OUT / slug / "index.html").read_text(encoding="utf-8")
+            if f'http-equiv="refresh" content="0; url={dest}"' not in stub:
+                problems.append(f"{slug} refresh is missing")
+            if f'href="{dest}"' not in stub:
+                problems.append(f"{slug} link is missing")
+            if 'name="robots" content="noindex"' not in stub:
+                problems.append(f"{slug} noindex is missing")
+        if (Site.OUT / "assets" / "media" / "ceo-portrait.webp").exists():
+            problems.append("ceo portrait still in site assets")
         if "viewport-fit=cover" not in home or "mark-logo.webp" not in home:
             problems.append("home logo or viewport-fit missing")
         if "Recognized by" not in home:
@@ -3357,7 +3459,13 @@ p, h1, h2, h3, li, dd {
                 for url in urls:
                     if url.startswith(("http:", "https:", "data:")):
                         continue
-                    image = (path.parent / url).resolve()
+                    if url.startswith("/"):
+                        mount = Site.mount()
+                        if not url.startswith(mount):
+                            continue
+                        image = (Site.OUT / url[len(mount):]).resolve()
+                    else:
+                        image = (path.parent / url).resolve()
                     if image.is_file() and image.stat().st_size > best_size:
                         best = image
                         best_size = image.stat().st_size

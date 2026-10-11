@@ -4,12 +4,12 @@
   "pages": [
     {
       "path": "404.html",
-      "html_bytes": 5076,
+      "html_bytes": 5742,
       "css_bytes": 30349,
       "font_bytes": 29336,
       "image_bytes": 60622,
       "js_bytes": 6226,
-      "total_bytes": 131609,
+      "total_bytes": 132275,
       "limit_bytes": 1048576,
       "under_limit": true
     },
@@ -58,6 +58,17 @@
       "under_limit": true
     },
     {
+      "path": "contact/index.html",
+      "html_bytes": 5254,
+      "css_bytes": 30349,
+      "font_bytes": 29336,
+      "image_bytes": 60622,
+      "js_bytes": 6226,
+      "total_bytes": 131787,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
       "path": "credentials/index.html",
       "html_bytes": 7690,
       "css_bytes": 30349,
@@ -98,6 +109,17 @@
       "image_bytes": 60622,
       "js_bytes": 6226,
       "total_bytes": 141233,
+      "limit_bytes": 1048576,
+      "under_limit": true
+    },
+    {
+      "path": "faqs/index.html",
+      "html_bytes": 5237,
+      "css_bytes": 30349,
+      "font_bytes": 29336,
+      "image_bytes": 60622,
+      "js_bytes": 6226,
+      "total_bytes": 131770,
       "limit_bytes": 1048576,
       "under_limit": true
     },
