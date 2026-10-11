@@ -1093,6 +1093,33 @@ class Site:
         return re.sub(r'src="media:([^"]+)"', src_sub, html)
 
     @staticmethod
+    def wrap_bare_tokens(html: str) -> str:
+        parts = re.split(r"(<[^>]+>)", html)
+        token = re.compile(
+            r"https?://[^\s<]+|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+            re.I,
+        )
+        in_anchor = 0
+        out = []
+        for part in parts:
+            if part.startswith("<"):
+                match = re.match(r"<\s*(/?)\s*([a-zA-Z0-9]+)", part)
+                if match and match.group(2).lower() == "a":
+                    in_anchor += -1 if match.group(1) else 1
+                out.append(part)
+                continue
+            if in_anchor > 0:
+                out.append(part)
+                continue
+            out.append(
+                token.sub(
+                    lambda item: f'<span class="break-anywhere">{item.group(0)}</span>',
+                    part,
+                )
+            )
+        return "".join(out)
+
+    @staticmethod
     def article_body(article: dict) -> str:
         slug = article["slug"]
         when = ""
@@ -1104,7 +1131,7 @@ class Site:
         source = ""
         if article.get("source"):
             source = f'<p class="source-note">Original source: {escape(article["source"])}</p>'
-        body = Site.expand_refs(article.get("html") or "", slug)
+        body = Site.wrap_bare_tokens(Site.expand_refs(article.get("html") or "", slug))
         back = Site.href(slug, article.get("back") or "news")
         label = escape(article.get("back_label") or "News")
         return f"""
@@ -2648,13 +2675,22 @@ main ul:not([class]) > li { max-width: 27em; }
   background: transparent;
 }
 .logo-row .logo-fallback {
-  padding: 0 0.3rem;
+  width: 160px;
+  max-width: 160px;
+  height: auto;
+  min-height: 40px;
+  padding: 8px 16px;
   font-weight: 560;
   font-size: 1em;
   letter-spacing: -0.02em;
   line-height: 1.15;
   text-align: center;
-  overflow: hidden;
+  overflow: visible;
+  white-space: normal;
+}
+.logo-row .logo-fallback span {
+  min-width: 0;
+  max-width: 100%;
 }
 .logo-more { margin: -0.2rem 0 1.2rem; }
 .logo-more a { font-weight: 560; text-decoration: none; }
@@ -2681,10 +2717,11 @@ main ul:not([class]) > li { max-width: 27em; }
 }
 .archive time { flex: none; color: var(--quiet); }
 .archive p { margin: 0.15rem 0 0; color: var(--quiet); }
-.article { overflow-wrap: anywhere; }
+.article { overflow-wrap: normal; }
 .article-figure { margin: 1rem 0; }
 .article img, .article-figure img { max-width: 100%; height: auto; }
 .source-note { color: var(--quiet); overflow-wrap: anywhere; }
+.break-anywhere { overflow-wrap: anywhere; }
 .back { margin-top: 2rem; }
 a.external::after { content: " (external)"; }
 .opening main { display: flex; flex-direction: column; }
@@ -2820,6 +2857,7 @@ body {
   font-weight: 560;
   letter-spacing: -0.045em;
   line-height: 0.95;
+  white-space: nowrap;
 }
 .mandate { border-top: 1px solid var(--ink); margin: 1.4rem 0 0; }
 .mandate-row {
@@ -2841,14 +2879,19 @@ body {
   margin: 0;
   padding: 0;
 }
-.mandate-pair li { margin: 0; padding-left: 0.95rem; position: relative; }
-.mandate-pair li::before {
+.mandate-pair li { margin: 0; padding-left: 0; position: relative; }
+.mandate-pair li > p:not(.mandate-num) {
+  position: relative;
+  padding-left: 0.95rem;
+}
+.mandate-pair li > p:not(.mandate-num)::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 1.7rem;
+  top: 0.75em;
   width: 0.4rem;
   height: 0.4rem;
+  margin-top: -0.2rem;
   border-radius: 50%;
   background: currentColor;
 }
@@ -2858,6 +2901,27 @@ body {
   line-height: 1;
   font-weight: 560;
   letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+.mandate-pair p { word-break: normal; hyphens: none; }
+@media (max-width: 759px) {
+  .mandate-row {
+    grid-template-columns: 1fr;
+    row-gap: 16px;
+  }
+  .mandate-row > p,
+  .mandate-pair,
+  .mandate-pair p {
+    text-align: left;
+  }
+  .mandate-pair {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .mandate-pair .mandate-num {
+    white-space: nowrap;
+    font-size: clamp(44px, 12vw, 64px);
+  }
 }
 .mandate-links { display: flex; flex-direction: column; align-items: flex-start; margin-top: 0.35rem; }
 .mandate-links a {
@@ -2998,8 +3062,10 @@ body {
   .seal-grid li { min-height: 9rem; }
   .seal-grid img { width: 6.25rem; height: 6.25rem; }
 }
-p, h1, h2, h3, li, dd {
-  overflow-wrap: anywhere;
+body, p, h1, h2, h3, h4, h5, h6, li, dd {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
 }
 @media (max-width: 700px) {
   .logo-row li { height: 40px; min-height: 40px; }
@@ -3059,7 +3125,6 @@ p, h1, h2, h3, li, dd {
   .frame { width: min(76rem, calc(100% - 1.25rem)); }
   .wordmark-name { letter-spacing: 0.12em; }
   .wordmark-line { letter-spacing: 0.1em; }
-  .mandate-row { grid-template-columns: 7.25rem minmax(0, 1fr); gap: 0.5rem 0.75rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .mark-lg .mass,

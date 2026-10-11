@@ -1549,7 +1549,7 @@
       "forms": 0,
       "scripts": 1,
       "external_urls": [
-        "http://www.hmgstrategy.com/events/agenda.asp?eventID=67</p",
+        "http://www.hmgstrategy.com/events/agenda.asp?eventID=67</span",
         "https://axoncyber.com/2020/10/20/2014-april-23-washington-d-c/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2014-april-23-washington-d-c/"
       ]
@@ -1741,7 +1741,7 @@
       "forms": 0,
       "scripts": 1,
       "external_urls": [
-        "http://www.hmgstrategy.com/company/news-and-press-overview/detail.asp?newsID=78</p",
+        "http://www.hmgstrategy.com/company/news-and-press-overview/detail.asp?newsID=78</span",
         "https://axoncyber.com/2020/10/20/2014-august-19-atlanta-ga/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2014-august-19-atlanta-ga/"
       ]
@@ -1780,7 +1780,7 @@
       "forms": 0,
       "scripts": 1,
       "external_urls": [
-        "http://www.cnn.com/videos/tech/2014/12/19/exp-ath-how-do-hackers-gain-access-richard-marshall.cnn</p",
+        "http://www.cnn.com/videos/tech/2014/12/19/exp-ath-how-do-hackers-gain-access-richard-marshall.cnn</span",
         "https://axoncyber.com/2020/10/20/2014-december-19/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2014-december-19/"
       ]
@@ -2275,7 +2275,7 @@
       "forms": 0,
       "scripts": 1,
       "external_urls": [
-        "http://www.hmgstrategy.com/events/agenda.asp?eventID=66</p",
+        "http://www.hmgstrategy.com/events/agenda.asp?eventID=66</span",
         "https://axoncyber.com/2020/10/20/2014-may-8-washington-d-c/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2014-may-8-washington-d-c/"
       ]
@@ -2618,7 +2618,7 @@
       "forms": 0,
       "scripts": 1,
       "external_urls": [
-        "http://www.hnba.com/main/view_event/7/2</p",
+        "http://www.hnba.com/main/view_event/7/2</span",
         "https://axoncyber.com/2020/10/20/2015-march-18-san-antonio-tx/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2015-march-18-san-antonio-tx/"
       ]
@@ -2885,7 +2885,7 @@
       "forms": 0,
       "scripts": 1,
       "external_urls": [
-        "http://www.hmgstrategy.com/events/agenda.asp?eventID=95),",
+        "http://www.hmgstrategy.com/events/agenda.asp?eventID=95),</span",
         "https://axoncyber.com/2020/10/20/2015-september-23-denver-co/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2015-september-23-denver-co/"
       ]
@@ -2924,7 +2924,7 @@
       "forms": 0,
       "scripts": 1,
       "external_urls": [
-        "http://www.chli.org",
+        "http://www.chli.org</span",
         "https://axoncyber.com/2020/10/20/2015-september-28-washington-d-c/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2015-september-28-washington-d-c/"
       ]
@@ -3381,7 +3381,7 @@
       "forms": 0,
       "scripts": 1,
       "external_urls": [
-        "http://www.middlemarketgrowth.org/a-new-year-for-cybersecurity-what-to-expect-in-2016/)</p",
+        "http://www.middlemarketgrowth.org/a-new-year-for-cybersecurity-what-to-expect-in-2016/)</span",
         "https://axoncyber.com/2020/10/20/2016-january-19-2016-washington-d-c/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2016-january-19-2016-washington-d-c/"
       ]
@@ -5170,7 +5170,7 @@
       "external_urls": [
         "https://axoncyber.com/2020/10/20/2018-july-28-washington-d-c/</p",
         "https://undercl0ck.github.io/project-web-ac/news/2018-july-28-washington-d-c/",
-        "https://www.cna.org/about/"
+        "https://www.cna.org/about/</span"
       ]
     },
     {
@@ -5246,7 +5246,7 @@
       "scripts": 1,
       "external_urls": [
         "https://axoncyber.com/2020/10/20/2018-june-7-washington-d-c/</p",
-        "https://axoncyber.com/israel-info/",
+        "https://axoncyber.com/israel-info/</span",
         "https://undercl0ck.github.io/project-web-ac/news/2018-june-7-washington-d-c/"
       ]
     },
@@ -7351,9 +7351,9 @@
       "scripts": 1,
       "external_urls": [
         "https://axoncyber.com/2023/10/09/2023-june-29-mclean-va/</p",
-        "https://axoncyber.com/recognitions/</p",
+        "https://axoncyber.com/recognitions/</span",
         "https://undercl0ck.github.io/project-web-ac/news/2023-june-29-mclean-va/",
-        "https://www.ida.org/en/ida-ffrdcs/systems-and-analysescenter</p"
+        "https://www.ida.org/en/ida-ffrdcs/systems-and-analysescenter</span"
       ]
     },
     {
@@ -7508,7 +7508,7 @@
       "scripts": 1,
       "external_urls": [
         "https://axoncyber.com/2023/10/09/2023-may-29-washington-d-c/</p",
-        "https://axoncyber.com/recognitions/</p",
+        "https://axoncyber.com/recognitions/</span",
         "https://undercl0ck.github.io/project-web-ac/news/2023-may-29-washington-d-c/"
       ]
     },
@@ -8641,7 +8641,7 @@
       "scripts": 1,
       "external_urls": [
         "https://axoncyber.com/2024/11/07/dhs-cisa-interview-with-axon-cyber-ceo-israel-martinez/</p",
-        "https://axoncyber.com/wp-content/uploads/2024/11/nov-interview.mp4.",
+        "https://axoncyber.com/wp-content/uploads/2024/11/nov-interview.mp4.</span",
         "https://undercl0ck.github.io/project-web-ac/news/dhs-cisa-interview-with-axon-cyber-ceo-israel-martinez/"
       ]
     },
