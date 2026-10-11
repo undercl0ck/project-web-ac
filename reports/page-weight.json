@@ -103,12 +103,12 @@
     },
     {
       "path": "faq/index.html",
-      "html_bytes": 19282,
+      "html_bytes": 19288,
       "css_bytes": 32103,
       "font_bytes": 29336,
       "image_bytes": 60622,
       "js_bytes": 7450,
-      "total_bytes": 148793,
+      "total_bytes": 148799,
       "limit_bytes": 1048576,
       "under_limit": true
     },
