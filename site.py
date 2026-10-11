@@ -160,7 +160,7 @@ class Site:
             "home": True,
             "body": (
                 "An expedient third-party report identifying gaps between current "
-                "programs verses current threats."
+                "programs versus current threats."
             ),
         },
         {
@@ -1227,7 +1227,7 @@ class Site:
     PORTRAIT_MAX_REM = 22
     NARROW_FRAME_GUTTER_REM = 1.25
     TEAM_PHOTO_ID = "uscert-our-team"
-    WHO_WE_ARE_CANON_SHA256 = "26e5bb3a6f4af7713546d6bc515e2b48ffa43968ef0935b334ecf0e4d3d0fbf6"
+    WHO_WE_ARE_CANON_SHA256 = "39ff90094c2ae54279b22f482907c82eaffb5551900d639df997838528cee2b4"
 
     @dataclass(frozen=True)
     class RoleList:
@@ -1646,24 +1646,84 @@ class Site:
 {"".join(sections)}
 """
 
+    class Disclosure:
+        def __init__(self, anchor: str, trigger: str, panel: str) -> None:
+            if not trigger or not panel:
+                raise ValueError("disclosure needs a trigger and a panel")
+            if not re.fullmatch(r"[a-z0-9-]+", anchor):
+                raise ValueError("disclosure anchor is not a slug")
+            self.anchor = anchor
+            self.trigger = trigger
+            self.panel = panel
+
+    @staticmethod
+    def quote_excluded(entry: dict) -> bool:
+        blob = f"{entry.get('quote', '')} {entry.get('note', '')}".casefold()
+        return "[poop]" in blob or "[fill in the blank]" in blob
+
+    @staticmethod
+    def quote_disclosures(entries: list[dict]) -> list[Disclosure]:
+        items: list[Site.Disclosure] = []
+        seen: set[str] = set()
+        for entry in entries:
+            if Site.quote_excluded(entry):
+                continue
+            quote = entry["quote"]
+            note = entry["note"]
+            if not quote or not note:
+                raise ValueError("empty quote or note")
+            folded = quote.casefold()
+            for mark in ("'", "\u2018", "\u2019", "\u201c", "\u201d", '"'):
+                folded = folded.replace(mark, "")
+            words = re.findall(r"[a-z0-9]+", folded)[:5]
+            anchor = "quote-" + "-".join(words)
+            if anchor in seen:
+                raise ValueError("duplicate disclosure anchor")
+            seen.add(anchor)
+            items.append(Site.Disclosure(anchor, quote, note))
+        return items
+
+    @staticmethod
+    def accordion(items: list[Disclosure]) -> str:
+        rows = []
+        for item in items:
+            anchor = escape(item.anchor)
+            panel_id = escape(f"{item.anchor}-panel")
+            rows.append(
+                '<li class="faq-item">'
+                "<h3>"
+                f'<button type="button" class="faq-trigger" id="{anchor}" '
+                f'aria-expanded="true" aria-controls="{panel_id}">'
+                f'<span class="faq-text">{escape(item.trigger)}</span>'
+                '<span class="faq-icon" aria-hidden="true"></span>'
+                "</button>"
+                "</h3>"
+                f'<div class="faq-panel" id="{panel_id}" role="region" '
+                f'aria-labelledby="{anchor}">'
+                f'<div class="faq-answer"><p>{escape(item.trigger)}</p>'
+                f'<p class="quiet">{escape(item.panel)}</p></div>'
+                "</div>"
+                "</li>"
+            )
+        return '<ul class="faq">' + "".join(rows) + "</ul>"
+
     @staticmethod
     def faq_body(_slug: str) -> str:
         data = Site.bundle()
         intro = "".join(f"<p>{escape(line)}</p>" for line in data["faq_intro"])
         questions = "".join(f"<li>{escape(line)}</li>" for line in data["faq_questions"])
-        quotes = []
-        for item in data["faq_quotes"]:
-            note = f"<p>{escape(item['note'])}</p>" if item.get("note") else ""
-            quotes.append(f"<li><p>{escape(item['quote'])}</p>{note}</li>")
+        quotes = Site.accordion(Site.quote_disclosures(data["faq_quotes"]))
         lessons = "".join(f"<li>{escape(line)}</li>" for line in data["faq_lessons"])
         lesson_intro = "".join(f"<p>{escape(line)}</p>" for line in data["faq_lessons_intro"])
         return f"""
 <h1>FAQs</h1>
 {intro}
+<!--
 <ol class="plain">{questions}</ol>
+-->
 <h2>Top Quotes</h2>
 <p>{escape(data["faq_disclaimer"])}</p>
-<ul class="plain">{"".join(quotes)}</ul>
+{quotes}
 <h2>Top Lessons Learned</h2>
 {lesson_intro}
 <ul class="plain">{lessons}</ul>
@@ -1964,6 +2024,42 @@ class Site:
   lockRows();
   window.addEventListener("resize", lockRows);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockRows);
+})();
+(function () {
+  var lists = document.querySelectorAll(".faq");
+  if (!lists.length) return;
+
+  function triggerIn(node) {
+    var item = node && node.closest ? node.closest(".faq-item") : null;
+    return item ? item.querySelector(".faq-trigger") : null;
+  }
+
+  function setOpen(trigger, open) {
+    trigger.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  function openFromHash() {
+    var id = (location.hash || "").replace(/^#/, "");
+    var trigger = id ? triggerIn(document.getElementById(id)) : null;
+    if (trigger) setOpen(trigger, true);
+  }
+
+  Array.prototype.forEach.call(lists, function (list) {
+    Array.prototype.forEach.call(list.querySelectorAll(".faq-trigger"), function (trigger) {
+      setOpen(trigger, false);
+    });
+    list.addEventListener("click", function (event) {
+      var trigger = event.target.closest(".faq-trigger");
+      if (!trigger || !list.contains(trigger)) return;
+      setOpen(trigger, trigger.getAttribute("aria-expanded") !== "true");
+    });
+  });
+  openFromHash();
+  lists[0].getBoundingClientRect();
+  Array.prototype.forEach.call(lists, function (list) {
+    list.classList.add("faq-live");
+  });
+  window.addEventListener("hashchange", openFromHash);
 })();
 """
 
@@ -3146,6 +3242,70 @@ p, h1, h2, h3, li, dd {
     transition: none;
   }
 }
+.faq {
+  list-style: none;
+  margin: 0.6rem 0 1.4rem;
+  padding: 0;
+  border-bottom: 1px solid var(--rule);
+}
+.faq-item { border-top: 1px solid var(--rule); }
+.faq-item > h3 { margin: 0; font: inherit; }
+.faq-trigger {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.75rem 0;
+  text-align: left;
+  color: var(--ink);
+  cursor: auto;
+  scroll-margin-top: 1rem;
+}
+.faq-icon { display: none; }
+.faq-panel { display: grid; grid-template-rows: 1fr; }
+.faq-answer { min-height: 0; overflow: hidden; }
+.faq-answer > p { max-width: 66ch; margin: 0; padding-bottom: 1rem; }
+.faq-answer > p.quiet { color: var(--quiet); }
+.faq-item:has(> h3 > [aria-expanded="false"]) > .faq-panel {
+  grid-template-rows: 0fr;
+  visibility: hidden;
+}
+.faq-live .faq-trigger { cursor: pointer; }
+.faq-live .faq-icon {
+  display: block;
+  position: relative;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-top: calc(0.75em - 12px);
+  transition: transform 200ms ease-out;
+}
+.faq-icon::before,
+.faq-icon::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: calc(50% - 0.75px);
+  width: 16px;
+  height: 1.5px;
+  background: currentColor;
+}
+.faq-icon::after { transform: rotate(90deg); }
+.faq-live [aria-expanded="true"] > .faq-icon { transform: rotate(45deg); }
+.faq-live .faq-panel { transition: grid-template-rows 200ms ease-out, visibility 200ms ease-out; }
+@media (hover: hover) {
+  .faq-live .faq-trigger:hover .faq-text {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-live .faq-item .faq-icon,
+  .faq-live .faq-item .faq-panel { transition: none; }
+}
 
 """
         portrait = ".portrait { margin: 0 0 1.4rem; max-width: 22rem; }"
@@ -3364,7 +3524,7 @@ p, h1, h2, h3, li, dd {
             problems.append("faq still has editorial brackets")
         if "Would it stand up to review by your board, your regulator, or a court?" not in faq:
             problems.append("faq review question missing")
-        if "Generals Counsel" not in faq or "Conducted" not in home:
+        if "General Counsel" not in faq or "Conducted" not in home:
             problems.append("source wording drifted")
         if re.search(r"\[\d+\]", news):
             problems.append("news still has citation marks")

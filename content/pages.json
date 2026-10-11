@@ -7,11 +7,11 @@
     "Founded in 2003, graduate of the Federally Certified 8(a) program"
   ],
   "who_value_heading": "Our Unique Business Value",
-  "who_value": "Axon Global has been a trusted, vetted and contracted entity with the Department of Homeland Security (DHS) and/or the Cybersecurity Infrastructure Security Agency (CISA) authorized to operate in the private sector, while simultaneously protecting the critical infrastructure security agency. Axon is also executing critical infrastructure security cyber-monitoring; threat intelligence; and defending critical infrastructure under The Task Force on National and Homeland Security, established under a bi-partisan U.S. Congressional Committee. Axon Global has provided Cyber Enterprise Risk Management Training for over 200 Fortune 500 Directors, Officers, and Generals Counsel and over 300 Executive Leadership Teams across all major industries including but not limited to the following listed at:",
+  "who_value": "Axon Global has been a trusted, vetted and contracted entity with the Department of Homeland Security (DHS) and/or the Cybersecurity Infrastructure Security Agency (CISA) authorized to operate in the private sector, while simultaneously protecting the critical infrastructure security agency. Axon is also executing critical infrastructure security cyber-monitoring; threat intelligence; and defending critical infrastructure under The Task Force on National and Homeland Security, established under a bi-partisan U.S. Congressional Committee. Axon Global has provided Cyber Enterprise Risk Management Training for over 200 Fortune 500 Directors, Officers, and General Counsel and over 300 Executive Leadership Teams across all major industries including but not limited to the following listed at:",
   "clients_intro": [
-    "Axon has Conducted Cyber Enterprise Risk Management training to over 220 of the F500 Directors, Officers, Generals Counsel and Executive Leadership Teams.",
+    "Axon has Conducted Cyber Enterprise Risk Management training to over 220 of the F500 Directors, Officers, General Counsel and Executive Leadership Teams.",
     "Axon focuses on protecting the valuation, reputation, safety and operations of its clients with boardroom intelligence and strategy. Our Clients are almost exclusively Director & Officer level contracts with F500 and Global 1000 companies or at the most senior levels with government agencies - most of our contracts are confidential. Engagements include Cyber Risk, Governance, Strategy and Innovation. Confidential engagements include a variety of cyber boardroom intelligence; cyber counter intelligence; and/or cyber counter terrorism services.",
-    "Axon Global has provided Cyber Enterprise Risk Management Training for over 200 Fortune 500 Directors, Officers, and Generals Counsel and over 300 Executive Leadership Teams across all major industries including but not limited to the following:"
+    "Axon Global has provided Cyber Enterprise Risk Management Training for over 200 Fortune 500 Directors, Officers, and General Counsel and over 300 Executive Leadership Teams across all major industries including but not limited to the following:"
   ],
   "clients": [
     "American Bar Association",
@@ -108,19 +108,19 @@
     "View our Extended Capabilities"
   ],
   "faq_intro": [
-    "Axon Global has trained over 250 F500 Board Directors, Generals Counsel and Executive Leadership Team members in Cyber Enterprise Risk Management (ERM)",
+    "Axon Global has trained over 250 F500 Board Directors, General Counsel and Executive Leadership Team members in Cyber Enterprise Risk Management (ERM)",
     "Here are the current Frequently Asked Questions by Board Members in “Cyber ERM Training for Directors”"
   ],
   "faq_questions": [
-    "How will recent breaches and judicial rulings at Yahoo!, Capital One, Marriott, and facebook impact the board and executive leadership team ELT members?",
+    "How will recent breaches and judicial rulings at Yahoo!, Capital One, Marriott, and Facebook impact the board and executive leadership team ELT members?",
     "Why is 3rd party attorney-client privilege no longer enough to protect directors and ELT (e.g. Capital One – Mandiant recent ruling)?",
     "How will the post COVID-19 Work From Home environment impact my risk management strategy?",
     "How and why is Directors and Officers (D&O) liability insurance now suing the individual members of the ELT after a cyber breach? How can I mitigate that risk?",
     "How will the European Union General Data Protection Regulation (EU GDPR) create cybersecurity liability for my organization?",
     "Cybersecurity metrics are no longer reliable indicators of risk posture. What is a current best practice?",
     "What should be done to mitigate risk when cybersecurity insurance is providing minimal coverage?",
-    "What are the implications of Yahoo! and Equifax having a criminal investigation component for cyber breach response? Will DNO or cybersecurity insurance cover that?",
-    "What happens during an Capital One type breach and how does that impact ELT, operations, and management?",
+    "What are the implications of Yahoo! and Equifax having a criminal investigation component for cyber breach response? Will D&O or cybersecurity insurance cover that?",
+    "What happens during a Capital One-type breach and how does that impact ELT, operations, and management?",
     "How do I get a more meaningful risk report from my C-suite?",
     "What questions should I be asking as a board member?",
     "To whom should risk report?",
@@ -129,7 +129,7 @@
     "Does anyone outside of the company know about our cyber (vulnerabilities/compromises/breaches)?",
     "What organizations might hold us accountable with respect to cyber compromises and breaches?",
     "How do we increase visibility into what’s really happening internally [with respect to cybersecurity]?",
-    "How do I compare to others in my industry, and when are we required to meet a reasonable verses a responsible standard?",
+    "How do I compare to others in my industry, and when are we required to meet a reasonable versus a responsible standard?",
     "In M&A, how can I know if the target company’s intellectual property has already been compromised or stolen?",
     "Is cyber espionage something we should report? If so, how? Can we do it with safe harbor?",
     "Cybersecurity insurance is not covering much in recent breaches, why? How do we mitigate that risk?",
@@ -153,7 +153,7 @@
     },
     {
       "quote": "“Is that what you meant about our officer’s email being compromised?”",
-      "note": "“They bad actors know both the log-in AND the passwords? They can read everything?” Question was asked by a C-level executive, three months into an active cyber breach investigation, who did not understand the implications of compromised email accounts."
+      "note": "“The bad actors know both the log-in AND the passwords? They can read everything?” Question was asked by a C-level executive, three months into an active cyber breach investigation, who did not understand the implications of compromised email accounts."
     },
     {
       "quote": "“What’s the consequence if we do nothing?”",
@@ -181,7 +181,7 @@
     "Their experience advises Directors to assume the following"
   ],
   "faq_lessons": [
-    "There is no such thing as a cybersecurity, focus on risk management of liability vs breach prevention – its now all about resiliency.",
+    "There is no such thing as a cybersecurity, focus on risk management of liability vs breach prevention – it's now all about resiliency.",
     "Presume that cybersecurity risk and liability are better mitigated with Enterprise Risk Management and Governance than with technology: “what will you wish you had done yesterday, if a breach is discovered tomorrow?”",
     "Presume that cybersecurity compromises invoke survival instincts, as in “Maslow’s hierarchy of needs.” Expect unusual and sometimes desperate behavior as a breach or disclosable event develops.",
     "Expect organizational behaviors that, when audited, violate D&O insurance coverage requirements, and/or disqualify cybersecurity insurance protection.",
@@ -201,7 +201,7 @@
     "Do not let IT “black-box” or mystify the cybersecurity risk for your company. Keep asking the questions until you get satisfactory answers. Are we at risk? How do you know? How do you measure that? Is that enough? Has that been audited? By whom? Can I trust it? How do we know that? Would it stand up to review by your board, your regulator, or a court?",
     "It’s not the compromise or breach that causes most of the liability; it’s the lack of governance and the potential unethical behavior surrounding the event that costs the most."
   ],
-  "fyi_heading": "European General Data Protection Regulation (EU GDPR",
+  "fyi_heading": "European General Data Protection Regulation (EU GDPR)",
   "fyi_readings": [
     {
       "text": "The Hill: Admiral Rogers pushes to loosen reins on cyber weapons",
