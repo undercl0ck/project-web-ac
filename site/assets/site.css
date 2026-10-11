@@ -279,6 +279,13 @@ a:focus-visible, button:focus-visible {
   line-height: 1.12;
   text-transform: none;
 }
+.row h3 {
+  margin: 0 0 0.15rem;
+  font-size: clamp(1.2rem, 0.5vw + 1.05rem, 1.45rem);
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
 p { margin: 0 0 0.75rem; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
@@ -501,6 +508,7 @@ th {
 .photo-grid li, .recog-grid li { background: var(--ink); }
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
+.prose { max-width: 40rem; }
 .portrait img { display: block; width: 100%; height: auto; }
 .logo-row {
   display: flex;

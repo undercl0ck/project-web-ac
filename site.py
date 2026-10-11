@@ -5,9 +5,11 @@ One class. Static methods. Plain HTML, one stylesheet, one menu script, one self
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
+from dataclasses import dataclass, fields, is_dataclass
 from datetime import date
 from html import escape
 from pathlib import Path
@@ -848,6 +850,9 @@ class Site:
     @staticmethod
     def proof_body(slug: str) -> str:
         data = Site.bundle()
+        segments = "".join(
+            f"<li>{escape(line)}</li>" for line in Site.who_we_are().proof.client_segments
+        )
         return f"""
 <h1>Proof</h1>
 <p class="lede">{escape(data["who_credentials_heading"])}</p>
@@ -856,6 +861,7 @@ class Site:
 {Site.figures()}
 <section id="clients">
 <h2>Our Clients</h2>
+<ul class="plain">{segments}</ul>
 {Site.client_logo_row(slug)}
 </section>
 """
@@ -1026,14 +1032,34 @@ class Site:
 
     @staticmethod
     def about_body(slug: str) -> str:
-        data = Site.bundle()
-        lines = "".join(f"<li>{escape(line)}</li>" for line in data["who_credentials"])
-        logo = next(row for row in Site.catalog() if row["id"] == "mark-logo")
+        about = Site.who_we_are().about
+        leader, team = about.leader, about.team
+        creds = "".join(f"<li>{escape(line)}</li>" for line in Site.bundle()["who_credentials"])
+        bio = "".join(f"<p>{escape(text)}</p>" for text in leader.bio)
+        roles = "".join(
+            f"<p>{escape(group.lead)}</p>"
+            f'<ul class="plain">{"".join(f"<li>{escape(line)}</li>" for line in group.lines)}</ul>'
+            for group in (team.executive, team.cyber_response)
+        )
+        # .portrait caps the image at 22rem (352px). The 1.25rem frame gutter
+        # makes that slot narrower only at a viewport of 371px or below.
+        portrait = Site.image(
+            slug,
+            leader.portrait,
+            "(max-width: 371px) calc(100vw - 1.25rem), 22rem",
+        )
+        leadership = (
+            f'<figure class="portrait">{portrait}</figure>'
+            f'<div class="prose"><h3>{escape(leader.name)}</h3>'
+            f'<p class="quiet">{escape(leader.role)}</p>{bio}</div>'
+        )
         return f"""
-<h1>About</h1>
-<p class="lede">Axon Global Services prepares board training and pre-emptive cyber risk work for the readers on Who it is for.</p>
-<figure class="portrait">{Site.image(slug, logo, "12rem")}</figure>
-<ul class="plain">{lines}</ul>
+<h1>{escape(about.title)}</h1>
+<p class="lede">{escape(about.subtitle)}</p>
+<p class="prose">{escape(about.intro)}</p>
+<ul class="plain">{creds}</ul>
+{Site.row("01", "Leadership", leadership, "leadership")}
+{Site.row("02", "Team", f'<div class="prose"><p>{escape(team.nda)}</p>{roles}</div>', "team")}
 """
 
     @staticmethod
@@ -1082,6 +1108,110 @@ class Site:
 <h2>Insights</h2>
 <ol class="map">{"".join(notes)}</ol>
 """
+
+    # Canonical JSON, not the file bytes. Reindenting the file does not change the lock.
+    WHO_WE_ARE_SHA256 = "ca6660697d65b8d4a5840b90bfc3baa7b7fbf9a0d3e2b57e4a25122c87df4387"
+
+    @dataclass(frozen=True)
+    class RoleList:
+        lead: str
+        lines: tuple[str, ...]
+
+    @dataclass(frozen=True)
+    class Team:
+        nda: str
+        executive: Site.RoleList
+        cyber_response: Site.RoleList
+
+    @dataclass(frozen=True)
+    class Leader:
+        name: str
+        role: str
+        portrait: dict
+        bio: tuple[str, ...]
+
+    @dataclass(frozen=True)
+    class AboutCopy:
+        title: str
+        subtitle: str
+        intro: str
+        leader: Site.Leader
+        team: Site.Team
+
+    @dataclass(frozen=True)
+    class ProofCopy:
+        client_segments: tuple[str, ...]
+
+    @dataclass(frozen=True)
+    class WhoWeAre:
+        """Field names are page slugs. audit() opens each page by that name."""
+
+        about: Site.AboutCopy
+        proof: Site.ProofCopy
+
+    @staticmethod
+    def who_we_are() -> Site.WhoWeAre:
+        raw = json.loads((Site.ROOT / "content" / "who-we-are.json").read_text(encoding="utf-8"))
+        canon = json.dumps(raw, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+        digest = hashlib.sha256(canon.encode("ascii")).hexdigest()
+        if digest != Site.WHO_WE_ARE_SHA256:
+            raise SystemExit(
+                "content/who-we-are.json no longer matches the owner-approved copy. "
+                "It is copied word for word from axoncyber.com, NBSPs and curly quotes included. "
+                "Restore it (git diff content/who-we-are.json). "
+                f"Set WHO_WE_ARE_SHA256 = {digest!r} only for wording the owner supplied."
+            )
+        about = raw["about"]
+        leader = about["leader"]
+        team = about["team"]
+        row = next((item for item in Site.catalog() if item["id"] == leader["portrait"]), None)
+        if row is None:
+            raise SystemExit(f"no catalog row for portrait {leader['portrait']!r}")
+        media = Site.ROOT / "media"
+        if not (media / row["file"]).is_file():
+            raise SystemExit(f"missing media/{row['file']}")
+        small = Path(row["file"]).stem + "-sm.webp"
+        if int(row["width"]) > 640 and not (media / small).is_file():
+            raise SystemExit(f"missing media/{small}; the portrait needs its 640w candidate")
+        return Site.WhoWeAre(
+            about=Site.AboutCopy(
+                title=about["title"],
+                subtitle=about["subtitle"],
+                intro=about["intro"],
+                leader=Site.Leader(
+                    name=leader["name"],
+                    role=leader["role"],
+                    portrait=row,
+                    bio=tuple(leader["bio"]),
+                ),
+                team=Site.Team(
+                    nda=team["nda"],
+                    executive=Site.RoleList(
+                        team["executive"]["lead"],
+                        tuple(team["executive"]["lines"]),
+                    ),
+                    cyber_response=Site.RoleList(
+                        team["cyber_response"]["lead"],
+                        tuple(team["cyber_response"]["lines"]),
+                    ),
+                ),
+            ),
+            proof=Site.ProofCopy(tuple(raw["proof"]["client_segments"])),
+        )
+
+    @staticmethod
+    def _strings(record) -> tuple[str, ...]:
+        # Leader.portrait is a catalog row. audit() checks its file name on its own.
+        out = []
+        for field in fields(record):
+            value = getattr(record, field.name)
+            if isinstance(value, str):
+                out.append(value)
+            elif isinstance(value, tuple):
+                out.extend(value)
+            elif is_dataclass(value):
+                out.extend(Site._strings(value))
+        return tuple(out)
 
     @staticmethod
     def bundle() -> dict:
@@ -1990,6 +2120,13 @@ a:focus-visible, button:focus-visible {
   line-height: 1.12;
   text-transform: none;
 }
+.row h3 {
+  margin: 0 0 0.15rem;
+  font-size: clamp(1.2rem, 0.5vw + 1.05rem, 1.45rem);
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
 p { margin: 0 0 0.75rem; }
 .quiet { color: var(--quiet); }
 .colophon .quiet { color: var(--quiet-dark); }
@@ -2212,6 +2349,7 @@ th {
 .photo-grid li, .recog-grid li { background: var(--ink); }
 .photo-grid img, .recog-grid img { height: 12rem; }
 .portrait { margin: 0 0 1.4rem; max-width: 22rem; }
+.prose { max-width: 40rem; }
 .portrait img { display: block; width: 100%; height: auto; }
 .logo-row {
   display: flex;
@@ -2976,6 +3114,14 @@ p, h1, h2, h3, li, dd {
         about = (Site.OUT / "about" / "index.html").read_text(encoding="utf-8")
         if "Slot" in about or "mark-logo.webp" not in about:
             problems.append("about is missing the logo")
+        who = Site.who_we_are()
+        for group in fields(who):
+            html = Site.page_path(group.name).read_text(encoding="utf-8")
+            for text in Site._strings(getattr(who, group.name)):
+                if escape(text) not in html:
+                    problems.append(f"{group.name} is missing restored copy {text[:48]!r}")
+        if who.about.leader.portrait["file"] not in about:
+            problems.append("about is missing the leader portrait")
         if "viewport-fit=cover" not in home or "mark-logo.webp" not in home:
             problems.append("home logo or viewport-fit missing")
         if "Recognized by" not in home:
